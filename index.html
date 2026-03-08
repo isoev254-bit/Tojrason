@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Яндекс Такси - Фармоиши курьер</title>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #FFFFFF;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .yandex-app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: #E5E5E5;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Navigation Controls */
+        .navigation-controls {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            border: none;
+            color: #666;
+            transition: all 0.2s;
+            font-size: 20px;
+        }
+
+        .nav-btn:hover {
+            background: #FFD600;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Zoom Indicator */
+        .zoom-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            font-size: 14px;
+            color: #333;
+            border: 2px solid #FFD600;
+        }
+
+        .zoom-indicator i {
+            color: #FFD600;
+            margin-right: 5px;
+        }
+
+        /* Search Panel */
+        .search-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            padding: 16px;
+        }
+
+        .location-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #F7F7F7;
+            border-radius: 16px;
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .input-wrapper.active {
+            border-color: #FFD600;
+            background: white;
+        }
+
+        .input-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-icon.pickup {
+            color: #FFD600;
+        }
+
+        .input-icon.delivery {
+            color: #00A85C;
+        }
+
+        .input-field {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 500;
+            outline: none;
+            padding: 8px 0;
+        }
+
+        .input-field:focus {
+            background: transparent;
+        }
+
+        .input-field::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        .clear-btn {
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+        }
+
+        .clear-btn:hover {
+            color: #FFD600;
+        }
+
+        /* Address Suggestions */
+        .suggestions-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 16px;
+            margin-top: 8px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+        }
+
+        .suggestion-item {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .suggestion-item:hover {
+            background: #FFF9E6;
+        }
+
+        .suggestion-item i {
+            width: 24px;
+            color: #FFD600;
+            font-size: 18px;
+        }
+
+        .suggestion-item div {
+            flex: 1;
+        }
+
+        .suggestion-item .main-text {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .suggestion-item .sub-text {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .swap-btn {
+            position: absolute;
+            right: 20px;
+            top: 70px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            z-index: 1001;
+            border: none;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .swap-btn:hover {
+            transform: rotate(180deg);
+            color: #FFD600;
+        }
+
+        /* My Location Button */
+        .my-location-btn {
+            position: absolute;
+            bottom: 120px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            z-index: 1000;
+            border: none;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .my-location-btn:hover {
+            color: #FFD600;
+            transform: scale(1.1);
+        }
+
+        /* Bottom Sheet */
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 30px 30px 0 0;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1002;
+            transition: transform 0.3s ease;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 5px;
+            background: #E0E0E0;
+            border-radius: 10px;
+            margin: 12px auto 20px;
+            cursor: pointer;
+        }
+
+        .sheet-content {
+            padding: 0 20px 30px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .order-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
+
+        .close-sheet {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #F7F7F7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Price Card */
+        .price-card {
+            background: linear-gradient(135deg, #1A1A1A 0%, #333 100%);
+            border-radius: 24px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .price-label {
+            color: #B0B0B0;
+            font-size: 15px;
+        }
+
+        .price-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: #FFD600;
+        }
+
+        .price-currency {
+            font-size: 24px;
+            color: #B0B0B0;
+        }
+
+        .price-details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .price-detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .price-detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .price-detail-row.total {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: 700;
+            color: #FFD600;
+        }
+
+        .price-note {
+            font-size: 12px;
+            color: #B0B0B0;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .distance-info {
+            display: flex;
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .distance-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .distance-item i {
+            color: #FFD600;
+        }
+
+        /* Address Details Grid */
+        .address-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            background: #F7F7F7;
+            border-radius: 16px;
+            padding: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .detail-input {
+            padding: 10px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .detail-input:focus {
+            border-color: #FFD600;
+            outline: none;
+        }
+
+        .detail-input::placeholder {
+            color: #999;
+        }
+
+        /* Order Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #F0F0F0;
+            border-radius: 16px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #FFD600;
+            outline: none;
+        }
+
+        .package-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .package-option {
+            text-align: center;
+            padding: 16px 8px;
+            background: #F7F7F7;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .package-option.active {
+            background: #FFF9E6;
+            border-color: #FFD600;
+        }
+
+        .package-option i {
+            font-size: 24px;
+            color: #666;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .package-option.active i {
+            color: #FFD600;
+        }
+
+        .package-option span {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1A1A1A;
+        }
+
+        .weight-slider {
+            width: 100%;
+            height: 6px;
+            background: #F0F0F0;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .weight-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #FFD600;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.3);
+        }
+
+        .weight-value {
+            display: inline-block;
+            margin-left: 12px;
+            font-weight: 700;
+            color: #FFD600;
+        }
+
+        .weight-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .free-weight {
+            color: #00A85C;
+            font-weight: 600;
+        }
+
+        .extra-weight {
+            color: #FFD600;
+            font-weight: 600;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: #FFD600;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A1A1A;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #FFE44D;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 214, 0, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Courier Card */
+        .courier-card {
+            background: #F7F7F7;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .courier-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .courier-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #FFD600, #FFE44D);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .courier-details h4 {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .courier-details p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .courier-rating {
+            color: #FFD600;
+            margin-top: 4px;
+        }
+
+        .courier-rating i {
+            margin-right: 2px;
+        }
+
+        .progress-track {
+            background: white;
+            border-radius: 30px;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #E0E0E0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #FFD600;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Recent Orders */
+        .recent-orders {
+            margin-top: 20px;
+        }
+
+        .recent-order-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #F7F7F7;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .recent-order-item:hover {
+            background: #F0F0F0;
+        }
+
+        .order-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD600;
+            font-size: 20px;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .order-info h6 {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .order-info p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .order-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            background: #FFD600;
+            border-radius: 20px;
+            color: #1A1A1A;
+        }
+
+        .order-status.completed {
+            background: #00A85C;
+            color: white;
+        }
+
+        .order-status.searching {
+            background: #FFD600;
+        }
+
+        /* Map Markers */
+        .custom-marker {
+            background: transparent;
+            border: none;
+        }
+
+        .pickup-marker, .delivery-marker {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+        }
+
+        .pickup-marker {
+            background: #FFD600;
+        }
+
+        .delivery-marker {
+            background: #00A85C;
+        }
+
+        .pickup-marker i, .delivery-marker i {
+            color: white;
+            font-size: 24px;
+        }
+
+        /* Direction Arrow */
+        .direction-arrow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 214, 0, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+            backdrop-filter: blur(5px);
+        }
+
+        .direction-arrow i {
+            font-size: 40px;
+            color: #FFD600;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Promo Code */
+        .promo-section {
+            margin: 15px 0;
+        }
+
+        .promo-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .promo-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #F0F0F0;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .promo-input button {
+            padding: 12px 20px;
+            background: #F7F7F7;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .promo-input button:hover {
+            background: #FFD600;
+        }
+
+        .promo-active {
+            background: #FFF9E6;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .promo-active i {
+            color: #00A85C;
+            margin-right: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .package-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .navigation-controls {
+                right: 10px;
+            }
+            
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+            
+            .price-value {
+                font-size: 36px;
+            }
+            
+            .address-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="yandex-app">
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- Direction Arrow -->
+            <div class="direction-arrow" id="directionArrow" style="display: none;">
+                <i class="fas fa-arrow-up" id="arrowIcon"></i>
+            </div>
+        </div>
+
+        <!-- Navigation Controls -->
+        <div class="navigation-controls">
+            <button class="nav-btn" onclick="navigate('north')" title="Ба боло">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            <button class="nav-btn" onclick="navigate('west')" title="Ба чап">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <button class="nav-btn" onclick="navigate('east')" title="Ба рост">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="nav-btn" onclick="navigate('south')" title="Ба поён">
+                <i class="fas fa-arrow-down"></i>
+            </button>
+            <button class="nav-btn" onclick="zoomIn()" title="Калон кардан">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="nav-btn" onclick="zoomOut()" title="Хурд кардан">
+                <i class="fas fa-minus"></i>
+            </button>
+        </div>
+
+        <!-- Zoom Indicator -->
+        <div class="zoom-indicator" id="zoomIndicator">
+            <i class="fas fa-search"></i>
+            <span id="zoomLevel">13</span>x
+        </div>
+
+        <!-- Search Panel -->
+        <div class="search-panel">
+            <div class="location-inputs">
+                <!-- Pickup Address -->
+                <div class="input-wrapper" id="pickupWrapper">
+                    <div class="input-icon pickup">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <input type="text" class="input-field" id="pickupInput" placeholder="Аз куҷо? (адресро ворид кунед)" autocomplete="off">
+                    <i class="fas fa-times clear-btn" onclick="clearLocation('pickup')"></i>
+                </div>
+                <!-- Suggestions for pickup -->
+                <div class="suggestions-box" id="pickupSuggestions"></div>
+
+                <!-- Delivery Address -->
+                <div class="input-wrapper" id="deliveryWrapper">
+                    <div class="input-icon delivery">
+                        <i class="fas fa-flag-checkered"></i>
+                    </div>
+                    <input type="text" class="input-field" id="deliveryInput" placeholder="Ба куҷо? (адресро ворид кунед)" autocomplete="off">
+                    <i class="fas fa-times clear-btn" onclick="clearLocation('delivery')"></i>
+                </div>
+                <!-- Suggestions for delivery -->
+                <div class="suggestions-box" id="deliverySuggestions"></div>
+            </div>
+        </div>
+
+        <!-- Swap Button -->
+        <button class="swap-btn" onclick="swapLocations()">
+            <i class="fas fa-arrow-down-up"></i>
+        </button>
+
+        <!-- My Location Button -->
+        <button class="my-location-btn" onclick="goToMyLocation()">
+            <i class="fas fa-location-dot"></i>
+        </button>
+
+        <!-- Bottom Sheet -->
+        <div class="bottom-sheet" id="bottomSheet">
+            <div class="sheet-handle" onclick="toggleSheet()"></div>
+            <div class="sheet-content">
+                <div class="order-header">
+                    <h2>Фармоиши курьер</h2>
+                    <div class="close-sheet" onclick="minimizeSheet()">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+
+                <!-- Price Card -->
+                <div class="price-card" id="priceCard">
+                    <div class="price-row">
+                        <span class="price-label">Нархи фармоиш</span>
+                        <span class="price-value" id="totalPrice">0<span class="price-currency"> сом</span></span>
+                    </div>
+                    
+                    <div class="price-details" id="priceDetails">
+                        <div class="price-detail-row">
+                            <span>Нархи асосӣ:</span>
+                            <span id="basePrice">10 сом</span>
+                        </div>
+                        <div class="price-detail-row">
+                            <span>Масофа (<span id="distanceKm">0</span> км):</span>
+                            <span id="distancePrice">0 сом</span>
+                        </div>
+                        <div class="price-detail-row">
+                            <span>Вазн (<span id="weightKg">1</span> кг):</span>
+                            <span id="weightPrice">0 сом</span>
+                        </div>
+                        <div class="price-detail-row total">
+                            <span>Ҳамагӣ:</span>
+                            <span id="totalPriceDetails">0 сом</span>
+                        </div>
+                    </div>
+                    
+                    <div class="price-note" id="weightNote">
+                        * Вазн то 10 кг ройгон
+                    </div>
+
+                    <div class="distance-info">
+                        <div class="distance-item">
+                            <i class="fas fa-route"></i>
+                            <span id="distance">0 км</span>
+                        </div>
+                        <div class="distance-item">
+                            <i class="fas fa-clock"></i>
+                            <span id="duration">0 дақ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Details for Delivery -->
+                <div class="address-details-grid">
+                    <div class="detail-item">
+                        <label class="detail-label">Подъезд</label>
+                        <input type="text" class="detail-input" id="entrance" placeholder="№1">
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Этаж</label>
+                        <input type="text" class="detail-input" id="floor" placeholder="5">
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Квартира</label>
+                        <input type="text" class="detail-input" id="apartment" placeholder="№42">
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Код домофон</label>
+                        <input type="text" class="detail-input" id="intercom" placeholder="1234">
+                    </div>
+                </div>
+
+                <!-- Promo Code Section -->
+                <div class="promo-section">
+                    <div class="promo-input">
+                        <input type="text" id="promoCode" placeholder="Коди промо (ихтиёрӣ)">
+                        <button onclick="applyPromo()">Татбиқ</button>
+                    </div>
+                    <div class="promo-active" id="promoActive">
+                        <i class="fas fa-check-circle"></i> <span id="promoMessage"></span>
+                    </div>
+                </div>
+
+                <!-- Order Form -->
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label class="form-label">Номи шумо</label>
+                        <input type="text" class="form-control" id="senderName" placeholder="Масалан: Алишер" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Рақами телефон</label>
+                        <input type="tel" class="form-control" id="senderPhone" placeholder="+992 900 000 000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Намуди бор</label>
+                        <div class="package-options" id="packageOptions">
+                            <div class="package-option active" data-type="document" onclick="selectPackage(this)">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Ҳуҷҷат</span>
+                            </div>
+                            <div class="package-option" data-type="parcel" onclick="selectPackage(this)">
+                                <i class="fas fa-box"></i>
+                                <span>Баста</span>
+                            </div>
+                            <div class="package-option" data-type="food" onclick="selectPackage(this)">
+                                <i class="fas fa-utensils"></i>
+                                <span>Ғизо</span>
+                            </div>
+                            <div class="package-option" data-type="other" onclick="selectPackage(this)">
+                                <i class="fas fa-ellipsis"></i>
+                                <span>Дигар</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            Вазн: <span id="weightValue" class="weight-value">1 кг</span>
+                        </label>
+                        <input type="range" class="weight-slider" id="weightSlider" min="0.1" max="30" step="0.1" value="1">
+                        <div class="weight-info">
+                            <span class="free-weight">То 10 кг ройгон</span>
+                            <span class="extra-weight" id="extraWeightInfo"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Эзоҳ (ихтиёрӣ)</label>
+                        <textarea class="form-control" id="comment" rows="2" placeholder="Масалан: Дарвозаи дуюм, қуттии 42..."></textarea>
+                    </div>
+
+                    <!-- Courier Card -->
+                    <div class="courier-card" id="courierCard">
+                        <div class="courier-header">
+                            <div class="courier-avatar" id="courierAvatar">A</div>
+                            <div class="courier-details">
+                                <h4 id="courierName">Алишер</h4>
+                                <p>Масофа: <span id="courierDistance">0 км</span></p>
+                                <div class="courier-rating" id="courierRating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="progress-track">
+                            <i class="fas fa-motorcycle"></i>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                            </div>
+                            <span id="progressText">0%</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                        <i class="fas fa-check-circle"></i>
+                        Сабти фармоиш
+                    </button>
+                </form>
+
+                <!-- Recent Orders -->
+                <div class="recent-orders">
+                    <h6 style="margin: 20px 0 15px; font-weight: 700;">Фармоишҳои охирин</h6>
+                    <div id="recentOrdersList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        class YandexCourierApp {
+            constructor() {
+                this.map = null;
+                this.pickupMarker = null;
+                this.deliveryMarker = null;
+                this.pickupCoords = null;
+                this.deliveryCoords = null;
+                this.userLocation = null;
+                this.orders = JSON.parse(localStorage.getItem('yandexOrders') || '[]');
+                this.searchTimeout = null;
+                this.currentDirection = 0;
+                this.navigationMode = false;
+                this.promoDiscount = 0;
+                this.baseRatePerKm = 10 / 3; // 10 сом барои 3 км
+                
+                this.init();
+            }
+
+            init() {
+                this.initMap();
+                this.initEventListeners();
+                this.displayRecentOrders();
+                this.updateZoomIndicator();
+                
+                // Load sample data for demo
+                this.loadSampleData();
+            }
+
+            loadSampleData() {
+                if (this.orders.length === 0) {
+                    const sampleOrders = [
+                        {
+                            id: 1,
+                            senderName: 'Алишер',
+                            senderPhone: '+992 900 123 456',
+                            packageType: 'Ҳуҷҷат',
+                            weight: 0.5,
+                            pickupAddress: 'Хиёбони Неъмат Қаробов, 72/1',
+                            deliveryAddress: 'Кӯчаи Айнӣ, 42',
+                            entrance: '1',
+                            floor: '5',
+                            apartment: '42',
+                            intercom: '1234',
+                            status: 'completed',
+                            time: '2024-03-08 10:30'
+                        },
+                        {
+                            id: 2,
+                            senderName: 'Фаррух',
+                            senderPhone: '+992 901 234 567',
+                            packageType: 'Баста',
+                            weight: 12.5,
+                            pickupAddress: 'Маркази савдои "Садбарг"',
+                            deliveryAddress: 'Микрорайони 82, хонаи 15',
+                            entrance: '2',
+                            floor: '3',
+                            apartment: '15',
+                            intercom: '4321',
+                            status: 'searching',
+                            time: '2024-03-08 11:45'
+                        }
+                    ];
+                    this.orders = sampleOrders;
+                    localStorage.setItem('yandexOrders', JSON.stringify(sampleOrders));
+                }
+            }
+
+            initMap() {
+                this.map = L.map('map').setView([38.5737, 68.7864], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© Yandex Style'
+                }).addTo(this.map);
+
+                this.map.on('click', (e) => {
+                    this.handleMapClick(e.latlng);
+                });
+
+                this.map.on('zoomend', () => {
+                    this.updateZoomIndicator();
+                });
+
+                this.getUserLocation();
+            }
+
+            updateZoomIndicator() {
+                const zoom = this.map.getZoom();
+                document.getElementById('zoomLevel').textContent = zoom;
+            }
+
+            navigate(direction) {
+                const center = this.map.getCenter();
+                const zoom = this.map.getZoom();
+                
+                const moveDistance = 0.01 * (15 / zoom);
+                
+                let newLat = center.lat;
+                let newLng = center.lng;
+                
+                switch(direction) {
+                    case 'north':
+                        newLat += moveDistance;
+                        break;
+                    case 'south':
+                        newLat -= moveDistance;
+                        break;
+                    case 'east':
+                        newLng += moveDistance;
+                        break;
+                    case 'west':
+                        newLng -= moveDistance;
+                        break;
+                }
+                
+                this.map.setView([newLat, newLng], zoom);
+                this.showDirectionArrow(direction);
+            }
+
+            showDirectionArrow(direction) {
+                const arrow = document.getElementById('directionArrow');
+                const arrowIcon = document.getElementById('arrowIcon');
+                
+                arrowIcon.className = 'fas';
+                
+                switch(direction) {
+                    case 'north':
+                        arrowIcon.className = 'fas fa-arrow-up';
+                        break;
+                    case 'south':
+                        arrowIcon.className = 'fas fa-arrow-down';
+                        break;
+                    case 'east':
+                        arrowIcon.className = 'fas fa-arrow-right';
+                        break;
+                    case 'west':
+                        arrowIcon.className = 'fas fa-arrow-left';
+                        break;
+                }
+                
+                arrow.style.display = 'flex';
+                
+                setTimeout(() => {
+                    arrow.style.display = 'none';
+                }, 1500);
+            }
+
+            zoomIn() {
+                this.map.zoomIn();
+            }
+
+            zoomOut() {
+                this.map.zoomOut();
+            }
+
+            getUserLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            this.userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude
+                            };
+                            
+                            L.circleMarker([this.userLocation.lat, this.userLocation.lng], {
+                                radius: 8,
+                                color: '#FFD600',
+                                fillColor: '#FFD600',
+                                fillOpacity: 0.3,
+                                weight: 2
+                            }).addTo(this.map).bindPopup('Шумо дар ин ҷо');
+                        },
+                        (error) => {
+                            console.log('Location error:', error);
+                        }
+                    );
+                }
+            }
+
+            handleMapClick(latlng) {
+                const activeInput = document.querySelector('.input-wrapper.active input');
+                if (activeInput) {
+                    this.getAddressFromCoords(latlng.lat, latlng.lng, activeInput.id);
+                }
+            }
+
+            async getAddressFromCoords(lat, lng, inputId) {
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=tg`
+                    );
+                    const data = await response.json();
+                    const address = data.display_name || 'Адрес номаълум';
+
+                    document.getElementById(inputId).value = address;
+                    
+                    if (inputId === 'pickupInput') {
+                        this.setPickupLocation(lat, lng, address);
+                    } else {
+                        this.setDeliveryLocation(lat, lng, address);
+                    }
+
+                    if (this.pickupCoords && this.deliveryCoords) {
+                        this.calculatePrice();
+                    }
+                } catch (error) {
+                    console.error('Error getting address:', error);
+                }
+            }
+
+            async searchAddress(query, inputId) {
+                if (!query || query.length < 3) {
+                    document.getElementById(inputId + 'Suggestions').style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=tg`
+                    );
+                    const data = await response.json();
+                    this.showSuggestions(data, inputId);
+                } catch (error) {
+                    console.error('Search error:', error);
+                }
+            }
+
+            showSuggestions(suggestions, inputId) {
+                const box = document.getElementById(inputId + 'Suggestions');
+                
+                if (!suggestions || suggestions.length === 0) {
+                    box.style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+                suggestions.forEach(item => {
+                    html += `
+                        <div class="suggestion-item" onclick="selectSuggestion('${inputId}', '${item.lat}', '${item.lon}', '${item.display_name.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <div class="main-text">${item.display_name.split(',')[0]}</div>
+                                <div class="sub-text">${item.display_name.substring(0, 50)}...</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                box.innerHTML = html;
+                box.style.display = 'block';
+            }
+
+            selectSuggestion(inputId, lat, lon, address) {
+                document.getElementById(inputId).value = address;
+                document.getElementById(inputId + 'Suggestions').style.display = 'none';
+                
+                if (inputId === 'pickupInput') {
+                    this.setPickupLocation(parseFloat(lat), parseFloat(lon), address);
+                } else {
+                    this.setDeliveryLocation(parseFloat(lat), parseFloat(lon), address);
+                }
+
+                if (this.pickupCoords && this.deliveryCoords) {
+                    this.calculatePrice();
+                }
+
+                this.map.setView([parseFloat(lat), parseFloat(lon)], 15);
+            }
+
+            setPickupLocation(lat, lng, address) {
+                if (this.pickupMarker) {
+                    this.map.removeLayer(this.pickupMarker);
+                }
+
+                this.pickupCoords = { lat, lng };
+
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div class="pickup-marker"><i class="fas fa-circle"></i></div>`,
+                    iconSize: [48, 48],
+                    iconAnchor: [24, 24]
+                });
+
+                this.pickupMarker = L.marker([lat, lng], { icon }).addTo(this.map);
+                
+                document.getElementById('pickupWrapper').classList.add('active');
+                document.getElementById('deliveryWrapper').classList.remove('active');
+                
+                this.checkSubmitButton();
+            }
+
+            setDeliveryLocation(lat, lng, address) {
+                if (this.deliveryMarker) {
+                    this.map.removeLayer(this.deliveryMarker);
+                }
+
+                this.deliveryCoords = { lat, lng };
+
+                const icon = L.divIcon({
+                    className: 'custom-marker',
+                    html: `<div class="delivery-marker"><i class="fas fa-flag-checkered"></i></div>`,
+                    iconSize: [48, 48],
+                    iconAnchor: [24, 24]
+                });
+
+                this.deliveryMarker = L.marker([lat, lng], { icon }).addTo(this.map);
+                
+                document.getElementById('deliveryWrapper').classList.add('active');
+                
+                this.checkSubmitButton();
+
+                if (this.pickupMarker) {
+                    const group = L.featureGroup([this.pickupMarker, this.deliveryMarker]);
+                    this.map.fitBounds(group.getBounds(), { padding: [50, 50] });
+                }
+            }
+
+            calculateWeightPrice(weight) {
+                if (weight <= 10) {
+                    return 0; // То 10 кг ройгон
+                } else {
+                    // Барои ҳар 2 кг иловагӣ 1 сом
+                    const extraWeight = weight - 10;
+                    const extraPrice = Math.ceil(extraWeight / 2);
+                    return extraPrice;
+                }
+            }
+
+            calculatePrice() {
+                if (!this.pickupCoords || !this.deliveryCoords) return;
+
+                const distance = this.calculateDistance(
+                    this.pickupCoords.lat, this.pickupCoords.lng,
+                    this.deliveryCoords.lat, this.deliveryCoords.lng
+                );
+
+                const weight = parseFloat(document.getElementById('weightSlider').value);
+                
+                const basePrice = 10;
+                const pricePerKm = 10 / 3;
+                const weightPrice = this.calculateWeightPrice(weight);
+                
+                const distancePrice = Math.round(distance * pricePerKm);
+                const totalPrice = basePrice + distancePrice + weightPrice;
+                
+                const finalPrice = Math.round(totalPrice * (1 - this.promoDiscount));
+
+                // Update weight info
+                if (weight > 10) {
+                    const extraWeight = weight - 10;
+                    const extraPrice = Math.ceil(extraWeight / 2);
+                    document.getElementById('extraWeightInfo').textContent = 
+                        `+${extraWeight.toFixed(1)} кг иловагӣ: +${extraPrice} сом`;
+                    document.getElementById('weightNote').textContent = 
+                        `* То 10 кг ройгон, барои ҳар 2 кг иловагӣ 1 сом (иловагӣ: ${extraPrice} сом)`;
+                } else {
+                    document.getElementById('extraWeightInfo').textContent = '';
+                    document.getElementById('weightNote').textContent = '* Вазн то 10 кг ройгон';
+                }
+
+                // Update price details
+                document.getElementById('priceCard').style.display = 'block';
+                document.getElementById('basePrice').textContent = basePrice + ' сом';
+                document.getElementById('distanceKm').textContent = distance.toFixed(1);
+                document.getElementById('distancePrice').textContent = distancePrice + ' сом';
+                document.getElementById('weightKg').textContent = weight.toFixed(1);
+                document.getElementById('weightPrice').textContent = weightPrice + ' сом';
+                document.getElementById('totalPriceDetails').textContent = totalPrice + ' сом';
+                
+                document.getElementById('totalPrice').innerHTML = finalPrice + '<span class="price-currency"> сом</span>';
+                document.getElementById('distance').textContent = distance.toFixed(1) + ' км';
+                document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
+
+                this.showAvailableCourier(distance);
+                this.navigationMode = true;
+            }
+
+            calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371;
+                const dLat = this.deg2rad(lat2 - lat1);
+                const dLon = this.deg2rad(lon2 - lon1);
+                const a = 
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            deg2rad(deg) {
+                return deg * (Math.PI/180);
+            }
+
+            showAvailableCourier(distance) {
+                const couriers = [
+                    { name: 'Алишер', rating: 4.8, trips: 1250 },
+                    { name: 'Фаррух', rating: 4.9, trips: 2300 },
+                    { name: 'Саид', rating: 4.7, trips: 890 },
+                    { name: 'Умед', rating: 5.0, trips: 3120 },
+                    { name: 'Давлат', rating: 4.8, trips: 1670 }
+                ];
+                
+                const randomCourier = couriers[Math.floor(Math.random() * couriers.length)];
+                
+                document.getElementById('courierName').textContent = randomCourier.name;
+                document.getElementById('courierDistance').textContent = distance.toFixed(1) + ' км';
+                document.getElementById('courierAvatar').textContent = randomCourier.name[0];
+                
+                const rating = randomCourier.rating;
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = rating % 1 >= 0.5;
+                let starsHtml = '';
+                
+                for (let i = 0; i < fullStars; i++) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                }
+                if (hasHalfStar) {
+                    starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                }
+                
+                document.getElementById('courierRating').innerHTML = starsHtml;
+                document.getElementById('courierCard').style.display = 'block';
+            }
+
+            checkSubmitButton() {
+                const submitBtn = document.getElementById('submitBtn');
+                if (this.pickupCoords && this.deliveryCoords) {
+                    submitBtn.disabled = false;
+                } else {
+                    submitBtn.disabled = true;
+                }
+            }
+
+            applyPromo(code) {
+                const promoInput = document.getElementById('promoCode');
+                const code_ = code || promoInput.value.toUpperCase();
+                
+                const promos = {
+                    'YANDEX10': 0.1,
+                    'YANDEX20': 0.2,
+                    'YANDEX30': 0.3,
+                    'NEWUSER': 0.15,
+                    'WELCOME': 0.1,
+                    'COURIER': 0.1
+                };
+                
+                if (promos[code_]) {
+                    this.promoDiscount = promos[code_];
+                    document.getElementById('promoActive').style.display = 'block';
+                    document.getElementById('promoMessage').textContent = 
+                        'Промо код татбиқ шуд: ' + (this.promoDiscount * 100) + '%';
+                    
+                    if (this.pickupCoords && this.deliveryCoords) {
+                        this.calculatePrice();
+                    }
+                    
+                    promoInput.value = '';
+                } else {
+                    alert('Коди промо нодуруст аст');
+                }
+            }
+
+            clearLocation(type) {
+                if (type === 'pickup') {
+                    if (this.pickupMarker) {
+                        this.map.removeLayer(this.pickupMarker);
+                        this.pickupMarker = null;
+                        this.pickupCoords = null;
+                    }
+                    document.getElementById('pickupInput').value = '';
+                    document.getElementById('pickupWrapper').classList.remove('active');
+                } else {
+                    if (this.deliveryMarker) {
+                        this.map.removeLayer(this.deliveryMarker);
+                        this.deliveryMarker = null;
+                        this.deliveryCoords = null;
+                    }
+                    document.getElementById('deliveryInput').value = '';
+                    document.getElementById('deliveryWrapper').classList.remove('active');
+                }
+                
+                document.getElementById('priceCard').style.display = 'none';
+                document.getElementById('courierCard').style.display = 'none';
+                this.navigationMode = false;
+                this.checkSubmitButton();
+            }
+
+            swapLocations() {
+                const pickupInput = document.getElementById('pickupInput');
+                const deliveryInput = document.getElementById('deliveryInput');
+                
+                const pickupVal = pickupInput.value;
+                const deliveryVal = deliveryInput.value;
+                
+                const pickupCoords = this.pickupCoords;
+                const deliveryCoords = this.deliveryCoords;
+
+                pickupInput.value = deliveryVal;
+                deliveryInput.value = pickupVal;
+
+                if (deliveryCoords) {
+                    this.setPickupLocation(deliveryCoords.lat, deliveryCoords.lng, deliveryVal);
+                }
+                if (pickupCoords) {
+                    this.setDeliveryLocation(pickupCoords.lat, pickupCoords.lng, pickupVal);
+                }
+            }
+
+            goToMyLocation() {
+                if (this.userLocation) {
+                    this.map.setView([this.userLocation.lat, this.userLocation.lng], 16);
+                } else {
+                    alert('Ҷойгиршавии шумо дастрас нест');
+                }
+            }
+
+            minimizeSheet() {
+                const sheet = document.getElementById('bottomSheet');
+                sheet.style.transform = 'translateY(70%)';
+            }
+
+            toggleSheet() {
+                const sheet = document.getElementById('bottomSheet');
+                if (sheet.style.transform === 'translateY(70%)') {
+                    sheet.style.transform = 'translateY(0)';
+                } else {
+                    sheet.style.transform = 'translateY(70%)';
+                }
+            }
+
+            selectPackage(element) {
+                document.querySelectorAll('.package-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                element.classList.add('active');
+            }
+
+            initEventListeners() {
+                // Pickup input
+                const pickupInput = document.getElementById('pickupInput');
+                pickupInput.addEventListener('input', (e) => {
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(() => {
+                        this.searchAddress(e.target.value, 'pickup');
+                    }, 500);
+                });
+
+                pickupInput.addEventListener('focus', () => {
+                    document.getElementById('pickupWrapper').classList.add('active');
+                    document.getElementById('deliveryWrapper').classList.remove('active');
+                });
+
+                // Delivery input
+                const deliveryInput = document.getElementById('deliveryInput');
+                deliveryInput.addEventListener('input', (e) => {
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(() => {
+                        this.searchAddress(e.target.value, 'delivery');
+                    }, 500);
+                });
+
+                deliveryInput.addEventListener('focus', () => {
+                    document.getElementById('deliveryWrapper').classList.add('active');
+                    document.getElementById('pickupWrapper').classList.remove('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.input-wrapper') && !e.target.closest('.suggestions-box')) {
+                        document.getElementById('pickupSuggestions').style.display = 'none';
+                        document.getElementById('deliverySuggestions').style.display = 'none';
+                    }
+                });
+
+                // Weight slider
+                document.getElementById('weightSlider').addEventListener('input', (e) => {
+                    const weight = parseFloat(e.target.value);
+                    document.getElementById('weightValue').textContent = weight.toFixed(1) + ' кг';
+                    
+                    if (this.pickupCoords && this.deliveryCoords) {
+                        this.calculatePrice();
+                    }
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key.startsWith('Arrow')) {
+                        e.preventDefault();
+                        switch(e.key) {
+                            case 'ArrowUp':
+                                this.navigate('north');
+                                break;
+                            case 'ArrowDown':
+                                this.navigate('south');
+                                break;
+                            case 'ArrowLeft':
+                                this.navigate('west');
+                                break;
+                            case 'ArrowRight':
+                                this.navigate('east');
+                                break;
+                        }
+                    }
+                });
+
+                // Order form submit
+                document.getElementById('orderForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    const order = {
+                        id: Date.now(),
+                        senderName: document.getElementById('senderName').value,
+                        senderPhone: document.getElementById('senderPhone').value,
+                        packageType: document.querySelector('.package-option.active span').textContent,
+                        weight: document.getElementById('weightSlider').value,
+                        pickupAddress: document.getElementById('pickupInput').value,
+                        deliveryAddress: document.getElementById('deliveryInput').value,
+                        entrance: document.getElementById('entrance').value,
+                        floor: document.getElementById('floor').value,
+                        apartment: document.getElementById('apartment').value,
+                        intercom: document.getElementById('intercom').value,
+                        comment: document.getElementById('comment').value,
+                        status: 'Ҷустуҷӯи курьер',
+                        time: new Date().toLocaleString('tg-TJ')
+                    };
+
+                    this.saveOrder(order);
+                    
+                    alert('✅ Фармоиш қабул карда шуд! Курьер дар ҳоли расидан аст.');
+                    
+                    this.startProgress();
+                    
+                    e.target.reset();
+                    document.getElementById('weightSlider').value = 1;
+                    document.getElementById('weightValue').textContent = '1.0 кг';
+                    
+                    this.displayRecentOrders();
+                });
+
+                // Promo code enter key
+                document.getElementById('promoCode').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.applyPromo();
+                    }
+                });
+            }
+
+            startProgress() {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 2;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    document.getElementById('progressText').textContent = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        document.getElementById('progressText').textContent = 'Расид';
+                        
+                        const orderStatuses = document.querySelectorAll('.order-status');
+                        if (orderStatuses.length > 0) {
+                            orderStatuses[0].textContent = 'Расид';
+                            orderStatuses[0].classList.add('completed');
+                        }
+                    }
+                }, 200);
+            }
+
+            saveOrder(order) {
+                this.orders.unshift(order);
+                localStorage.setItem('yandexOrders', JSON.stringify(this.orders));
+            }
+
+            displayRecentOrders() {
+                const list = document.getElementById('recentOrdersList');
+                
+                if (this.orders.length === 0) {
+                    list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Ҳеҷ фармоише нест</p>';
+                    return;
+                }
+
+                let html = '';
+                this.orders.slice(0, 3).forEach(order => {
+                    const statusClass = order.status === 'completed' ? 'completed' : 'searching';
+                    html += `
+                        <div class="recent-order-item" onclick="loadOrder('${order.id}')">
+                            <div class="order-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="order-info">
+                                <h6>${order.senderName}</h6>
+                                <p>${order.pickupAddress.substring(0, 30)}...</p>
+                                <small>Под.${order.entrance || '?'} Эт.${order.floor || '?'} Кв.${order.apartment || '?'}</small>
+                            </div>
+                            <div class="order-status ${statusClass}">${order.status}</div>
+                        </div>
+                    `;
+                });
+                
+                list.innerHTML = html;
+            }
+        }
+
+        // Global variables and functions
+        let app;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new YandexCourierApp();
+        });
+
+        function navigate(direction) {
+            if (app) app.navigate(direction);
+        }
+
+        function zoomIn() {
+            if (app) app.zoomIn();
+        }
+
+        function zoomOut() {
+            if (app) app.zoomOut();
+        }
+
+        function clearLocation(type) {
+            if (app) app.clearLocation(type);
+        }
+
+        function swapLocations() {
+            if (app) app.swapLocations();
+        }
+
+        function goToMyLocation() {
+            if (app) app.goToMyLocation();
+        }
+
+        function minimizeSheet() {
+            if (app) app.minimizeSheet();
+        }
+
+        function toggleSheet() {
+            if (app) app.toggleSheet();
+        }
+
+        function selectPackage(element) {
+            if (app) app.selectPackage(element);
+        }
+
+        function selectSuggestion(inputId, lat, lon, address) {
+            if (app) app.selectSuggestion(inputId, lat, lon, address);
+        }
+
+        function applyPromo() {
+            if (app) app.applyPromo();
+        }
+
+        function loadOrder(orderId) {
+            console.log('Loading order:', orderId);
+            alert('Тафсилоти фармоиш №' + orderId);
+        }
+    </script>
+</body>
+</html>
