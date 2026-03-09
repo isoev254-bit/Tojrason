@@ -1,3 +1,39 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Курьер - Барномаи расонӣ</title>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Screens */
+        .screen {
+            min-height: 100vh;
+            background: white;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
         /* Header */
         .header {
             background: linear-gradient(135deg, #1a237e, #0d47a1);
@@ -370,7 +406,7 @@
 
         /* Map */
         .map-container {
-            height: 350px;
+            height: 400px;
             position: relative;
             border-bottom: 3px solid #ffd600;
         }
@@ -379,6 +415,34 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+        }
+
+        .map-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .map-button {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-size: 20px;
+            color: #1a237e;
+            transition: all 0.3s;
+        }
+
+        .map-button:hover {
+            background: #ffd600;
+            transform: scale(1.1);
         }
 
         /* Waiting Card */
@@ -550,6 +614,23 @@
             transform: translateY(-2px);
         }
 
+        .btn-decline {
+            padding: 16px;
+            background: #f44336;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-decline:hover {
+            background: #ff6659;
+            transform: translateY(-2px);
+        }
+
         .low-balance-alert {
             background: #f44336;
             color: white;
@@ -716,6 +797,14 @@
 
         <div class="map-container">
             <div id="map"></div>
+            <div class="map-controls">
+                <button class="map-button" onclick="centerOnCourier()" title="Ҷойгиршавии ман">
+                    <i class="fas fa-location-dot"></i>
+                </button>
+                <button class="map-button" onclick="showFullRoute()" title="Тамоми маршрут">
+                    <i class="fas fa-route"></i>
+                </button>
+            </div>
         </div>
 
         <div class="content">
@@ -746,24 +835,25 @@
                 </div>
                 <div class="order-info">
                     <h3 id="orderTitle">Закази нав</h3>
-                    <p id="orderDistance">Масофа: 3.2 км</p>
+                    <p id="orderDistance">Масофа: 4.1 км</p>
                 </div>
             </div>
             
             <div class="route-info">
                 <div class="route-point">
                     <div class="point-marker pickup"></div>
-                    <div class="point-address" id="pickupAddress">Кӯчаи Айнӣ 42</div>
+                    <div class="point-address" id="pickupAddress">112-й микрорайон</div>
                 </div>
                 <div class="route-point">
                     <div class="point-marker delivery"></div>
-                    <div class="point-address" id="deliveryAddress">Хиёбони Неъмат Қаробов 72/1</div>
+                    <div class="point-address" id="deliveryAddress">2-юм микрорайон</div>
                 </div>
             </div>
             
             <div class="order-actions">
                 <button class="btn-accept" id="acceptBtn" onclick="acceptOrder()">Қабул кардан</button>
                 <button class="btn-complete" id="completeBtn" onclick="completeOrder()">Заказро додам</button>
+                <button class="btn-decline" id="declineBtn" onclick="declineOrder()" style="display: none;">Рад кардан</button>
             </div>
             
             <div class="low-balance-alert" id="lowBalanceAlert" style="display: none;">
@@ -790,21 +880,59 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
+            authDomain: "tojrason.firebaseapp.com",
+            databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
+            projectId: "tojrason",
+            storageBucket: "tojrason.firebasestorage.app",
+            messagingSenderId: "734402668671",
+            appId: "1:734402668671:web:ca983940b6870335d2374a",
+            measurementId: "G-M4LKWDWSB7"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        // Make database available globally
+        window.firebaseDatabase = database;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseOnValue = onValue;
+        
+        console.log("Firebase initialized successfully");
+    </script>
+
     <script>
         // App State
         let courierData = JSON.parse(localStorage.getItem('courierData')) || null;
         let isOnline = false;
-        let balance = parseFloat(localStorage.getItem('balance')) || 10;
+        let balance = parseFloat(localStorage.getItem('balance')) || 7; // Барои санҷиш 7 сом гузоштам
         let map = null;
         let courierMarker = null;
+        let pickupMarker = null;
+        let deliveryMarker = null;
         let routeLine = null;
         let currentOrder = null;
         let watchId = null;
+        let orderCoordinates = {
+            pickup: { lat: 38.5737, lng: 68.7864 }, // 112-й микрорайон
+            delivery: { lat: 38.5627, lng: 68.7739 } // 2-юм микрорайон
+        };
 
         // Camera variables
         let currentPhotoType = null;
         let cameraStream = null;
-        let currentCamera = 'environment'; // 'environment' for back camera, 'user' for front
+        let currentCamera = 'environment';
         let flashOn = false;
 
         // Track uploaded photos
@@ -822,7 +950,7 @@
         });
 
         // ========== CAMERA FUNCTIONS ==========
-        async function openCamera(type) {
+        window.openCamera = async function(type) {
             currentPhotoType = type;
             document.getElementById('cameraTitle').textContent = 
                 type === 'face' ? 'Акси рӯй' : 
@@ -850,7 +978,7 @@
             }
         }
 
-        function closeCamera() {
+        window.closeCamera = function() {
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
                 cameraStream = null;
@@ -858,7 +986,7 @@
             document.getElementById('cameraModal').classList.remove('active');
         }
 
-        async function switchCamera() {
+        window.switchCamera = async function() {
             currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
             
             if (cameraStream) {
@@ -882,13 +1010,12 @@
             }
         }
 
-        function toggleFlash() {
+        window.toggleFlash = function() {
             flashOn = !flashOn;
-            // Flash is not directly supported in browser, but we can simulate
             alert('Flash ' + (flashOn ? 'фаъол' : 'ғайрифаъол'));
         }
 
-        function capturePhoto() {
+        window.capturePhoto = function() {
             const video = document.getElementById('cameraVideo');
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
@@ -913,7 +1040,7 @@
             closeCamera();
         }
 
-        function removePhoto(type) {
+        window.removePhoto = function(type) {
             console.log('Removing photo:', type);
             photos[type] = null;
             document.getElementById(type + 'Preview').style.display = 'none';
@@ -925,8 +1052,10 @@
             if (courierData) {
                 if (courierData.status === 'approved') {
                     showScreen('main');
-                    initMap();
-                    startLocationTracking();
+                    setTimeout(() => {
+                        initMap();
+                        startLocationTracking();
+                    }, 500);
                 } else if (courierData.status === 'pending') {
                     showScreen('waiting');
                 }
@@ -940,7 +1069,25 @@
             document.getElementById('screen' + screenId.charAt(0).toUpperCase() + screenId.slice(1)).classList.add('active');
         }
 
-        function registerCourier() {
+        // Firebase saqlash funksiyasi
+        function saveCourierToFirebase(courierData) {
+            if (window.firebaseDatabase && window.firebaseRef && window.firebaseSet) {
+                const db = window.firebaseDatabase;
+                const courierRef = window.firebaseRef(db, 'couriers/' + courierData.id);
+                
+                window.firebaseSet(courierRef, courierData)
+                    .then(() => {
+                        console.log('✅ Курьер Firebase ба сабт шуд');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Хато дар сабт ба Firebase:', error);
+                    });
+            } else {
+                console.warn('⚠️ Firebase омода нест');
+            }
+        }
+
+        window.registerCourier = function() {
             const fullName = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
             
@@ -988,18 +1135,24 @@
                 registeredAt: new Date().toLocaleString('tg-TJ')
             };
 
+            // LocalStorage ga saqlash
             localStorage.setItem('courierData', JSON.stringify(courierData));
             localStorage.setItem('balance', '10');
+            
+            // Firebase ga saqlash
+            saveCourierToFirebase(courierData);
             
             showScreen('waiting');
             alert('Маълумоти шумо барои санҷиш фиристода шуд');
         }
 
-        function checkStatus() {
+        window.checkStatus = function() {
             if (courierData && courierData.status === 'approved') {
                 showScreen('main');
-                initMap();
-                startLocationTracking();
+                setTimeout(() => {
+                    initMap();
+                    startLocationTracking();
+                }, 500);
             } else {
                 // For demo: approve after 3 checks
                 let checks = parseInt(localStorage.getItem('checks') || '0');
@@ -1010,8 +1163,10 @@
                     courierData.status = 'approved';
                     localStorage.setItem('courierData', JSON.stringify(courierData));
                     showScreen('main');
-                    initMap();
-                    startLocationTracking();
+                    setTimeout(() => {
+                        initMap();
+                        startLocationTracking();
+                    }, 500);
                     alert('Табрик! Шумо тасдиқ карда шудед');
                 } else {
                     alert('Ҳолати шумо: Дар ҳоли баррасӣ');
@@ -1038,9 +1193,16 @@
                         const lng = position.coords.longitude;
                         
                         updateCourierMarker(lat, lng);
+                        
+                        // Агар заказ қабул шуда бошад, маршрутро навсозӣ кун
+                        if (currentOrder) {
+                            updateRoute(lat, lng);
+                        }
                     },
                     (error) => {
                         console.error('Location error:', error);
+                        // Агар GPS кор накунад, нуқтаи собит истифода барем
+                        updateCourierMarker(38.5737, 68.7864);
                     },
                     {
                         enableHighAccuracy: true,
@@ -1048,6 +1210,9 @@
                         timeout: 5000
                     }
                 );
+            } else {
+                // Агар GPS дастгирӣ накунад
+                updateCourierMarker(38.5737, 68.7864);
             }
         }
 
@@ -1055,20 +1220,101 @@
             if (courierMarker) {
                 courierMarker.setLatLng([lat, lng]);
             } else {
+                // Иконаи курьер
+                const courierIcon = L.divIcon({
+                    className: 'custom-marker',
+                    html: '<div style="background:#ffd600; width:24px; height:24px; border-radius:50%; border:4px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;"><i class="fas fa-motorcycle" style="color:#1a237e; font-size:12px;"></i></div>',
+                    iconSize: [24, 24]
+                });
+                
                 courierMarker = L.marker([lat, lng], {
-                    icon: L.divIcon({
-                        className: 'custom-marker',
-                        html: '<div style="background:#ffd600; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3);"></div>',
-                        iconSize: [20, 20]
-                    })
+                    icon: courierIcon,
+                    zIndexOffset: 1000
                 }).addTo(map).bindPopup('Шумо дар ин ҷо');
             }
             
-            map.setView([lat, lng], 15);
+            // Агар заказ надошта бошем, харитаро ба курьер марказ кун
+            if (!currentOrder) {
+                map.setView([lat, lng], 15);
+            }
+        }
+
+        function addOrderMarkers() {
+            // Тоза кардани маркерҳои кӯҳна
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (deliveryMarker) map.removeLayer(deliveryMarker);
+            
+            // Икона барои нуқтаи гирифтан (А)
+            const pickupIcon = L.divIcon({
+                className: 'pickup-marker',
+                html: '<div style="background:#ffd600; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:#1a237e; font-weight:bold; font-size:16px;">A</div>',
+                iconSize: [30, 30]
+            });
+            
+            // Икона барои нуқтаи расонидан (Б)
+            const deliveryIcon = L.divIcon({
+                className: 'delivery-marker',
+                html: '<div style="background:#4caf50; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:16px;">Б</div>',
+                iconSize: [30, 30]
+            });
+            
+            pickupMarker = L.marker([orderCoordinates.pickup.lat, orderCoordinates.pickup.lng], {
+                icon: pickupIcon
+            }).addTo(map).bindPopup('Нуқтаи гирифтан: 112-й микрорайон');
+            
+            deliveryMarker = L.marker([orderCoordinates.delivery.lat, orderCoordinates.delivery.lng], {
+                icon: deliveryIcon
+            }).addTo(map).bindPopup('Нуқтаи расонидан: 2-юм микрорайон');
+        }
+
+        function updateRoute(courierLat, courierLng) {
+            if (routeLine) {
+                map.removeLayer(routeLine);
+            }
+            
+            // Маршрут аз курьер то нуқтаи гирифтан ва то нуқтаи расонидан
+            const points = [
+                [courierLat, courierLng],
+                [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
+                [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
+            ];
+            
+            routeLine = L.polyline(points, {
+                color: '#ffd600',
+                weight: 5,
+                opacity: 0.8,
+                dashArray: '5, 10'
+            }).addTo(map);
+            
+            // Нишон додани тамоми маршрут
+            showFullRoute();
+        }
+
+        window.centerOnCourier = function() {
+            if (courierMarker) {
+                const pos = courierMarker.getLatLng();
+                map.setView([pos.lat, pos.lng], 16);
+            }
+        }
+
+        window.showFullRoute = function() {
+            if (routeLine) {
+                map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+            } else if (currentOrder) {
+                // Агар маршрут накашида бошад, ҳама нуқтаҳоро нишон диҳ
+                const bounds = L.latLngBounds([
+                    [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
+                    [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
+                ]);
+                if (courierMarker) {
+                    bounds.extend(courierMarker.getLatLng());
+                }
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
         }
 
         // ========== ORDER FUNCTIONS ==========
-        function toggleOnline() {
+        window.toggleOnline = function() {
             isOnline = !isOnline;
             const toggle = document.getElementById('onlineToggle');
             const statusText = document.getElementById('statusText');
@@ -1076,7 +1322,10 @@
             if (isOnline) {
                 toggle.classList.add('active');
                 statusText.textContent = 'Онлайн';
-                simulateNewOrder();
+                // Барои санҷиш, заказро фавран нишон диҳ
+                if (!currentOrder) {
+                    showNewOrder();
+                }
             } else {
                 toggle.classList.remove('active');
                 statusText.textContent = 'Офлайн';
@@ -1090,45 +1339,19 @@
             localStorage.setItem('balance', balance.toString());
         }
 
-        function simulateNewOrder() {
-            if (isOnline && !currentOrder) {
-                setTimeout(() => {
-                    if (isOnline && !currentOrder) {
-                        showNewOrder();
-                    }
-                }, 5000);
-            }
-        }
-
         function showNewOrder() {
             if (balance < 10) {
                 document.getElementById('lowBalanceAlert').style.display = 'flex';
                 return;
             }
 
-            const orders = [
-                {
-                    pickup: 'Кӯчаи Айнӣ 42',
-                    delivery: 'Хиёбони Неъмат Қаробов 72/1',
-                    distance: '3.2',
-                    price: 25
-                },
-                {
-                    pickup: 'Маркази савдои "Садбарг"',
-                    delivery: 'Микрорайони 82, хонаи 15',
-                    distance: '4.1',
-                    price: 30
-                },
-                {
-                    pickup: 'Кӯчаи Борбад 15',
-                    delivery: 'Хиёбони Рӯдакӣ 137',
-                    distance: '2.8',
-                    price: 22
-                }
-            ];
-
-            currentOrder = orders[Math.floor(Math.random() * orders.length)];
-            currentOrder.id = 'ORD' + Date.now();
+            currentOrder = {
+                id: 'ORD' + Date.now(),
+                pickup: '112-й микрорайон',
+                delivery: '2-юм микрорайон',
+                distance: '4.1',
+                price: 25
+            };
 
             document.getElementById('orderTitle').textContent = 'Закази нав #' + currentOrder.id.slice(-4);
             document.getElementById('orderDistance').textContent = 'Масофа: ' + currentOrder.distance + ' км';
@@ -1137,11 +1360,15 @@
             
             document.getElementById('acceptBtn').style.display = 'block';
             document.getElementById('completeBtn').style.display = 'none';
+            document.getElementById('declineBtn').style.display = 'block';
             document.getElementById('orderCard').style.display = 'block';
             document.getElementById('lowBalanceAlert').style.display = 'none';
+            
+            // Нишон додани нуқтаҳо дар харита
+            addOrderMarkers();
         }
 
-        function acceptOrder() {
+        window.acceptOrder = function() {
             if (balance < 10) {
                 document.getElementById('lowBalanceAlert').style.display = 'flex';
                 return;
@@ -1154,42 +1381,53 @@
 
             document.getElementById('acceptBtn').style.display = 'none';
             document.getElementById('completeBtn').style.display = 'block';
+            document.getElementById('declineBtn').style.display = 'none';
             document.getElementById('orderTitle').textContent = 'Заказ қабул шуд';
             
-            showRoute();
+            // Кашидани маршрут
+            if (courierMarker) {
+                const pos = courierMarker.getLatLng();
+                updateRoute(pos.lat, pos.lng);
+            } else {
+                updateRoute(38.5737, 68.7864);
+            }
         }
 
-        function showRoute() {
+        window.declineOrder = function() {
+            currentOrder = null;
+            document.getElementById('orderCard').style.display = 'none';
+            
+            // Тоза кардани маркерҳо
+            if (pickupMarker) {
+                map.removeLayer(pickupMarker);
+                pickupMarker = null;
+            }
+            if (deliveryMarker) {
+                map.removeLayer(deliveryMarker);
+                deliveryMarker = null;
+            }
             if (routeLine) {
                 map.removeLayer(routeLine);
-            }
-
-            if (courierMarker) {
-                const courierPos = courierMarker.getLatLng();
-                
-                const points = [
-                    [courierPos.lat, courierPos.lng],
-                    [38.5627, 68.7739],
-                    [38.5537, 68.7964]
-                ];
-                
-                routeLine = L.polyline(points, {
-                    color: '#ffd600',
-                    weight: 5,
-                    opacity: 0.8,
-                    dashArray: '10, 10'
-                }).addTo(map);
-
-                map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+                routeLine = null;
             }
         }
 
-        function completeOrder() {
+        window.completeOrder = function() {
             document.getElementById('successMessage').style.display = 'block';
             document.getElementById('orderCard').style.display = 'none';
             
+            // Тоза кардани маркерҳо
+            if (pickupMarker) {
+                map.removeLayer(pickupMarker);
+                pickupMarker = null;
+            }
+            if (deliveryMarker) {
+                map.removeLayer(deliveryMarker);
+                deliveryMarker = null;
+            }
             if (routeLine) {
                 map.removeLayer(routeLine);
+                routeLine = null;
             }
             
             currentOrder = null;
@@ -1198,9 +1436,10 @@
                 document.getElementById('successMessage').style.display = 'none';
             }, 3000);
 
+            // Баъди 5 сония закази нав нишон диҳ
             setTimeout(() => {
-                if (isOnline) {
-                    simulateNewOrder();
+                if (isOnline && balance >= 10) {
+                    showNewOrder();
                 }
             }, 5000);
         }
@@ -1215,29 +1454,5 @@
             }
         });
     </script>
-    </script>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
-  authDomain: "tojrason.firebaseapp.com",
-  databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
-  projectId: "tojrason",
-  storageBucket: "tojrason.firebasestorage.app",
-  messagingSenderId: "734402668671",
-  appId: "1:734402668671:web:ca983940b6870335d2374a",
-  measurementId: "G-M4LKWDWSB7"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-</script>
-
 </body>
 </html>
-</body>
-</html>
-
