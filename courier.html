@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Курьер - Барномаи расонӣ</title>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Screens */
+        .screen {
+            min-height: 100vh;
+            background: white;
+            display: none;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            padding: 50px 20px 30px;
+            text-align: center;
+            color: white;
+            border-radius: 0 0 30px 30px;
+        }
+
+        .header i {
+            font-size: 60px;
+            color: #ffd600;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 25px 20px;
+            overflow-y: auto;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #ffd600;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.2);
+        }
+
+        /* Phone Input */
+        .phone-input-container {
+            display: flex;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .phone-prefix {
+            background: #f5f5f5;
+            padding: 16px;
+            font-weight: 600;
+            color: #666;
+            border-right: 2px solid #e0e0e0;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .phone-input {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+
+        .phone-input:focus {
+            background: #fff9e6;
+        }
+
+        .phone-hint {
+            color: #999;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* Camera Buttons */
+        .camera-button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffd600, #ffe44d);
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .camera-button i {
+            font-size: 24px;
+        }
+
+        .camera-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 214, 0, 0.3);
+        }
+
+        .camera-button.secondary {
+            background: white;
+            border: 2px solid #ffd600;
+            color: #1a1a1a;
+        }
+
+        /* Photo Preview */
+        .photo-preview-container {
+            display: none;
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 10px;
+            position: relative;
+            border: 3px solid #ffd600;
+            box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+        }
+
+        .photo-preview-container img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-preview-container .remove-photo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: #f44336;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .photo-preview-container .remove-photo:hover {
+            background: #f44336;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Camera Modal */
+        .camera-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: black;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .camera-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .camera-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .camera-view {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-controls {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border: 4px solid #ffd600;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .capture-btn:active {
+            transform: scale(0.95);
+        }
+
+        .flash-btn, .switch-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .flash-btn:hover, .switch-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: #ffd600;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-primary:hover {
+            background: #ffe44d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 214, 0, 0.3);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: #ffd600;
+            color: #1a1a1a;
+            background: #fff9e6;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: #1a237e;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .online-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: #666;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4caf50;
+        }
+
+        .toggle-circle {
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active .toggle-circle {
+            left: 32px;
+        }
+
+        .balance-info {
+            background: #ffd600;
+            color: #1a1a1a;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Map */
+        .map-container {
+            height: 350px;
+            position: relative;
+            border-bottom: 3px solid #ffd600;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Waiting Card */
+        .waiting-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .waiting-card i {
+            font-size: 70px;
+            color: #ffd600;
+            margin-bottom: 20px;
+        }
+
+        .waiting-card h3 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1a237e;
+        }
+
+        .waiting-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f0f0f0;
+            border-top-color: #ffd600;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Order Card */
+        .order-card {
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            box-shadow: 0 -5px 30px rgba(0,0,0,0.15);
+            margin-top: -20px;
+            position: relative;
+            z-index: 2;
+            display: none;
+        }
+
+        .order-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .order-icon {
+            width: 60px;
+            height: 60px;
+            background: #ffd600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+        }
+
+        .order-info h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #1a237e;
+        }
+
+        .order-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .route-info {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .route-point {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .route-point:last-child {
+            margin-bottom: 0;
+        }
+
+        .point-marker {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+        }
+
+        .point-marker.pickup {
+            background: #ffd600;
+            box-shadow: 0 0 0 4px rgba(255, 214, 0, 0.3);
+        }
+
+        .point-marker.delivery {
+            background: #4caf50;
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.3);
+        }
+
+        .point-address {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-accept {
+            flex: 1;
+            padding: 16px;
+            background: #4caf50;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-accept:hover {
+            background: #66bb6a;
+            transform: translateY(-2px);
+        }
+
+        .btn-complete {
+            flex: 1;
+            padding: 16px;
+            background: #ffd600;
+            border: none;
+            border-radius: 16px;
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .btn-complete:hover {
+            background: #ffe44d;
+            transform: translateY(-2px);
+        }
+
+        .low-balance-alert {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .balance-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .balance-amount-large {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffd600;
+        }
+
+        .balance-note {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* Commission Info */
+        .commission-info {
+            background: #fff9e6;
+            border-left: 4px solid #ffd600;
+            padding: 12px 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- SCREEN 1: Registration -->
+    <div class="screen active" id="screenRegister">
+        <div class="header">
+            <i class="fas fa-motorcycle"></i>
+            <h1>Сабти номи курьер</h1>
+            <p>Барои шурӯъи кор маълумоти худро ворид кунед</p>
+        </div>
+        
+        <div class="content">
+            <!-- Name -->
+            <div class="form-group">
+                <label class="form-label">Ном ва насаб</label>
+                <input type="text" class="form-control" id="fullName" placeholder="Масалан: Алишер Каримов">
+            </div>
+            
+            <!-- Phone Number -->
+            <div class="form-group">
+                <label class="form-label">Рақами телефон</label>
+                <div class="phone-input-container">
+                    <span class="phone-prefix">+992</span>
+                    <input type="tel" class="phone-input" id="phone" placeholder="90 000 00 00">
+                </div>
+                <span class="phone-hint">Мисол: 90 123 45 67</span>
+            </div>
+            
+            <!-- Face Photo -->
+            <div class="form-group">
+                <label class="form-label">Акси рӯй</label>
+                <button class="camera-button" onclick="openCamera('face')">
+                    <i class="fas fa-camera"></i>
+                    Гирифтани акси рӯй
+                </button>
+                <div class="photo-preview-container" id="facePreview">
+                    <img src="" alt="Face" id="faceImage">
+                    <button class="remove-photo" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <!-- Passport Photo -->
+            <div class="form-group">
+                <label class="form-label">Акси паспорт</label>
+                <button class="camera-button secondary" onclick="openCamera('passport')">
+                    <i class="fas fa-id-card"></i>
+                    Гирифтани акси паспорт
+                </button>
+                <div class="photo-preview-container" id="passportPreview">
+                    <img src="" alt="Passport" id="passportImage">
+                    <button class="remove-photo" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <!-- Selfie with Passport -->
+            <div class="form-group">
+                <label class="form-label">Акси худ бо паспорт дар даст</label>
+                <button class="camera-button" onclick="openCamera('selfie')">
+                    <i class="fas fa-user-check"></i>
+                    Гирифтани акси худ бо паспорт
+                </button>
+                <div class="photo-preview-container" id="selfiePreview">
+                    <img src="" alt="Selfie" id="selfieImage">
+                    <button class="remove-photo" onclick="removePhoto('selfie')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <button class="btn-primary" onclick="registerCourier()">Сабти ном</button>
+            <button class="btn-secondary" onclick="checkStatus()">Санҷидани ҳолат</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: Waiting for Approval -->
+    <div class="screen" id="screenWaiting">
+        <div class="header">
+            <i class="fas fa-hourglass-half"></i>
+            <h1>Интизори тасдиқ</h1>
+            <p>Маълумоти шумо ба админ фиристода шуд</p>
+        </div>
+        
+        <div class="content">
+            <div class="waiting-card">
+                <i class="fas fa-clock"></i>
+                <h3>Дар ҳоли баррасӣ</h3>
+                <p>Маълумоти шумо аз ҷониби админ санҷида мешавад. Баъди тасдиқ шумо метавонед корро оғоз кунед.</p>
+                <div class="loading-spinner"></div>
+            </div>
+            
+            <button class="btn-secondary" onclick="checkStatus()">Санҷидани ҳолат</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: Main App -->
+    <div class="screen" id="screenMain">
+        <div class="status-bar">
+            <div class="online-toggle">
+                <span>Ҳолат:</span>
+                <div class="toggle-switch" id="onlineToggle" onclick="toggleOnline()">
+                    <div class="toggle-circle"></div>
+                </div>
+                <span id="statusText">Офлайн</span>
+            </div>
+            <div class="balance-info" id="balanceDisplay">10 сом</div>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+
+        <div class="content">
+            <!-- Balance Card -->
+            <div class="balance-card">
+                <div class="balance-title">Баланси шумо</div>
+                <div class="balance-amount-large" id="mainBalance">10 сом</div>
+                <div class="balance-note">Барои қабули заказ камаш 10 сом лозим аст</div>
+            </div>
+
+            <!-- Commission Info -->
+            <div class="commission-info">
+                <i class="fas fa-percent" style="color: #ffd600; margin-right: 8px;"></i>
+                <span>Комиссияи система: 10% аз ҳар заказ</span>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Заказ бомуваффақият анҷом дода шуд!
+            </div>
+        </div>
+
+        <!-- Order Card -->
+        <div class="order-card" id="orderCard">
+            <div class="order-header">
+                <div class="order-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="order-info">
+                    <h3 id="orderTitle">Закази нав</h3>
+                    <p id="orderDistance">Масофа: 3.2 км</p>
+                </div>
+            </div>
+            
+            <div class="route-info">
+                <div class="route-point">
+                    <div class="point-marker pickup"></div>
+                    <div class="point-address" id="pickupAddress">Кӯчаи Айнӣ 42</div>
+                </div>
+                <div class="route-point">
+                    <div class="point-marker delivery"></div>
+                    <div class="point-address" id="deliveryAddress">Хиёбони Неъмат Қаробов 72/1</div>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <button class="btn-accept" id="acceptBtn" onclick="acceptOrder()">Қабул кардан</button>
+                <button class="btn-complete" id="completeBtn" onclick="completeOrder()">Заказро додам</button>
+            </div>
+            
+            <div class="low-balance-alert" id="lowBalanceAlert" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Барои қабули заказ камаш 10 сом баланс лозим аст</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div class="camera-modal" id="cameraModal">
+        <div class="camera-header">
+            <h3 id="cameraTitle">Гирифтани акс</h3>
+            <button onclick="closeCamera()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="camera-view">
+            <video id="cameraVideo" autoplay playsinline></video>
+        </div>
+        <div class="camera-controls">
+            <button class="flash-btn" onclick="toggleFlash()"><i class="fas fa-bolt"></i></button>
+            <button class="capture-btn" onclick="capturePhoto()"></button>
+            <button class="switch-btn" onclick="switchCamera()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // App State
+        let courierData = JSON.parse(localStorage.getItem('courierData')) || null;
+        let isOnline = false;
+        let balance = parseFloat(localStorage.getItem('balance')) || 10;
+        let map = null;
+        let courierMarker = null;
+        let routeLine = null;
+        let currentOrder = null;
+        let watchId = null;
+
+        // Camera variables
+        let currentPhotoType = null;
+        let cameraStream = null;
+        let currentCamera = 'environment'; // 'environment' for back camera, 'user' for front
+        let flashOn = false;
+
+        // Track uploaded photos
+        let photos = {
+            face: null,
+            passport: null,
+            selfie: null
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('App initialized');
+            updateBalance();
+            checkAuth();
+        });
+
+        // ========== CAMERA FUNCTIONS ==========
+        async function openCamera(type) {
+            currentPhotoType = type;
+            document.getElementById('cameraTitle').textContent = 
+                type === 'face' ? 'Акси рӯй' : 
+                type === 'passport' ? 'Акси паспорт' : 
+                'Акси худ бо паспорт';
+            
+            document.getElementById('cameraModal').classList.add('active');
+            
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: currentCamera,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+            } catch (err) {
+                console.error('Camera error:', err);
+                alert('Хатогӣ дар кушодани камера. Лутфан иҷозат диҳед.');
+                closeCamera();
+            }
+        }
+
+        function closeCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            document.getElementById('cameraModal').classList.remove('active');
+        }
+
+        async function switchCamera() {
+            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: currentCamera,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+            } catch (err) {
+                console.error('Switch camera error:', err);
+            }
+        }
+
+        function toggleFlash() {
+            flashOn = !flashOn;
+            // Flash is not directly supported in browser, but we can simulate
+            alert('Flash ' + (flashOn ? 'фаъол' : 'ғайрифаъол'));
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert to data URL
+            const photoData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            // Save photo
+            photos[currentPhotoType] = photoData;
+            
+            // Show preview
+            const preview = document.getElementById(currentPhotoType + 'Preview');
+            const image = document.getElementById(currentPhotoType + 'Image');
+            image.src = photoData;
+            preview.style.display = 'block';
+            
+            // Close camera
+            closeCamera();
+        }
+
+        function removePhoto(type) {
+            console.log('Removing photo:', type);
+            photos[type] = null;
+            document.getElementById(type + 'Preview').style.display = 'none';
+            document.getElementById(type + 'Image').src = '';
+        }
+
+        // ========== AUTH FUNCTIONS ==========
+        function checkAuth() {
+            if (courierData) {
+                if (courierData.status === 'approved') {
+                    showScreen('main');
+                    initMap();
+                    startLocationTracking();
+                } else if (courierData.status === 'pending') {
+                    showScreen('waiting');
+                }
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById('screen' + screenId.charAt(0).toUpperCase() + screenId.slice(1)).classList.add('active');
+        }
+
+        function registerCourier() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            console.log('Registering courier:', { fullName, phone, photos });
+            
+            // Validate name
+            if (!fullName) {
+                alert('Лутфан ном ва насаби худро ворид кунед');
+                return;
+            }
+
+            // Validate phone
+            if (!phone) {
+                alert('Лутфан рақами телефони худро ворид кунед');
+                return;
+            }
+
+            // Check photos
+            if (!photos.face) {
+                alert('Лутфан акси рӯйро гиред');
+                return;
+            }
+
+            if (!photos.passport) {
+                alert('Лутфан акси паспортро гиред');
+                return;
+            }
+
+            if (!photos.selfie) {
+                alert('Лутфан акси худро бо паспорт гиред');
+                return;
+            }
+
+            // Format phone number
+            const formattedPhone = phone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+            const fullPhone = '+992 ' + formattedPhone;
+
+            courierData = {
+                id: 'C' + Date.now(),
+                name: fullName,
+                phone: fullPhone,
+                photos: photos,
+                status: 'pending',
+                balance: 10,
+                registeredAt: new Date().toLocaleString('tg-TJ')
+            };
+
+            localStorage.setItem('courierData', JSON.stringify(courierData));
+            localStorage.setItem('balance', '10');
+            
+            showScreen('waiting');
+            alert('Маълумоти шумо барои санҷиш фиристода шуд');
+        }
+
+        function checkStatus() {
+            if (courierData && courierData.status === 'approved') {
+                showScreen('main');
+                initMap();
+                startLocationTracking();
+            } else {
+                // For demo: approve after 3 checks
+                let checks = parseInt(localStorage.getItem('checks') || '0');
+                checks++;
+                localStorage.setItem('checks', checks.toString());
+                
+                if (checks >= 3) {
+                    courierData.status = 'approved';
+                    localStorage.setItem('courierData', JSON.stringify(courierData));
+                    showScreen('main');
+                    initMap();
+                    startLocationTracking();
+                    alert('Табрик! Шумо тасдиқ карда шудед');
+                } else {
+                    alert('Ҳолати шумо: Дар ҳоли баррасӣ');
+                }
+            }
+        }
+
+        // ========== MAP FUNCTIONS ==========
+        function initMap() {
+            if (!map) {
+                map = L.map('map').setView([38.5737, 68.7864], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© Courier App'
+                }).addTo(map);
+            }
+        }
+
+        function startLocationTracking() {
+            if (navigator.geolocation) {
+                watchId = navigator.geolocation.watchPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        updateCourierMarker(lat, lng);
+                    },
+                    (error) => {
+                        console.error('Location error:', error);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        maximumAge: 0,
+                        timeout: 5000
+                    }
+                );
+            }
+        }
+
+        function updateCourierMarker(lat, lng) {
+            if (courierMarker) {
+                courierMarker.setLatLng([lat, lng]);
+            } else {
+                courierMarker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background:#ffd600; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3);"></div>',
+                        iconSize: [20, 20]
+                    })
+                }).addTo(map).bindPopup('Шумо дар ин ҷо');
+            }
+            
+            map.setView([lat, lng], 15);
+        }
+
+        // ========== ORDER FUNCTIONS ==========
+        function toggleOnline() {
+            isOnline = !isOnline;
+            const toggle = document.getElementById('onlineToggle');
+            const statusText = document.getElementById('statusText');
+            
+            if (isOnline) {
+                toggle.classList.add('active');
+                statusText.textContent = 'Онлайн';
+                simulateNewOrder();
+            } else {
+                toggle.classList.remove('active');
+                statusText.textContent = 'Офлайн';
+                document.getElementById('orderCard').style.display = 'none';
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById('balanceDisplay').textContent = balance + ' сом';
+            document.getElementById('mainBalance').textContent = balance + ' сом';
+            localStorage.setItem('balance', balance.toString());
+        }
+
+        function simulateNewOrder() {
+            if (isOnline && !currentOrder) {
+                setTimeout(() => {
+                    if (isOnline && !currentOrder) {
+                        showNewOrder();
+                    }
+                }, 5000);
+            }
+        }
+
+        function showNewOrder() {
+            if (balance < 10) {
+                document.getElementById('lowBalanceAlert').style.display = 'flex';
+                return;
+            }
+
+            const orders = [
+                {
+                    pickup: 'Кӯчаи Айнӣ 42',
+                    delivery: 'Хиёбони Неъмат Қаробов 72/1',
+                    distance: '3.2',
+                    price: 25
+                },
+                {
+                    pickup: 'Маркази савдои "Садбарг"',
+                    delivery: 'Микрорайони 82, хонаи 15',
+                    distance: '4.1',
+                    price: 30
+                },
+                {
+                    pickup: 'Кӯчаи Борбад 15',
+                    delivery: 'Хиёбони Рӯдакӣ 137',
+                    distance: '2.8',
+                    price: 22
+                }
+            ];
+
+            currentOrder = orders[Math.floor(Math.random() * orders.length)];
+            currentOrder.id = 'ORD' + Date.now();
+
+            document.getElementById('orderTitle').textContent = 'Закази нав #' + currentOrder.id.slice(-4);
+            document.getElementById('orderDistance').textContent = 'Масофа: ' + currentOrder.distance + ' км';
+            document.getElementById('pickupAddress').textContent = currentOrder.pickup;
+            document.getElementById('deliveryAddress').textContent = currentOrder.delivery;
+            
+            document.getElementById('acceptBtn').style.display = 'block';
+            document.getElementById('completeBtn').style.display = 'none';
+            document.getElementById('orderCard').style.display = 'block';
+            document.getElementById('lowBalanceAlert').style.display = 'none';
+        }
+
+        function acceptOrder() {
+            if (balance < 10) {
+                document.getElementById('lowBalanceAlert').style.display = 'flex';
+                return;
+            }
+
+            // Calculate commission (10%)
+            const commission = Math.ceil(currentOrder.price * 0.1);
+            balance -= commission;
+            updateBalance();
+
+            document.getElementById('acceptBtn').style.display = 'none';
+            document.getElementById('completeBtn').style.display = 'block';
+            document.getElementById('orderTitle').textContent = 'Заказ қабул шуд';
+            
+            showRoute();
+        }
+
+        function showRoute() {
+            if (routeLine) {
+                map.removeLayer(routeLine);
+            }
+
+            if (courierMarker) {
+                const courierPos = courierMarker.getLatLng();
+                
+                const points = [
+                    [courierPos.lat, courierPos.lng],
+                    [38.5627, 68.7739],
+                    [38.5537, 68.7964]
+                ];
+                
+                routeLine = L.polyline(points, {
+                    color: '#ffd600',
+                    weight: 5,
+                    opacity: 0.8,
+                    dashArray: '10, 10'
+                }).addTo(map);
+
+                map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+            }
+        }
+
+        function completeOrder() {
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('orderCard').style.display = 'none';
+            
+            if (routeLine) {
+                map.removeLayer(routeLine);
+            }
+            
+            currentOrder = null;
+            
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+
+            setTimeout(() => {
+                if (isOnline) {
+                    simulateNewOrder();
+                }
+            }, 5000);
+        }
+
+        // Clean up
+        window.addEventListener('beforeunload', function() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>
