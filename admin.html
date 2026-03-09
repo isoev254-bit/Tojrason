@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Админ Панел - Системаи доставка</title>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Login Container */
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 30px;
+            padding: 40px 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header i {
+            font-size: 60px;
+            color: #ffd600;
+            margin-bottom: 15px;
+        }
+
+        .login-header h2 {
+            font-size: 28px;
+            color: #1a237e;
+            margin-bottom: 5px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #ffd600;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: #ffd600;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: #ffe44d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 214, 0, 0.3);
+        }
+
+        .register-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .register-btn:hover {
+            background: #66bb6a;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #f44336;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #4caf50;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 14px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .admin-list {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 16px;
+        }
+
+        .admin-list h3 {
+            color: #1a237e;
+            margin-bottom: 15px;
+        }
+
+        .admin-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-role {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .role-super {
+            background: #ffd600;
+            color: #1a1a1a;
+        }
+
+        .role-admin {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .role-moderator {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a237e;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 3000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-crown"></i>
+            <h2>Админ Панел</h2>
+            <p>Барои даромад логин ва паролро ворид кунед</p>
+        </div>
+        
+        <div class="error-message" id="loginError"></div>
+        <div class="success-message" id="loginSuccess"></div>
+        
+        <!-- Login Form -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Логин</label>
+                <input type="text" class="form-control" id="loginUsername" placeholder="Логини худро ворид кунед">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Парол</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="Пароли худро ворид кунед">
+            </div>
+            
+            <button class="login-btn" onclick="login()">
+                <i class="fas fa-sign-in-alt"></i>
+                Даромад
+            </button>
+            
+            <button class="login-btn register-btn" onclick="showRegister()" style="margin-top: 10px;">
+                <i class="fas fa-user-plus"></i>
+                Сабти ном ҳамчун Супер Админ
+            </button>
+        </div>
+
+        <!-- Register Form (hidden by default) -->
+        <div id="registerForm" style="display: none;">
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                Шумо аввалин админро месозед. Ин админ Супер Админ хоҳад буд.
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Номи пурра</label>
+                <input type="text" class="form-control" id="regName" placeholder="Масалан: Алишер Каримов">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Логин</label>
+                <input type="text" class="form-control" id="regUsername" placeholder="Логини худро интихоб кунед">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Парол</label>
+                <input type="password" class="form-control" id="regPassword" placeholder="Пароли худро ворид кунед">
+                <small style="color: #666; display: block; margin-top: 5px;">Камаш 6 символов</small>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Такрори парол</label>
+                <input type="password" class="form-control" id="regConfirmPassword" placeholder="Паролро такрор кунед">
+            </div>
+            
+            <button class="login-btn register-btn" onclick="register()">
+                <i class="fas fa-check-circle"></i>
+                Сабти ном
+            </button>
+            
+            <button class="login-btn" onclick="showLogin()" style="margin-top: 10px; background: #f5f5f5; color: #666;">
+                <i class="fas fa-arrow-left"></i>
+                Ба саҳифаи даромад
+            </button>
+        </div>
+
+        <!-- Admin List (shows if admins exist) -->
+        <div class="admin-list" id="adminList" style="display: none;">
+            <h3>Админҳо дар система:</h3>
+            <div id="adminsDisplay"></div>
+            
+            <button class="login-btn" onclick="clearAllAdmins()" style="background: #f44336; color: white; margin-top: 10px;">
+                <i class="fas fa-trash"></i>
+                Тоза кардани ҳама
+            </button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ========== INITIALIZE ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAdmins();
+        });
+
+        // ========== CHECK ADMINS ==========
+        function checkAdmins() {
+            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            
+            if (admins.length > 0) {
+                // If admins exist, show login form and admin list
+                document.getElementById('adminList').style.display = 'block';
+                displayAdmins(admins);
+            } else {
+                // If no admins, show register form by default
+                showRegister();
+            }
+        }
+
+        // ========== DISPLAY ADMINS ==========
+        function displayAdmins(admins) {
+            let html = '';
+            
+            admins.forEach(admin => {
+                const roleClass = admin.role === 'super_admin' ? 'role-super' : 
+                                 admin.role === 'admin' ? 'role-admin' : 'role-moderator';
+                
+                const roleText = admin.role === 'super_admin' ? 'Супер Админ' :
+                                admin.role === 'admin' ? 'Администратор' : 'Модератор';
+                
+                html += `
+                    <div class="admin-item">
+                        <div class="admin-info">
+                            <i class="fas fa-user-circle" style="font-size: 24px; color: #1a237e;"></i>
+                            <div>
+                                <strong>${admin.name}</strong><br>
+                                <small>${admin.username}</small>
+                            </div>
+                            <span class="admin-role ${roleClass}">${roleText}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('adminsDisplay').innerHTML = html;
+        }
+
+        // ========== SHOW/HIDE FORMS ==========
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('loginSuccess').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('loginSuccess').style.display = 'none';
+        }
+
+        // ========== REGISTER (Create Super Admin) ==========
+        function register() {
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+
+            // Validation
+            if (!name || !username || !password || !confirmPassword) {
+                showError('Лутфан ҳамаи майдонҳоро пур кунед');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Парол бояд камаш 6 символ бошад');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Паролҳо мувофиқ нестанд');
+                return;
+            }
+
+            // Check if username already exists
+            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            if (admins.find(a => a.username === username)) {
+                showError('Ин логин аллакай истифода шудааст');
+                return;
+            }
+
+            // Create new Super Admin
+            const newAdmin = {
+                id: Date.now().toString(),
+                name: name,
+                username: username,
+                password: password,
+                role: 'super_admin'
+            };
+
+            admins.push(newAdmin);
+            localStorage.setItem('admins', JSON.stringify(admins));
+            
+            // Auto login
+            localStorage.setItem('currentAdmin', JSON.stringify(newAdmin));
+            
+            showSuccess('✅ Сабти ном муваффақиятли! Шумо ҳамчун Супер Админ ворид шудед.');
+            
+            // Here you would redirect to main admin panel
+            setTimeout(() => {
+                window.location.href = 'admin-panel.html'; // Replace with your main panel URL
+            }, 2000);
+        }
+
+        // ========== LOGIN ==========
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (!username || !password) {
+                showError('Лутфан логин ва паролро ворид кунед');
+                return;
+            }
+
+            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            const admin = admins.find(a => a.username === username && a.password === password);
+            
+            if (admin) {
+                localStorage.setItem('currentAdmin', JSON.stringify(admin));
+                showSuccess('✅ Даромад муваффақиятли! Хуш омадед, ' + admin.name);
+                
+                // Here you would redirect to main admin panel
+                setTimeout(() => {
+                    window.location.href = 'admin-panel.html'; // Replace with your main panel URL
+                }, 2000);
+            } else {
+                showError('Логин ё парол нодуруст аст');
+            }
+        }
+
+        // ========== CLEAR ALL ADMINS ==========
+        function clearAllAdmins() {
+            if (confirm('Оё шумо боварӣ доред, ки ҳамаи админҳоро тоза кардан мехоҳед?')) {
+                localStorage.removeItem('admins');
+                localStorage.removeItem('currentAdmin');
+                document.getElementById('adminList').style.display = 'none';
+                showRegister();
+                showSuccess('✅ Ҳамаи админҳо тоза карда шуданд');
+            }
+        }
+
+        // ========== UI HELPERS ==========
+        function showError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            document.getElementById('loginSuccess').style.display = 'none';
+            
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('loginSuccess');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            document.getElementById('loginError').style.display = 'none';
+            
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2000);
+        }
+
+        // ========== FOR TESTING ==========
+        // Function to reset everything (for development)
+        window.resetSystem = function() {
+            localStorage.clear();
+            location.reload();
+        };
+    </script>
+</body>
+</html>
