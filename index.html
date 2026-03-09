@@ -1901,5 +1901,28 @@
             alert('Тафсилоти фармоиш №' + orderId);
         }
     </script>
+    </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
+  authDomain: "tojrason.firebaseapp.com",
+  databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
+  projectId: "tojrason",
+  storageBucket: "tojrason.firebasestorage.app",
+  messagingSenderId: "734402668671",
+  appId: "1:734402668671:web:ca983940b6870335d2374a",
+  measurementId: "G-M4LKWDWSB7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+</script>
+
+</body>
+</html>
 </body>
 </html>
