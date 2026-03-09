@@ -1,3 +1,52 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Админ Панел - Системаи доставка</title>
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .login-container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 30px;
+            padding: 40px 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
         .login-header i {
             font-size: 60px;
@@ -102,38 +151,250 @@
             text-align: center;
         }
 
-        .admin-list {
-            margin-top: 30px;
+        /* Main App */
+        .mobile-app {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
             padding: 20px;
-            background: #f5f5f5;
-            border-radius: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        .admin-list h3 {
-            color: #1a237e;
-            margin-bottom: 15px;
-        }
-
-        .admin-item {
+        .header-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px;
-            background: white;
-            border-radius: 12px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .header-top h1 {
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .admin-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .admin-role {
-            padding: 4px 12px;
+        .admin-name {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .menu-btn {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .date-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 10px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: white;
             border-radius: 20px;
+            padding: 20px 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s;
+            border: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: #fff9e6;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon i {
+            font-size: 24px;
+            color: #ffd600;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a237e;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 10px;
+            border-top: 1px solid #f0f0f0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: #999;
             font-size: 12px;
+            padding: 8px 0;
+            border-radius: 30px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active {
+            color: #ffd600;
+            background: #fff9e6;
+        }
+
+        .nav-item span {
+            font-weight: 500;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 20px;
+            padding-bottom: 90px;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .view-all {
+            color: #ffd600;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Admin Card */
+        .admin-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .admin-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .admin-info {
+            flex: 1;
+        }
+
+        .admin-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1a237e;
+        }
+
+        .admin-info p {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .admin-role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
             font-weight: 600;
         }
 
@@ -152,6 +413,269 @@
             color: #7b1fa2;
         }
 
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-icon.edit {
+            background: #fff9e6;
+            color: #ffd600;
+        }
+
+        .action-icon.edit:hover {
+            background: #ffd600;
+            color: white;
+        }
+
+        .action-icon.delete {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .action-icon.delete:hover {
+            background: #f44336;
+            color: white;
+        }
+
+        .action-icon.password {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .action-icon.password:hover {
+            background: #4caf50;
+            color: white;
+        }
+
+        /* Add Admin Button */
+        .add-admin-btn {
+            background: linear-gradient(135deg, #ffd600, #ffe44d);
+            color: #1a1a1a;
+            padding: 18px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(255, 214, 0, 0.3);
+        }
+
+        .add-admin-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Admin Stats */
+        .admin-stats {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .admin-stat-item {
+            text-align: center;
+        }
+
+        .admin-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .admin-stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            font-size: 22px;
+            color: #1a237e;
+        }
+
+        .close-btn {
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Generated Password */
+        .password-field {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 18px;
+        }
+
+        .copy-btn {
+            background: #ffd600;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Menu Drawer */
+        .menu-drawer {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            max-width: 350px;
+            height: 100vh;
+            background: white;
+            z-index: 1001;
+            transition: left 0.3s;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        .menu-drawer.open {
+            left: 0;
+        }
+
+        .drawer-header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .drawer-header i {
+            font-size: 50px;
+            color: #ffd600;
+            margin-bottom: 15px;
+        }
+
+        .drawer-header h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .drawer-header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .drawer-menu {
+            padding: 20px;
+        }
+
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .drawer-item i {
+            width: 24px;
+            color: #666;
+        }
+
+        .drawer-item.active {
+            background: #fff9e6;
+        }
+
+        .drawer-item.active i {
+            color: #ffd600;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        /* Toast Notification */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -165,118 +689,616 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.3);
             z-index: 3000;
             display: none;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <i class="fas fa-crown"></i>
-            <h2>Админ Панел</h2>
-            <p>Барои даромад логин ва паролро ворид кунед</p>
-        </div>
-        
-        <div class="error-message" id="loginError"></div>
-        <div class="success-message" id="loginSuccess"></div>
-        
-        <!-- Login Form -->
-        <div id="loginForm">
-            <div class="form-group">
-                <label class="form-label">Логин</label>
-                <input type="text" class="form-control" id="loginUsername" placeholder="Логини худро ворид кунед">
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-crown"></i>
+                <h2>Админ Панел</h2>
+                <p>Барои даромад логин ва паролро ворид кунед</p>
             </div>
             
-            <div class="form-group">
-                <label class="form-label">Парол</label>
-                <input type="password" class="form-control" id="loginPassword" placeholder="Пароли худро ворид кунед">
-            </div>
+            <div class="error-message" id="loginError"></div>
+            <div class="success-message" id="loginSuccess"></div>
             
-            <button class="login-btn" onclick="login()">
-                <i class="fas fa-sign-in-alt"></i>
-                Даромад
-            </button>
-            
-            <button class="login-btn register-btn" onclick="showRegister()" style="margin-top: 10px;">
-                <i class="fas fa-user-plus"></i>
-                Сабти ном ҳамчун Супер Админ
-            </button>
-        </div>
-
-        <!-- Register Form (hidden by default) -->
-        <div id="registerForm" style="display: none;">
-            <div class="info-box">
-                <i class="fas fa-info-circle"></i>
-                Шумо аввалин админро месозед. Ин админ Супер Админ хоҳад буд.
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" class="form-control" id="loginUsername" placeholder="Логини худро ворид кунед">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Парол</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Пароли худро ворид кунед">
+                </div>
+                
+                <button class="login-btn" onclick="login()">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Даромад
+                </button>
+                
+                <button class="login-btn register-btn" onclick="showRegister()" style="margin-top: 10px;">
+                    <i class="fas fa-user-plus"></i>
+                    Сабти ном ҳамчун Супер Админ
+                </button>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Номи пурра</label>
-                <input type="text" class="form-control" id="regName" placeholder="Масалан: Алишер Каримов">
+            <!-- Register Form (hidden by default) -->
+            <div id="registerForm" style="display: none;">
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    Шумо аввалин админро месозед. Ин админ Супер Админ хоҳад буд.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Номи пурра</label>
+                    <input type="text" class="form-control" id="regName" placeholder="Масалан: Алишер Каримов">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" class="form-control" id="regUsername" placeholder="Логини худро интихоб кунед">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Парол</label>
+                    <input type="password" class="form-control" id="regPassword" placeholder="Пароли худро ворид кунед">
+                    <small style="color: #666; display: block; margin-top: 5px;">Камаш 6 символов</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Такрори парол</label>
+                    <input type="password" class="form-control" id="regConfirmPassword" placeholder="Паролро такрор кунед">
+                </div>
+                
+                <button class="login-btn register-btn" onclick="register()">
+                    <i class="fas fa-check-circle"></i>
+                    Сабти ном
+                </button>
+                
+                <button class="login-btn" onclick="showLogin()" style="margin-top: 10px; background: #f5f5f5; color: #666;">
+                    <i class="fas fa-arrow-left"></i>
+                    Ба саҳифаи даромад
+                </button>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Логин</label>
-                <input type="text" class="form-control" id="regUsername" placeholder="Логини худро интихоб кунед">
+            <!-- Admin List -->
+            <div class="admin-list" id="adminList" style="display: none;">
+                <h3>Админҳо дар система:</h3>
+                <div id="adminsDisplay"></div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">Парол</label>
-                <input type="password" class="form-control" id="regPassword" placeholder="Пароли худро ворид кунед">
-                <small style="color: #666; display: block; margin-top: 5px;">Камаш 6 символов</small>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Такрори парол</label>
-                <input type="password" class="form-control" id="regConfirmPassword" placeholder="Паролро такрор кунед">
-            </div>
-            
-            <button class="login-btn register-btn" onclick="register()">
-                <i class="fas fa-check-circle"></i>
-                Сабти ном
-            </button>
-            
-            <button class="login-btn" onclick="showLogin()" style="margin-top: 10px; background: #f5f5f5; color: #666;">
-                <i class="fas fa-arrow-left"></i>
-                Ба саҳифаи даромад
-            </button>
-        </div>
-
-        <!-- Admin List (shows if admins exist) -->
-        <div class="admin-list" id="adminList" style="display: none;">
-            <h3>Админҳо дар система:</h3>
-            <div id="adminsDisplay"></div>
-            
-            <button class="login-btn" onclick="clearAllAdmins()" style="background: #f44336; color: white; margin-top: 10px;">
-                <i class="fas fa-trash"></i>
-                Тоза кардани ҳама
-            </button>
         </div>
     </div>
 
+    <!-- Main App -->
+    <div class="mobile-app" id="mainApp">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-top">
+                <button class="menu-btn" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Админ Панел</h1>
+                <div class="admin-info">
+                    <span class="admin-name" id="currentAdminName">Админ</span>
+                    <button class="menu-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="date-badge" id="currentDate"></div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area" id="contentArea">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage">
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="showPage('admins')">
+                        <div class="stat-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="stat-value" id="totalAdmins">0</div>
+                        <div class="stat-label">Админҳо</div>
+                    </div>
+                    
+                    <div class="stat-card" onclick="showPage('admins')">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="stat-value" id="superAdmins">0</div>
+                        <div class="stat-label">Супер Админ</div>
+                    </div>
+                    
+                    <div class="stat-card" onclick="showPage('admins')">
+                        <div class="stat-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="stat-value" id="regularAdmins">0</div>
+                        <div class="stat-label">Админҳо</div>
+                    </div>
+                    
+                    <div class="stat-card" onclick="showPage('settings')">
+                        <div class="stat-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="stat-value">...</div>
+                        <div class="stat-label">Танзимот</div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Менюи асосӣ</h2>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="showPage('admins')">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-value">Идора</div>
+                        <div class="stat-label">Админҳо</div>
+                    </div>
+                    
+                    <div class="stat-card" onclick="showPage('settings')">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div class="stat-value">Профил</div>
+                        <div class="stat-label">Танзимоти ман</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admins Page -->
+            <div id="adminsPage" style="display: none;">
+                <!-- Admin Stats -->
+                <div class="admin-stats">
+                    <div class="admin-stat-item">
+                        <div class="admin-stat-value" id="totalAdminsCount">0</div>
+                        <div class="admin-stat-label">Ҳамагӣ</div>
+                    </div>
+                    <div class="admin-stat-item">
+                        <div class="admin-stat-value" id="superAdminsCount">0</div>
+                        <div class="admin-stat-label">Супер Админ</div>
+                    </div>
+                    <div class="admin-stat-item">
+                        <div class="admin-stat-value" id="regularAdminsCount">0</div>
+                        <div class="admin-stat-label">Админҳо</div>
+                    </div>
+                </div>
+
+                <!-- Add Admin Button (only for Super Admin) -->
+                <div class="add-admin-btn" id="addAdminBtn" onclick="showAddAdminModal()">
+                    <i class="fas fa-plus-circle"></i>
+                    Илова кардани админи нав
+                </div>
+
+                <!-- Admins List -->
+                <div id="adminsList"></div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" style="display: none;">
+                <div class="admin-card">
+                    <div class="admin-avatar" id="myAvatar">A</div>
+                    <div class="admin-info">
+                        <h3 id="myName">Номи ман</h3>
+                        <p id="myUsername">логин</p>
+                        <span class="admin-role-badge role-super" id="myRole">Супер Админ</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Номи нав</label>
+                    <input type="text" class="form-control" id="newName" placeholder="Номи нав">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Логини нав</label>
+                    <input type="text" class="form-control" id="newUsername" placeholder="Логини нав">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Пароли нав</label>
+                    <input type="text" class="form-control" id="newPassword" placeholder="Пароли нав">
+                    <button class="copy-btn" onclick="generatePassword()" style="margin-top: 10px;">Генератсияи парол</button>
+                </div>
+
+                <button class="login-btn" onclick="updateMyProfile()">
+                    <i class="fas fa-save"></i>
+                    Сабти тағйирот
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showPage('dashboard')">
+                <i class="fas fa-home"></i>
+                <span>Асосӣ</span>
+            </div>
+            <div class="nav-item" onclick="showPage('admins')">
+                <i class="fas fa-users"></i>
+                <span>Админҳо</span>
+            </div>
+            <div class="nav-item" onclick="showPage('settings')">
+                <i class="fas fa-user"></i>
+                <span>Профил</span>
+            </div>
+        </div>
+
+        <!-- Menu Drawer -->
+        <div class="menu-drawer" id="menuDrawer">
+            <div class="drawer-header">
+                <i class="fas fa-crown"></i>
+                <h3 id="drawerAdminName">Админ</h3>
+                <p id="drawerAdminRole">Супер Админ</p>
+            </div>
+            <div class="drawer-menu">
+                <div class="drawer-item" onclick="showPage('dashboard'); toggleMenu()">
+                    <i class="fas fa-home"></i>
+                    <span>Асосӣ</span>
+                </div>
+                <div class="drawer-item" onclick="showPage('admins'); toggleMenu()">
+                    <i class="fas fa-users"></i>
+                    <span>Идоракунии админҳо</span>
+                </div>
+                <div class="drawer-item" onclick="showPage('settings'); toggleMenu()">
+                    <i class="fas fa-user-edit"></i>
+                    <span>Танзимоти ман</span>
+                </div>
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #f0f0f0;">
+                <div class="drawer-item" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Баромад</span>
+                </div>
+            </div>
+        </div>
+        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    </div>
+
+    <!-- Add Admin Modal -->
+    <div class="modal" id="addAdminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Илова кардани админи нав</h3>
+                <button class="close-btn" onclick="closeAddAdminModal()">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Номи пурра</label>
+                <input type="text" class="form-control" id="newAdminName" placeholder="Масалан: Алишер Каримов">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Логин</label>
+                <input type="text" class="form-control" id="newAdminLogin" placeholder="Логин">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Нақш</label>
+                <select class="form-control" id="newAdminRole">
+                    <option value="admin">Администратор</option>
+                    <option value="moderator">Модератор</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Парол</label>
+                <div class="password-field">
+                    <span id="generatedPassword">********</span>
+                    <button class="copy-btn" onclick="generateNewPassword()">Генератсия</button>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="login-btn" onclick="addAdmin()" style="flex: 2;">Сабт</button>
+                <button class="login-btn" onclick="closeAddAdminModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Admin Modal -->
+    <div class="modal" id="editAdminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Тағйир додани маълумот</h3>
+                <button class="close-btn" onclick="closeEditAdminModal()">&times;</button>
+            </div>
+            
+            <input type="hidden" id="editAdminId">
+            
+            <div class="form-group">
+                <label class="form-label">Номи пурра</label>
+                <input type="text" class="form-control" id="editAdminName">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Логин</label>
+                <input type="text" class="form-control" id="editAdminLogin">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Нақш</label>
+                <select class="form-control" id="editAdminRole">
+                    <option value="admin">Администратор</option>
+                    <option value="moderator">Модератор</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="login-btn" onclick="updateAdmin()" style="flex: 2;">Сабт</button>
+                <button class="login-btn" onclick="closeEditAdminModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Тағйир додани парол</h3>
+                <button class="close-btn" onclick="closePasswordModal()">&times;</button>
+            </div>
+            
+            <input type="hidden" id="passwordAdminId">
+            
+            <div class="form-group">
+                <label class="form-label">Пароли нав</label>
+                <div class="password-field">
+                    <span id="newPassword">********</span>
+                    <button class="copy-btn" onclick="generateNewPasswordForEdit()">Генератсия</button>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="login-btn" onclick="changePassword()" style="flex: 2;">Сабт</button>
+                <button class="login-btn" onclick="closePasswordModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Тасдиқи нест кардан</h3>
+                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            
+            <input type="hidden" id="deleteAdminId">
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 60px; color: #f44336;"></i>
+                <p style="margin-top: 20px; font-size: 16px;">Оё шумо боварӣ доред, ки ин админро нест кардан мехоҳед?</p>
+                <p style="color: #666; font-size: 14px;" id="deleteAdminName"></p>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="login-btn" onclick="confirmDelete()" style="flex: 1; background: #f44336;">Нест кардан</button>
+                <button class="login-btn" onclick="closeDeleteModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
 
     <script>
+        // ========== GLOBAL VARIABLES ==========
+        let currentPage = 'dashboard';
+        let currentAdmin = null;
+        let admins = [];
+        let currentPassword = '';
+
         // ========== INITIALIZE ==========
         document.addEventListener('DOMContentLoaded', function() {
-            checkAdmins();
+            updateDate();
+            checkAuth();
+            loadAdmins();
         });
 
-        // ========== CHECK ADMINS ==========
-        function checkAdmins() {
-            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+        // Update current date
+        function updateDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('tg-TJ', options);
+        }
+
+        // ========== AUTH FUNCTIONS ==========
+        function checkAuth() {
+            const savedAdmin = localStorage.getItem('currentAdmin');
+            const savedAdmins = localStorage.getItem('admins');
             
-            if (admins.length > 0) {
-                // If admins exist, show login form and admin list
-                document.getElementById('adminList').style.display = 'block';
-                displayAdmins(admins);
-            } else {
-                // If no admins, show register form by default
-                showRegister();
+            if (savedAdmins) {
+                admins = JSON.parse(savedAdmins);
+                displayAdminList(admins);
+            }
+
+            if (savedAdmin) {
+                currentAdmin = JSON.parse(savedAdmin);
+                showMainApp();
+                updateAdminUI();
+                loadAdmins();
             }
         }
 
-        // ========== DISPLAY ADMINS ==========
-        function displayAdmins(admins) {
+        function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (!username || !password) {
+                showError('Лутфан логин ва паролро ворид кунед');
+                return;
+            }
+
+            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            const admin = admins.find(a => a.username === username && a.password === password);
+            
+            if (admin) {
+                currentAdmin = admin;
+                localStorage.setItem('currentAdmin', JSON.stringify(admin));
+                showMainApp();
+                updateAdminUI();
+                loadAdmins();
+                showToast('✅ Хуш омадед, ' + admin.name);
+            } else {
+                showError('Логин ё парол нодуруст аст');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentAdmin');
+            currentAdmin = null;
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            showToast('✅ Баромад карда шуд');
+        }
+
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+
+        // ========== REGISTER ==========
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+
+            if (!name || !username || !password || !confirmPassword) {
+                showError('Лутфан ҳамаи майдонҳоро пур кунед');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Парол бояд камаш 6 символ бошад');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Паролҳо мувофиқ нестанд');
+                return;
+            }
+
+            let admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            
+            if (admins.find(a => a.username === username)) {
+                showError('Ин логин аллакай истифода шудааст');
+                return;
+            }
+
+            const newAdmin = {
+                id: Date.now().toString(),
+                name: name,
+                username: username,
+                password: password,
+                role: 'super_admin'
+            };
+
+            admins.push(newAdmin);
+            localStorage.setItem('admins', JSON.stringify(admins));
+            
+            currentAdmin = newAdmin;
+            localStorage.setItem('currentAdmin', JSON.stringify(newAdmin));
+            
+            showMainApp();
+            updateAdminUI();
+            loadAdmins();
+            showToast('✅ Сабти ном муваффақиятли!');
+        }
+
+        // ========== ADMIN MANAGEMENT ==========
+        function loadAdmins() {
+            admins = JSON.parse(localStorage.getItem('admins') || '[]');
+            
+            const superAdmins = admins.filter(a => a.role === 'super_admin').length;
+            const regularAdmins = admins.filter(a => a.role === 'admin' || a.role === 'moderator').length;
+            
+            document.getElementById('totalAdmins').textContent = admins.length;
+            document.getElementById('superAdmins').textContent = superAdmins;
+            document.getElementById('regularAdmins').textContent = regularAdmins;
+            
+            document.getElementById('totalAdminsCount').textContent = admins.length;
+            document.getElementById('superAdminsCount').textContent = superAdmins;
+            document.getElementById('regularAdminsCount').textContent = regularAdmins;
+
+            displayAdmins();
+            displayAdminList(admins);
+        }
+
+        function displayAdmins() {
+            if (!currentAdmin) return;
+            
+            let html = '';
+            
+            admins.forEach(admin => {
+                const roleClass = admin.role === 'super_admin' ? 'role-super' : 
+                                 admin.role === 'admin' ? 'role-admin' : 'role-moderator';
+                
+                const roleText = admin.role === 'super_admin' ? 'Супер Админ' :
+                                admin.role === 'admin' ? 'Администратор' : 'Модератор';
+                
+                html += `
+                    <div class="admin-card">
+                        <div class="admin-avatar">${admin.name.charAt(0)}</div>
+                        <div class="admin-info">
+                            <h3>${admin.name}</h3>
+                            <p>Логин: ${admin.username}</p>
+                            <span class="admin-role-badge ${roleClass}">${roleText}</span>
+                        </div>
+                        ${currentAdmin.role === 'super_admin' && admin.id !== currentAdmin.id ? `
+                            <div class="admin-actions">
+                                <div class="action-icon edit" onclick="editAdmin('${admin.id}')" title="Тағйир додан">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="action-icon password" onclick="showChangePassword('${admin.id}')" title="Тағйири парол">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="action-icon delete" onclick="showDeleteConfirm('${admin.id}', '${admin.name}')" title="Нест кардан">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('adminsList').innerHTML = html || '<div class="empty-state"><i class="fas fa-users-cog"></i><p>Ҳеҷ админе нест</p></div>';
+        }
+
+        function displayAdminList(admins) {
             let html = '';
             
             admins.forEach(admin => {
@@ -301,123 +1323,266 @@
             });
             
             document.getElementById('adminsDisplay').innerHTML = html;
+            document.getElementById('adminList').style.display = admins.length > 0 ? 'block' : 'none';
         }
 
-        // ========== SHOW/HIDE FORMS ==========
-        function showLogin() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('loginError').style.display = 'none';
-            document.getElementById('loginSuccess').style.display = 'none';
-        }
-
-        function showRegister() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            document.getElementById('loginError').style.display = 'none';
-            document.getElementById('loginSuccess').style.display = 'none';
-        }
-
-        // ========== REGISTER (Create Super Admin) ==========
-        function register() {
-            const name = document.getElementById('regName').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
-
-            // Validation
-            if (!name || !username || !password || !confirmPassword) {
-                showError('Лутфан ҳамаи майдонҳоро пур кунед');
+        // Add new admin
+        function showAddAdminModal() {
+            if (currentAdmin.role !== 'super_admin') {
+                showToast('Шумо иҷозати илова кардани админро надоред');
+                return;
+            }
+            
+            if (admins.length >= 30) {
+                showToast('Шумо метавонед ҳамагӣ 30 админ илова кунед');
                 return;
             }
 
-            if (password.length < 6) {
-                showError('Парол бояд камаш 6 символ бошад');
+            document.getElementById('newAdminName').value = '';
+            document.getElementById('newAdminLogin').value = '';
+            document.getElementById('newAdminRole').value = 'admin';
+            generateNewPassword();
+            document.getElementById('addAdminModal').classList.add('active');
+        }
+
+        function closeAddAdminModal() {
+            document.getElementById('addAdminModal').classList.remove('active');
+        }
+
+        function generateNewPassword() {
+            const length = 8;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            currentPassword = password;
+            document.getElementById('generatedPassword').textContent = password;
+        }
+
+        function addAdmin() {
+            const name = document.getElementById('newAdminName').value.trim();
+            const username = document.getElementById('newAdminLogin').value.trim();
+            const role = document.getElementById('newAdminRole').value;
+
+            if (!name || !username || !currentPassword) {
+                showToast('Лутфан ҳамаи майдонҳоро пур кунед');
                 return;
             }
 
-            if (password !== confirmPassword) {
-                showError('Паролҳо мувофиқ нестанд');
-                return;
-            }
-
-            // Check if username already exists
-            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
             if (admins.find(a => a.username === username)) {
-                showError('Ин логин аллакай истифода шудааст');
+                showToast('Ин логин аллакай истифода шудааст');
                 return;
             }
 
-            // Create new Super Admin
             const newAdmin = {
                 id: Date.now().toString(),
                 name: name,
                 username: username,
-                password: password,
-                role: 'super_admin'
+                password: currentPassword,
+                role: role
             };
 
             admins.push(newAdmin);
             localStorage.setItem('admins', JSON.stringify(admins));
             
-            // Auto login
-            localStorage.setItem('currentAdmin', JSON.stringify(newAdmin));
-            
-            showSuccess('✅ Сабти ном муваффақиятли! Шумо ҳамчун Супер Админ ворид шудед.');
-            
-            // Here you would redirect to main admin panel
-            setTimeout(() => {
-                window.location.href = 'admin-panel.html'; // Replace with your main panel URL
-            }, 2000);
+            loadAdmins();
+            closeAddAdminModal();
+            showToast('✅ Админи нав илова карда шуд\nЛогин: ' + username + '\nПарол: ' + currentPassword);
         }
 
-        // ========== LOGIN ==========
-        function login() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+        // Edit admin
+        function editAdmin(adminId) {
+            const admin = admins.find(a => a.id === adminId);
+            if (!admin) return;
+
+            document.getElementById('editAdminId').value = admin.id;
+            document.getElementById('editAdminName').value = admin.name;
+            document.getElementById('editAdminLogin').value = admin.username;
+            document.getElementById('editAdminRole').value = admin.role;
             
-            if (!username || !password) {
-                showError('Лутфан логин ва паролро ворид кунед');
+            document.getElementById('editAdminModal').classList.add('active');
+        }
+
+        function closeEditAdminModal() {
+            document.getElementById('editAdminModal').classList.remove('active');
+        }
+
+        function updateAdmin() {
+            const adminId = document.getElementById('editAdminId').value;
+            const name = document.getElementById('editAdminName').value.trim();
+            const username = document.getElementById('editAdminLogin').value.trim();
+            const role = document.getElementById('editAdminRole').value;
+
+            if (!name || !username) {
+                showToast('Лутфан ҳамаи майдонҳоро пур кунед');
                 return;
             }
 
-            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
-            const admin = admins.find(a => a.username === username && a.password === password);
-            
-            if (admin) {
-                localStorage.setItem('currentAdmin', JSON.stringify(admin));
-                showSuccess('✅ Даромад муваффақиятли! Хуш омадед, ' + admin.name);
+            const index = admins.findIndex(a => a.id === adminId);
+            if (index !== -1) {
+                admins[index].name = name;
+                admins[index].username = username;
+                admins[index].role = role;
                 
-                // Here you would redirect to main admin panel
-                setTimeout(() => {
-                    window.location.href = 'admin-panel.html'; // Replace with your main panel URL
-                }, 2000);
-            } else {
-                showError('Логин ё парол нодуруст аст');
+                localStorage.setItem('admins', JSON.stringify(admins));
+                loadAdmins();
+                closeEditAdminModal();
+                showToast('✅ Маълумоти админ тағйир дода шуд');
             }
         }
 
-        // ========== CLEAR ALL ADMINS ==========
-        function clearAllAdmins() {
-            if (confirm('Оё шумо боварӣ доред, ки ҳамаи админҳоро тоза кардан мехоҳед?')) {
-                localStorage.removeItem('admins');
-                localStorage.removeItem('currentAdmin');
-                document.getElementById('adminList').style.display = 'none';
-                showRegister();
-                showSuccess('✅ Ҳамаи админҳо тоза карда шуданд');
+        // Change password
+        function showChangePassword(adminId) {
+            document.getElementById('passwordAdminId').value = adminId;
+            generateNewPasswordForEdit();
+            document.getElementById('passwordModal').classList.add('active');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        function generateNewPasswordForEdit() {
+            const length = 8;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            currentPassword = password;
+            document.getElementById('newPassword').textContent = password;
+        }
+
+        function changePassword() {
+            const adminId = document.getElementById('passwordAdminId').value;
+
+            const index = admins.findIndex(a => a.id === adminId);
+            if (index !== -1) {
+                admins[index].password = currentPassword;
+                localStorage.setItem('admins', JSON.stringify(admins));
+                
+                if (adminId === currentAdmin.id) {
+                    currentAdmin.password = currentPassword;
+                    localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
+                }
+                
+                closePasswordModal();
+                showToast('✅ Парол тағйир дода шуд\nПароли нав: ' + currentPassword);
             }
         }
 
-        // ========== UI HELPERS ==========
+        // Delete admin
+        function showDeleteConfirm(adminId, adminName) {
+            document.getElementById('deleteAdminId').value = adminId;
+            document.getElementById('deleteAdminName').textContent = adminName;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            const adminId = document.getElementById('deleteAdminId').value;
+
+            admins = admins.filter(a => a.id !== adminId);
+            localStorage.setItem('admins', JSON.stringify(admins));
+            
+            loadAdmins();
+            closeDeleteModal();
+            showToast('✅ Админ нест карда шуд');
+        }
+
+        // Profile settings
+        function generatePassword() {
+            const length = 8;
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            document.getElementById('newPassword').value = password;
+        }
+
+        function updateMyProfile() {
+            const newName = document.getElementById('newName').value.trim();
+            const newUsername = document.getElementById('newUsername').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+
+            if (newName) {
+                currentAdmin.name = newName;
+            }
+
+            if (newUsername) {
+                currentAdmin.username = newUsername;
+            }
+
+            if (newPassword) {
+                currentAdmin.password = newPassword;
+            }
+
+            const index = admins.findIndex(a => a.id === currentAdmin.id);
+            if (index !== -1) {
+                admins[index] = currentAdmin;
+                localStorage.setItem('admins', JSON.stringify(admins));
+                localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
+                updateAdminUI();
+                loadAdmins();
+                showToast('✅ Маълумоти шумо тағйир дода шуд');
+            }
+        }
+
+        function updateAdminUI() {
+            document.getElementById('currentAdminName').textContent = currentAdmin.name;
+            document.getElementById('drawerAdminName').textContent = currentAdmin.name;
+            document.getElementById('drawerAdminRole').textContent = 
+                currentAdmin.role === 'super_admin' ? 'Супер Админ' :
+                currentAdmin.role === 'admin' ? 'Администратор' : 'Модератор';
+            
+            document.getElementById('myName').textContent = currentAdmin.name;
+            document.getElementById('myUsername').textContent = currentAdmin.username;
+            document.getElementById('myRole').textContent = 
+                currentAdmin.role === 'super_admin' ? 'Супер Админ' :
+                currentAdmin.role === 'admin' ? 'Администратор' : 'Модератор';
+            document.getElementById('myAvatar').textContent = currentAdmin.name.charAt(0);
+        }
+
+        // ========== UI FUNCTIONS ==========
+        function toggleMenu() {
+            document.getElementById('menuDrawer').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function showPage(page) {
+            currentPage = page;
+            
+            document.querySelectorAll('#dashboardPage, #adminsPage, #settingsPage').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            document.getElementById(page + 'Page').style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach((item, index) => {
+                item.classList.remove('active');
+            });
+            
+            const navIndex = ['dashboard', 'admins', 'settings'].indexOf(page);
+            if (navIndex !== -1) {
+                document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+            }
+            
+            if (page === 'admins') {
+                displayAdmins();
+            }
+        }
+
         function showError(message) {
             const errorDiv = document.getElementById('loginError');
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             document.getElementById('loginSuccess').style.display = 'none';
-            
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 3000);
+            setTimeout(() => errorDiv.style.display = 'none', 3000);
         }
 
         function showSuccess(message) {
@@ -425,27 +1590,23 @@
             successDiv.textContent = message;
             successDiv.style.display = 'block';
             document.getElementById('loginError').style.display = 'none';
-            
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 3000);
+            setTimeout(() => successDiv.style.display = 'none', 3000);
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.style.display = 'block';
-            
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 2000);
+            setTimeout(() => toast.style.display = 'none', 3000);
         }
 
-        // ========== FOR TESTING ==========
-        // Function to reset everything (for development)
-        window.resetSystem = function() {
-            localStorage.clear();
-            location.reload();
+        // Clear all admins
+        window.clearAllAdmins = function() {
+            if (confirm('Оё шумо боварӣ доред, ки ҳамаи админҳоро тоза кардан мехоҳед?')) {
+                localStorage.removeItem('admins');
+                localStorage.removeItem('currentAdmin');
+                location.reload();
+            }
         };
     </script>
 </body>
