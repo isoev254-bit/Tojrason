@@ -47,7 +47,7 @@
             min-height: 100vh;
             background: var(--light);
             position: relative;
-            padding-bottom: 80px; /* For bottom nav */
+            padding-bottom: 80px;
         }
 
         .screen.active {
@@ -182,6 +182,72 @@
             display: block;
         }
 
+        /* ========== CAMERA BUTTONS ========== */
+        .camera-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .camera-button i {
+            font-size: 20px;
+        }
+
+        .camera-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .photo-preview-container {
+            position: relative;
+            margin-top: 15px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            display: none;
+        }
+
+        .photo-preview-container img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-photo:hover {
+            background: var(--danger);
+            transform: scale(1.1);
+        }
+
         /* ========== BUTTONS ========== */
         .btn-primary {
             width: 100%;
@@ -218,11 +284,6 @@
             height: 300px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
-        }
-
         .btn-secondary {
             width: 100%;
             padding: 16px;
@@ -234,26 +295,12 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
+            margin-bottom: 10px;
         }
 
         .btn-secondary:hover {
             background: var(--primary);
             color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #0d9488);
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #d97706);
-            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
         }
 
         /* ========== STATUS BAR ========== */
@@ -743,6 +790,11 @@
             color: var(--danger);
         }
 
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
         /* ========== PROFILE MODAL ========== */
         .modal {
             display: none;
@@ -952,6 +1004,135 @@
             color: var(--gray);
             font-size: 14px;
         }
+
+        /* ========== CAMERA MODAL ========== */
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: black;
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-header {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .camera-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .camera-view {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .flash-btn, .switch-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        /* ========== ADMIN PANEL (FOR SIMULATION) ========== */
+        .admin-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff3e6;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--warning);
+        }
+
+        .admin-title {
+            font-weight: 700;
+            color: var(--warning);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pending-courier {
+            background: white;
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .courier-photos {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .courier-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-xs);
+            object-fit: cover;
+            border: 2px solid var(--border);
+        }
     </style>
 </head>
 <body>
@@ -1002,8 +1183,56 @@
                 <input type="password" class="form-control" id="password" placeholder="Пароли худро ворид кунед">
             </div>
             
+            <!-- Photo Upload Section -->
+            <div class="form-group">
+                <label class="form-label">Акси рӯй (бояд равшан бошад)</label>
+                <button class="camera-button" type="button" onclick="openCamera('face')">
+                    <i class="fas fa-camera"></i>
+                    Гирифтани акси рӯй
+                </button>
+                <div class="photo-preview-container" id="facePreview">
+                    <img src="" alt="Face" id="faceImage">
+                    <button class="remove-photo" type="button" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Акси паспорт (саҳифаи асосӣ)</label>
+                <button class="camera-button" type="button" onclick="openCamera('passport')">
+                    <i class="fas fa-camera"></i>
+                    Гирифтани акси паспорт
+                </button>
+                <div class="photo-preview-container" id="passportPreview">
+                    <img src="" alt="Passport" id="passportImage">
+                    <button class="remove-photo" type="button" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Акси худ бо паспорт дар даст</label>
+                <button class="camera-button" type="button" onclick="openCamera('selfie')">
+                    <i class="fas fa-camera"></i>
+                    Гирифтани акси худ бо паспорт
+                </button>
+                <div class="photo-preview-container" id="selfiePreview">
+                    <img src="" alt="Selfie" id="selfieImage">
+                    <button class="remove-photo" type="button" onclick="removePhoto('selfie')"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            
             <button class="btn-primary" onclick="register()">Сабти ном</button>
             <button class="btn-secondary" onclick="checkDemo()">Режими демо</button>
+            
+            <!-- Admin Panel (Hidden by default) - For simulation -->
+            <div class="admin-section" id="adminPanel" style="display: none;">
+                <div class="admin-title">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Панели админ (барои санҷиш)</span>
+                </div>
+                <div id="pendingCouriersList">
+                    <!-- Pending couriers will appear here -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1019,7 +1248,7 @@
             <div class="waiting-card">
                 <i class="fas fa-clock"></i>
                 <h3>Дар ҳоли баррасӣ</h3>
-                <p>Одатан ин раванд то 24 соат давом мекунад. Баъди тасдиқ ба шумо паём мефиристем.</p>
+                <p>Маълумоти шумо ва аксҳои шахсият ба админ фиристода шуд. Одатан ин раванд то 24 соат давом мекунад. Баъди тасдиқ ба шумо паём мефиристем.</p>
                 <div class="loading-spinner"></div>
             </div>
             
@@ -1043,7 +1272,7 @@
                     <span id="statusText">Офлайн</span>
                 </div>
             </div>
-            <div class="balance-info" id="balanceDisplay">$0</div>
+            <div class="balance-info" id="balanceDisplay">0 сом</div>
         </div>
 
         <!-- Map Container -->
@@ -1114,6 +1343,13 @@
                         <div style="color: var(--gray);" id="profileRating">4.8 ⭐ (124 заказ)</div>
                     </div>
                 </div>
+                <div class="modal-info">
+                    <i class="fas fa-image"></i>
+                    <div>
+                        <div style="font-weight: 600;">Ҳолати аксҳо</div>
+                        <div style="color: var(--gray);" id="profilePhotosStatus">Тасдиқ шудааст</div>
+                    </div>
+                </div>
             </div>
             
             <div class="modal-footer">
@@ -1135,12 +1371,29 @@
         </div>
     </div>
 
+    <!-- ========== CAMERA MODAL ========== -->
+    <div class="camera-modal" id="cameraModal">
+        <div class="camera-header">
+            <h3 id="cameraTitle">Гирифтани акс</h3>
+            <button onclick="closeCamera()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="camera-view">
+            <video id="cameraVideo" autoplay playsinline></video>
+        </div>
+        <div class="camera-controls">
+            <button class="flash-btn" onclick="toggleFlash()"><i class="fas fa-bolt"></i></button>
+            <button class="capture-btn" onclick="capturePhoto()"></button>
+            <button class="switch-btn" onclick="switchCamera()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
         // ========== APP STATE ==========
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         let users = JSON.parse(localStorage.getItem('users')) || [];
+        let pendingCouriers = JSON.parse(localStorage.getItem('pendingCouriers')) || [];
         let isOnline = false;
         let balance = parseFloat(localStorage.getItem('balance')) || 0;
         let totalOrders = parseInt(localStorage.getItem('totalOrders')) || 0;
@@ -1155,6 +1408,18 @@
         let orderTimer = null;
         let timerSeconds = 0;
         let notificationTimeout = null;
+        
+        // Camera variables
+        let currentPhotoType = null;
+        let cameraStream = null;
+        let currentCamera = 'environment';
+        
+        // Photos object
+        let photos = {
+            face: null,
+            passport: null,
+            selfie: null
+        };
         
         // Default location (Dushanbe)
         const defaultLocation = { lat: 38.5737, lng: 68.7864 };
@@ -1191,6 +1456,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateBalance();
             checkAuth();
+            updateAdminPanel();
         });
 
         // ========== AUTH FUNCTIONS ==========
@@ -1222,6 +1488,147 @@
             document.getElementById(screens[screenId]).classList.add('active');
         }
 
+        // ========== CAMERA FUNCTIONS ==========
+        window.openCamera = function(type) {
+            currentPhotoType = type;
+            
+            let titles = {
+                'face': 'Акси рӯй',
+                'passport': 'Акси паспорт',
+                'selfie': 'Акси худ бо паспорт'
+            };
+            document.getElementById('cameraTitle').textContent = titles[type];
+            
+            document.getElementById('cameraModal').classList.add('active');
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showNotification('Хатогӣ', 'Браузери шумо камераро дастгирӣ намекунад', 'error');
+                return;
+            }
+            
+            startCamera();
+        }
+
+        async function startCamera() {
+            try {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+                
+                let constraints = {
+                    video: {
+                        facingMode: currentCamera,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                let video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+                
+                video.onloadedmetadata = function() {
+                    video.play().catch(e => console.log('Play error:', e));
+                };
+                
+            } catch (err) {
+                console.log('Camera error:', err);
+                
+                if (err.name === 'NotAllowedError') {
+                    showNotification('Хатогӣ', 'Лутфан ба камера иҷозат диҳед', 'error');
+                } else if (err.name === 'NotFoundError') {
+                    showNotification('Хатогӣ', 'Камера ёфт нашуд', 'error');
+                } else if (err.name === 'NotReadableError') {
+                    showNotification('Хатогӣ', 'Камера дар истифода аст', 'error');
+                } else {
+                    try {
+                        let fallbackConstraints = { video: true, audio: false };
+                        cameraStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                        let video = document.getElementById('cameraVideo');
+                        video.srcObject = cameraStream;
+                        
+                        video.onloadedmetadata = function() {
+                            video.play().catch(e => console.log('Play error:', e));
+                        };
+                    } catch (fallbackErr) {
+                        showNotification('Хатогӣ', 'Хатогӣ дар кушодани камера', 'error');
+                        closeCamera();
+                    }
+                }
+            }
+        }
+
+        window.closeCamera = function() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            let video = document.getElementById('cameraVideo');
+            video.srcObject = null;
+            video.src = '';
+            
+            document.getElementById('cameraModal').classList.remove('active');
+        }
+
+        window.switchCamera = function() {
+            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            setTimeout(() => {
+                startCamera();
+            }, 100);
+        }
+
+        window.toggleFlash = function() {
+            showNotification('Маълумот', 'Flash танзимот дар браузер дастгирӣ намешавад', 'info');
+        }
+
+        window.capturePhoto = function() {
+            let video = document.getElementById('cameraVideo');
+            
+            if (!video || !video.videoWidth) {
+                showNotification('Хатогӣ', 'Камера омода нест', 'error');
+                return;
+            }
+            
+            let canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            let context = canvas.getContext('2d');
+            
+            if (currentCamera === 'user') {
+                context.translate(canvas.width, 0);
+                context.scale(-1, 1);
+            }
+            
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            let photoData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            photos[currentPhotoType] = photoData;
+            
+            let preview = document.getElementById(currentPhotoType + 'Preview');
+            let image = document.getElementById(currentPhotoType + 'Image');
+            image.src = photoData;
+            preview.style.display = 'block';
+            
+            closeCamera();
+            showNotification('Муваффақият', 'Акс гирифта шуд', 'success');
+        }
+
+        window.removePhoto = function(type) {
+            photos[type] = null;
+            document.getElementById(type + 'Preview').style.display = 'none';
+            document.getElementById(type + 'Image').src = '';
+        }
+
         // ========== REGISTER ==========
         window.register = function() {
             let fullName = document.getElementById('fullName').value.trim();
@@ -1230,6 +1637,22 @@
             
             if (!fullName || !phone || !password) {
                 showNotification('Хатогӣ', 'Лутфан ҳамаи майдонҳоро пур кунед', 'error');
+                return;
+            }
+
+            // Check photos
+            if (!photos.face) {
+                showNotification('Хатогӣ', 'Лутфан акси рӯйро гиред', 'error');
+                return;
+            }
+
+            if (!photos.passport) {
+                showNotification('Хатогӣ', 'Лутфан акси паспортро гиред', 'error');
+                return;
+            }
+
+            if (!photos.selfie) {
+                showNotification('Хатогӣ', 'Лутфан акси худро бо паспорт гиред', 'error');
                 return;
             }
 
@@ -1251,9 +1674,18 @@
                 completedOrders: 0,
                 cancelledOrders: 0,
                 rating: 5.0,
-                registeredAt: new Date().toLocaleDateString('tg-TJ')
+                registeredAt: new Date().toLocaleDateString('tg-TJ'),
+                photos: {
+                    face: photos.face,
+                    passport: photos.passport,
+                    selfie: photos.selfie
+                }
             };
 
+            // Add to pending couriers
+            pendingCouriers.push(newUser);
+            localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
+            
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
             
@@ -1261,7 +1693,8 @@
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
             showScreen('waiting');
-            showNotification('Муваффақият', 'ID шумо: ' + userId + '. Интизори тасдиқ аз ҷониби админ.', 'success');
+            updateAdminPanel();
+            showNotification('Муваффақият', 'ID шумо: ' + userId + '. Аксҳо ба админ фиристода шуд. Интизори тасдиқ.', 'success');
         }
 
         // ========== LOGIN ==========
@@ -1320,7 +1753,12 @@
                 completedOrders: 120,
                 cancelledOrders: 4,
                 rating: 4.8,
-                registeredAt: '15.01.2024'
+                registeredAt: '15.01.2024',
+                photos: {
+                    face: 'demo_face.jpg',
+                    passport: 'demo_passport.jpg',
+                    selfie: 'demo_selfie.jpg'
+                }
             };
 
             currentUser = demoUser;
@@ -1346,18 +1784,106 @@
         // ========== CHECK APPROVAL ==========
         window.checkApproval = function() {
             if (currentUser && currentUser.status === 'pending') {
-                // Simulate approval after 5 seconds (for demo)
-                setTimeout(() => {
-                    currentUser.status = 'approved';
+                // Check if admin approved
+                let updatedUser = users.find(u => u.id === currentUser.id);
+                if (updatedUser && updatedUser.status === 'approved') {
+                    currentUser = updatedUser;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     showScreen('main');
                     initMap();
                     startLocationTracking();
                     loadOrdersTab();
                     showNotification('Табрик!', 'Шумо тасдиқ карда шудед', 'success');
-                }, 3000);
+                } else {
+                    showNotification('Маълумот', 'Ҳолати шумо то ҳол ' + currentUser.status + ' аст', 'info');
+                }
+            }
+        }
+
+        // ========== ADMIN PANEL FUNCTIONS ==========
+        function updateAdminPanel() {
+            let adminPanel = document.getElementById('adminPanel');
+            let pendingList = document.getElementById('pendingCouriersList');
+            
+            if (pendingCouriers.length > 0) {
+                adminPanel.style.display = 'block';
                 
-                showNotification('Интизор шавед', 'Ҳолати шумо санҷида мешавад...', 'info');
+                let html = '';
+                pendingCouriers.forEach((courier, index) => {
+                    html += `
+                        <div class="pending-courier">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${courier.name}</strong>
+                                    <p style="font-size: 12px; color: var(--gray);">ID: ${courier.id}</p>
+                                    <p style="font-size: 12px; color: var(--gray);">${courier.phone}</p>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="btn-secondary" style="padding: 8px 15px; font-size: 12px;" onclick="approveCourier('${courier.id}')">Тасдиқ</button>
+                                    <button class="btn-danger" style="padding: 8px 15px; font-size: 12px; background: var(--danger); color: white; border: none; border-radius: var(--radius-xs);" onclick="rejectCourier('${courier.id}')">Рад</button>
+                                </div>
+                            </div>
+                            <div class="courier-photos">
+                                ${courier.photos.face ? `<img src="${courier.photos.face}" class="courier-photo" alt="Face">` : ''}
+                                ${courier.photos.passport ? `<img src="${courier.photos.passport}" class="courier-photo" alt="Passport">` : ''}
+                                ${courier.photos.selfie ? `<img src="${courier.photos.selfie}" class="courier-photo" alt="Selfie">` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                pendingList.innerHTML = html;
+            } else {
+                adminPanel.style.display = 'none';
+            }
+        }
+
+        window.approveCourier = function(courierId) {
+            let courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
+            if (courierIndex !== -1) {
+                // Update status
+                pendingCouriers[courierIndex].status = 'approved';
+                
+                // Update in users array
+                let userIndex = users.findIndex(u => u.id === courierId);
+                if (userIndex !== -1) {
+                    users[userIndex].status = 'approved';
+                }
+                
+                // Remove from pending
+                pendingCouriers.splice(courierIndex, 1);
+                
+                // Save to localStorage
+                localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                updateAdminPanel();
+                showNotification('Тасдиқ шуд', 'Курьер ба кор қабул карда шуд', 'success');
+            }
+        }
+
+        window.rejectCourier = function(courierId) {
+            if (confirm('Шумо боварӣ доред, ки ин курьерро рад мекунед?')) {
+                let courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
+                if (courierIndex !== -1) {
+                    // Update status
+                    pendingCouriers[courierIndex].status = 'rejected';
+                    
+                    // Update in users array
+                    let userIndex = users.findIndex(u => u.id === courierId);
+                    if (userIndex !== -1) {
+                        users[userIndex].status = 'rejected';
+                    }
+                    
+                    // Remove from pending
+                    pendingCouriers.splice(courierIndex, 1);
+                    
+                    // Save to localStorage
+                    localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    updateAdminPanel();
+                    showNotification('Рад карда шуд', 'Курьер рад карда шуд', 'info');
+                }
             }
         }
 
@@ -1384,6 +1910,9 @@
                 document.getElementById('profileId').textContent = currentUser.id;
                 document.getElementById('profileDate').textContent = currentUser.registeredAt;
                 document.getElementById('profileRating').textContent = currentUser.rating + ' ⭐ (' + totalOrders + ' заказ)';
+                
+                let photoStatus = currentUser.photos ? 'Тасдиқ шудааст' : 'Мавҷуд нест';
+                document.getElementById('profilePhotosStatus').textContent = photoStatus;
             }
         }
 
@@ -1509,7 +2038,6 @@
                 dashArray: '8, 8'
             }).addTo(map);
             
-            // Fit bounds to show both markers
             let bounds = L.latLngBounds(points);
             map.fitBounds(bounds, { padding: [50, 50] });
         }
@@ -1543,7 +2071,6 @@
                 toggle.classList.add('active');
                 statusText.textContent = 'Онлайн';
                 showNotification('Ҳолат', 'Шумо онлайн ҳастед. Заказҳо пайдо мешаванд.', 'success');
-                // Show available orders
                 loadOrdersTab();
             } else {
                 toggle.classList.remove('active');
@@ -1572,7 +2099,6 @@
             titleEl.textContent = title;
             textEl.textContent = message;
             
-            // Set color based on type
             notification.style.borderLeftColor = 
                 type === 'success' ? 'var(--success)' : 
                 type === 'error' ? 'var(--danger)' : 
@@ -1603,7 +2129,7 @@
                     timerSeconds++;
                     let minutes = Math.floor(timerSeconds / 60);
                     let seconds = timerSeconds % 60;
-                    timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    if (timerEl) timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
                 }, 1000);
             }
         }
@@ -1632,7 +2158,6 @@
             
             let ordersHtml = '<div style="margin-bottom: 20px;">';
             
-            // Balance card
             ordersHtml += `
                 <div class="balance-card">
                     <div class="balance-title">Баланси шумо</div>
@@ -1640,7 +2165,6 @@
                 </div>
             `;
             
-            // Available orders
             if (availableOrders.length > 0) {
                 availableOrders.forEach(order => {
                     ordersHtml += `
@@ -1710,7 +2234,6 @@
             ordersHtml += '</div>';
             content.innerHTML = ordersHtml;
             
-            // Start timer for first order if any
             if (availableOrders.length > 0) {
                 startOrderTimer();
             }
@@ -1722,15 +2245,13 @@
             
             currentOrder = order;
             
-            // Remove from available orders
             availableOrders = availableOrders.filter(o => o.id !== orderId);
             
-            // Add customer marker
             addCustomerMarker(order.lat, order.lng, order.delivery);
             
-            // Update UI
             let orderCard = document.getElementById('order-' + orderId);
             if (orderCard) {
+                let timerValue = document.getElementById('orderTimer') ? document.getElementById('orderTimer').textContent : '0:00';
                 orderCard.innerHTML = `
                     <div class="order-header">
                         <div class="order-icon" style="background: var(--success);">
@@ -1745,7 +2266,7 @@
                     <div class="order-timer">
                         <i class="fas fa-clock"></i>
                         <span>Вақти расонидан: </span>
-                        <span class="timer-value" id="orderTimer">${document.getElementById('orderTimer').textContent}</span>
+                        <span class="timer-value" id="orderTimer">${timerValue}</span>
                     </div>
                     
                     <div class="route-info">
@@ -1774,7 +2295,6 @@
                 `;
             }
             
-            // Update route
             if (courierMarker) {
                 let pos = courierMarker.getLatLng();
                 updateRoute(pos.lat, pos.lng, order.lat, order.lng);
@@ -1803,7 +2323,6 @@
         window.deliverOrder = function() {
             if (!currentOrder) return;
             
-            // Add to history
             let completedOrder = {
                 ...currentOrder,
                 completedAt: new Date().toLocaleString('tg-TJ'),
@@ -1814,7 +2333,6 @@
             orderHistory.push(completedOrder);
             localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
             
-            // Update stats
             balance += currentOrder.price;
             completedOrders++;
             totalOrders++;
@@ -1823,10 +2341,15 @@
             localStorage.setItem('totalOrders', totalOrders.toString());
             localStorage.setItem('completedOrders', completedOrders.toString());
             
-            // Clear current order
+            if (currentUser) {
+                currentUser.balance = balance;
+                currentUser.totalOrders = totalOrders;
+                currentUser.completedOrders = completedOrders;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
             currentOrder = null;
             
-            // Remove markers
             if (customerMarker) {
                 map.removeLayer(customerMarker);
                 customerMarker = null;
@@ -1836,15 +2359,11 @@
                 routeLine = null;
             }
             
-            // Stop timer
             stopOrderTimer();
-            
-            // Reload orders tab
             loadOrdersTab();
             
             showNotification('Заказ супорида шуд', 'Ташаккур! Барои заказҳои нав омода шавед', 'success');
             
-            // Simulate new order after 5 seconds
             setTimeout(() => {
                 if (isOnline) {
                     simulateNewOrder();
@@ -1857,7 +2376,6 @@
             
             let order = availableOrders.find(o => o.id === orderId);
             if (order) {
-                // Add to history as cancelled
                 let cancelledOrder = {
                     ...order,
                     completedAt: new Date().toLocaleString('tg-TJ'),
@@ -1867,17 +2385,19 @@
                 orderHistory.push(cancelledOrder);
                 localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
                 
-                // Update stats
                 cancelledOrders++;
                 totalOrders++;
                 localStorage.setItem('totalOrders', totalOrders.toString());
                 localStorage.setItem('cancelledOrders', cancelledOrders.toString());
+                
+                if (currentUser) {
+                    currentUser.totalOrders = totalOrders;
+                    currentUser.cancelledOrders = cancelledOrders;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
             }
             
-            // Remove from available orders
             availableOrders = availableOrders.filter(o => o.id !== orderId);
-            
-            // Reload orders tab
             loadOrdersTab();
             
             showNotification('Заказ рад карда шуд', 'Шумо метавонед заказҳои дигарро интизор шавед', 'info');
@@ -1917,8 +2437,10 @@
             
             if (orderHistory.length > 0) {
                 orderHistory.reverse().forEach(order => {
-                    let statusClass = order.status === 'delivered' ? 'status-delivered' : 'status-cancelled';
-                    let statusText = order.status === 'delivered' ? 'Супорида шуд' : 'Рад карда шуд';
+                    let statusClass = order.status === 'delivered' ? 'status-delivered' : 
+                                     order.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
+                    let statusText = order.status === 'delivered' ? 'Супорида шуд' : 
+                                    order.status === 'cancelled' ? 'Рад карда шуд' : 'Дар ҳол';
                     
                     historyHtml += `
                         <div class="history-item">
@@ -1979,7 +2501,7 @@
                     </div>
                 </div>
                 
-                <div class="commission-info" style="background: #fff9e6; border-left: 4px solid var(--primary); padding: 15px; border-radius: var(--radius-xs); margin-top: 20px;">
+                <div style="background: #fff9e6; border-left: 4px solid var(--primary); padding: 15px; border-radius: var(--radius-xs); margin-top: 20px;">
                     <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 10px;"></i>
                     <span>Шумо ${completedOrders} заказро бомуваффақият анҷом додед</span>
                 </div>
@@ -1991,7 +2513,6 @@
 
         // ========== TAB SWITCHING ==========
         window.switchTab = function(tab) {
-            // Update active nav
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -2016,7 +2537,10 @@
             if (orderTimer) {
                 clearInterval(orderTimer);
             }
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
         });
     </script>
 </body>
-            </html>
+</html>
