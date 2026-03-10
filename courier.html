@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
+        /* Все стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -1534,7 +1535,7 @@
             document.getElementById(screens[screenId]).classList.add('active');
         }
 
-        // Camera Functions - FIXED VERSION
+        // ========== FIXED CAMERA FUNCTIONS ==========
         window.openCamera = function(type) {
             currentPhotoType = type;
             
@@ -1554,10 +1555,31 @@
                 return;
             }
             
-            // Start camera after modal is shown
-            setTimeout(function() {
-                startCamera();
-            }, 100);
+            // Check if camera is available
+            if (!navigator.mediaDevices.enumerateDevices) {
+                alert('Браузери шумо дастгоҳҳои медиаро дастгирӣ намекунад');
+                return;
+            }
+            
+            // First check if there are any cameras
+            navigator.mediaDevices.enumerateDevices()
+                .then(function(devices) {
+                    const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                    if (videoDevices.length === 0) {
+                        alert('Дар дастгоҳи шумо камера ёфт нашуд');
+                        closeCamera();
+                        return;
+                    }
+                    
+                    // Small delay to ensure modal is visible
+                    setTimeout(function() {
+                        startCamera();
+                    }, 300);
+                })
+                .catch(function(err) {
+                    console.log('Error enumerating devices:', err);
+                    startCamera();
+                });
         }
 
         function startCamera() {
@@ -1568,9 +1590,10 @@
                 cameraStream.getTracks().forEach(function(track) {
                     track.stop();
                 });
+                cameraStream = null;
             }
             
-            // Camera constraints
+            // Camera constraints with fallback
             const constraints = {
                 video: {
                     facingMode: currentCamera,
@@ -1580,32 +1603,72 @@
                 audio: false
             };
             
-            // Request camera access
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(function(stream) {
-                    cameraStream = stream;
-                    video.srcObject = stream;
-                    
-                    // Play video when ready
-                    video.onloadedmetadata = function() {
-                        video.play().catch(function(e) {
+            // Request camera access with timeout
+            const timeoutPromise = new Promise((resolve, reject) => {
+                setTimeout(() => reject(new Error('timeout')), 10000);
+            });
+            
+            Promise.race([
+                navigator.mediaDevices.getUserMedia(constraints),
+                timeoutPromise
+            ])
+            .then(function(stream) {
+                cameraStream = stream;
+                video.srcObject = stream;
+                
+                // Play video when ready
+                video.onloadedmetadata = function() {
+                    video.play()
+                        .then(() => {
+                            console.log('Camera started successfully');
+                        })
+                        .catch(function(e) {
                             console.log('Play error:', e);
+                            // Try to play again
+                            setTimeout(() => {
+                                video.play().catch(err => console.log('Retry play error:', err));
+                            }, 100);
                         });
-                    };
-                })
-                .catch(function(err) {
-                    console.log('Camera error:', err);
-                    
-                    if (err.name === 'NotAllowedError') {
-                        alert('Лутфан ба камера иҷозат диҳед');
-                    } else if (err.name === 'NotFoundError') {
-                        alert('Камера ёфт нашуд');
-                    } else {
-                        alert('Хатогӣ дар кушодани камера: ' + err.message);
-                    }
-                    
-                    closeCamera();
-                });
+                };
+            })
+            .catch(function(err) {
+                console.log('Camera error:', err);
+                
+                // Try with basic constraints
+                if (err.message === 'timeout' || err.name === 'OverconstrainedError') {
+                    console.log('Trying with basic constraints...');
+                    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                        .then(function(stream) {
+                            cameraStream = stream;
+                            video.srcObject = stream;
+                            
+                            video.onloadedmetadata = function() {
+                                video.play().catch(e => console.log('Play error:', e));
+                            };
+                        })
+                        .catch(function(finalErr) {
+                            handleCameraError(finalErr);
+                        });
+                } else {
+                    handleCameraError(err);
+                }
+            });
+        }
+
+        function handleCameraError(err) {
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                alert('Лутфан ба камера иҷозат диҳед. Агар иҷозат надода бошед, танзимоти браузерро тафтиш кунед.');
+            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                alert('Камера ёфт нашуд. Лутфан камераро пайваст кунед.');
+            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                alert('Камера дар истифода аст. Лутфан барномаҳои дигарро пӯшед.');
+            } else if (err.name === 'OverconstrainedError') {
+                alert('Камера параметрҳои дархостшударо дастгирӣ намекунад.');
+            } else {
+                alert('Хатогӣ дар кушодани камера: ' + (err.message || 'номаълум'));
+            }
+            
+            closeCamera();
         }
 
         window.closeCamera = function() {
@@ -1618,6 +1681,8 @@
             
             const video = document.getElementById('cameraVideo');
             video.srcObject = null;
+            video.src = '';
+            video.load();
             
             document.getElementById('cameraModal').classList.remove('active');
         }
@@ -1634,52 +1699,57 @@
             
             setTimeout(function() {
                 startCamera();
-            }, 100);
+            }, 300);
         }
 
         window.toggleFlash = function() {
-            alert('Flash танзимот дар браузер дастгирӣ намешавад');
+            alert('Flash танзимот дар браузер дастгирӣ намешавад. Барои равшанӣ, чароғаки атрофро истифода баред.');
         }
 
         window.capturePhoto = function() {
             const video = document.getElementById('cameraVideo');
             
-            if (!video || !video.videoWidth) {
-                alert('Камера омода нест');
+            if (!video || !video.videoWidth || video.videoWidth === 0) {
+                alert('Камера омода нест. Лутфан камераро дубора кушоед.');
                 return;
             }
             
-            // Create canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            
-            const context = canvas.getContext('2d');
-            
-            // Mirror for front camera
-            if (currentCamera === 'user') {
-                context.translate(canvas.width, 0);
-                context.scale(-1, 1);
+            try {
+                // Create canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                const context = canvas.getContext('2d');
+                
+                // Mirror for front camera
+                if (currentCamera === 'user') {
+                    context.translate(canvas.width, 0);
+                    context.scale(-1, 1);
+                }
+                
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Get photo data
+                const photoData = canvas.toDataURL('image/jpeg', 0.9);
+                
+                // Save photo
+                photos[currentPhotoType] = photoData;
+                
+                // Show preview
+                const preview = document.getElementById(currentPhotoType + 'Preview');
+                const image = document.getElementById(currentPhotoType + 'Image');
+                image.src = photoData;
+                preview.style.display = 'block';
+                
+                // Close camera
+                closeCamera();
+                
+                showNotification('Муваффақият', 'Акс гирифта шуд', 'success');
+            } catch (err) {
+                console.error('Capture error:', err);
+                alert('Хатогӣ дар гирифтани акс: ' + err.message);
             }
-            
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Get photo data
-            const photoData = canvas.toDataURL('image/jpeg', 0.9);
-            
-            // Save photo
-            photos[currentPhotoType] = photoData;
-            
-            // Show preview
-            const preview = document.getElementById(currentPhotoType + 'Preview');
-            const image = document.getElementById(currentPhotoType + 'Image');
-            image.src = photoData;
-            preview.style.display = 'block';
-            
-            // Close camera
-            closeCamera();
-            
-            showNotification('Муваффақият', 'Акс гирифта шуд', 'success');
         }
 
         window.removePhoto = function(type) {
