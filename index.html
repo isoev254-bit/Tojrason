@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <style>
         * {
             margin: 0;
@@ -434,12 +436,120 @@
             color: #FFD600;
         }
 
+        /* Order Status Card */
+        .order-status-card {
+            background: linear-gradient(135deg, #1A1A1A 0%, #333 100%);
+            border-radius: 24px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 24px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-icon {
+            width: 60px;
+            height: 60px;
+            background: #FFD600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #1A1A1A;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-text h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .status-text p {
+            font-size: 13px;
+            color: #B0B0B0;
+        }
+
+        .status-timer {
+            font-size: 24px;
+            font-weight: 700;
+            color: #FFD600;
+        }
+
+        .courier-info-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .courier-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .courier-avatar-small {
+            width: 50px;
+            height: 50px;
+            background: #FFD600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A1A1A;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .courier-info-small h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .courier-info-small p {
+            font-size: 12px;
+            color: #B0B0B0;
+        }
+
+        .rating-stars {
+            color: #FFD600;
+            margin-top: 4px;
+        }
+
+        .rating-stars i {
+            margin-right: 2px;
+        }
+
         /* Address Details Grid */
         .address-details-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            margin-bottom: 20px;
+            margin: 20px 0;
             background: #F7F7F7;
             border-radius: 16px;
             padding: 15px;
@@ -736,7 +846,7 @@
             color: #666;
         }
 
-        .order-status {
+        .order-status-badge {
             font-size: 12px;
             font-weight: 600;
             padding: 4px 12px;
@@ -745,17 +855,22 @@
             color: #1A1A1A;
         }
 
-        .order-status.completed {
+        .order-status-badge.completed {
             background: #00A85C;
             color: white;
         }
 
-        .order-status.searching {
+        .order-status-badge.searching {
             background: #FFD600;
         }
 
+        .order-status-badge.accepted {
+            background: #007AFF;
+            color: white;
+        }
+
         /* Map Markers */
-        .custom-pickup-marker, .custom-delivery-marker {
+        .custom-pickup-marker, .custom-delivery-marker, .custom-courier-marker {
             background: transparent;
             border: none;
         }
@@ -783,21 +898,6 @@
             font-size: 40px;
             color: #FFD600;
             filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 1;
-            }
         }
 
         /* Promo Code */
@@ -845,16 +945,77 @@
             margin-right: 5px;
         }
 
-        /* Receiver Info Section */
+        /* Sections */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 24px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #FFD600;
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Person Form */
+        .person-form {
+            background: #F7F7F7;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .person-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
+
+        .person-header i {
+            color: #FFD600;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        /* Receiver Info */
         .receiver-info {
             margin-top: 20px;
             padding-top: 20px;
             border-top: 2px solid #F0F0F0;
         }
 
+        /* Sender Address Details */
+        .sender-address-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+            background: #F7F7F7;
+            border-radius: 16px;
+            padding: 15px;
+        }
+
         @media (max-width: 768px) {
             .package-options {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
             }
             
             .navigation-controls {
@@ -871,7 +1032,8 @@
                 font-size: 36px;
             }
             
-            .address-details-grid {
+            .address-details-grid,
+            .sender-address-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -961,7 +1123,7 @@
                     </div>
                 </div>
 
-                <!-- Price Card -->
+                <!-- Price Card (пеш аз фармоиш) -->
                 <div class="price-card" id="priceCard">
                     <div class="price-row">
                         <span class="price-label">Нархи фармоиш</span>
@@ -1000,36 +1162,110 @@
                             <i class="fas fa-clock"></i>
                             <span id="duration">0 дақ</span>
                         </div>
+                        <div class="distance-item">
+                            <i class="fas fa-car"></i>
+                            <span>Роҳи мошин</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Status Card (пас аз фармоиш) -->
+                <div class="order-status-card" id="orderStatusCard">
+                    <div class="status-header">
+                        <div class="status-icon" id="statusIcon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="status-text">
+                            <h3 id="statusTitle">Ҷустуҷӯи курьер</h3>
+                            <p id="statusMessage">Мо наздиктарин курьерро меҷӯем...</p>
+                        </div>
+                        <div class="status-timer" id="statusTimer">00:00</div>
+                    </div>
+                    
+                    <!-- Courier Info (пас аз пайдо шудани курьер) -->
+                    <div class="courier-info-card" id="courierInfoCard" style="display: none;">
+                        <div class="courier-row">
+                            <div class="courier-avatar-small" id="foundCourierAvatar">А</div>
+                            <div class="courier-info-small">
+                                <h4 id="foundCourierName">Алишер Раҷабов</h4>
+                                <p id="foundCourierStatus">Курьер ба назди шумо омода аст</p>
+                                <div class="rating-stars" id="foundCourierRating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Sender Information -->
-                <div class="form-group">
-                    <label class="form-label">Номи шумо (Фиристода)</label>
-                    <input type="text" class="form-control" id="senderName" placeholder="Масалан: Алишер" required>
+                <div class="section-title">
+                    <i class="fas fa-user"></i>
+                    Маълумоти фиристода
+                </div>
+                <div class="person-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Номи шумо *</label>
+                            <input type="text" class="form-control" id="senderName" placeholder="Масалан: Алишер" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Телефони шумо *</label>
+                            <input type="tel" class="form-control" id="senderPhone" placeholder="+992 900 000 000" required>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Рақами телефони шумо</label>
-                    <input type="tel" class="form-control" id="senderPhone" placeholder="+992 900 000 000" required>
+                <!-- Sender Address Details (барои фиристода) -->
+                <div class="section-title">
+                    <i class="fas fa-home"></i>
+                    Суроғаи фиристода
+                </div>
+                <div class="sender-address-grid">
+                    <div class="detail-item">
+                        <label class="detail-label">Подъезд</label>
+                        <input type="text" class="detail-input" id="senderEntrance" placeholder="№1">
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Этаж</label>
+                        <input type="text" class="detail-input" id="senderFloor" placeholder="5">
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Квартира</label>
+                        <input type="text" class="detail-input" id="senderApartment" placeholder="№42">
+                    </div>
+                    <div class="detail-item">
+                        <label class="detail-label">Код домофон</label>
+                        <input type="text" class="detail-input" id="senderIntercom" placeholder="1234">
+                    </div>
                 </div>
 
                 <!-- Receiver Information -->
-                <div class="receiver-info">
-                    <h3 style="margin-bottom: 15px; font-size: 18px;">Маълумоти қабулкунанда</h3>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Номи қабулкунанда</label>
-                        <input type="text" class="form-control" id="receiverName" placeholder="Масалан: Фаррух" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Рақами телефони қабулкунанда</label>
-                        <input type="tel" class="form-control" id="receiverPhone" placeholder="+992 901 234 567" required>
+                <div class="section-title">
+                    <i class="fas fa-user-check"></i>
+                    Маълумоти қабулкунанда
+                </div>
+                <div class="person-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Номи қабулкунанда *</label>
+                            <input type="text" class="form-control" id="receiverName" placeholder="Масалан: Фаррух" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Телефони қабулкунанда *</label>
+                            <input type="tel" class="form-control" id="receiverPhone" placeholder="+992 901 234 567" required>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Address Details for Delivery -->
+                <!-- Receiver Address Details (барои қабулкунанда) -->
+                <div class="section-title">
+                    <i class="fas fa-location-dot"></i>
+                    Суроғаи қабулкунанда
+                </div>
                 <div class="address-details-grid">
                     <div class="detail-item">
                         <label class="detail-label">Подъезд</label>
@@ -1100,7 +1336,7 @@
                         <textarea class="form-control" id="comment" rows="2" placeholder="Масалан: Дарвозаи дуюм, қуттии 42..."></textarea>
                     </div>
 
-                    <!-- Courier Card -->
+                    <!-- Courier Card (пеш аз фармоиш) -->
                     <div class="courier-card" id="courierCard">
                         <div class="courier-header">
                             <div class="courier-avatar" id="courierAvatar">A</div>
@@ -1131,6 +1367,12 @@
                     </button>
                 </form>
 
+                <!-- Cancel Order Button (пас аз фармоиш) -->
+                <button class="submit-btn" id="cancelOrderBtn" style="display: none; background: #FF3B30;" onclick="cancelOrder()">
+                    <i class="fas fa-times-circle"></i>
+                    Бекор кардани фармоиш
+                </button>
+
                 <!-- Recent Orders -->
                 <div class="recent-orders">
                     <h6 style="margin: 20px 0 15px; font-weight: 700;">Фармоишҳои охирин</h6>
@@ -1142,6 +1384,7 @@
 
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     <script>
         // Firebase Configuration (optional)
         const firebaseConfig = {
@@ -1158,17 +1401,20 @@
         class YandexCourierApp {
             constructor() {
                 this.map = null;
+                this.routingControl = null;
                 this.pickupMarker = null;
                 this.deliveryMarker = null;
+                this.courierMarker = null;
                 this.pickupCoords = null;
                 this.deliveryCoords = null;
                 this.userLocation = null;
                 this.orders = JSON.parse(localStorage.getItem('yandexOrders') || '[]');
+                this.activeOrder = null;
                 this.searchTimeout = null;
-                this.currentDirection = 0;
-                this.navigationMode = false;
                 this.promoDiscount = 0;
-                this.baseRatePerKm = 10 / 3;
+                this.timerInterval = null;
+                this.courierFound = false;
+                this.courierData = null;
                 
                 this.init();
             }
@@ -1179,6 +1425,15 @@
                 this.displayRecentOrders();
                 this.updateZoomIndicator();
                 this.loadSampleData();
+                this.checkActiveOrder();
+            }
+
+            checkActiveOrder() {
+                const activeOrder = JSON.parse(localStorage.getItem('activeOrder'));
+                if (activeOrder) {
+                    this.activeOrder = activeOrder;
+                    this.showActiveOrder();
+                }
             }
 
             loadSampleData() {
@@ -1188,6 +1443,10 @@
                             id: 1,
                             senderName: 'Алишер',
                             senderPhone: '+992 900 123 456',
+                            senderEntrance: '1',
+                            senderFloor: '5',
+                            senderApartment: '42',
+                            senderIntercom: '1234',
                             receiverName: 'Фаррух',
                             receiverPhone: '+992 901 234 567',
                             packageType: 'Ҳуҷҷат',
@@ -1205,6 +1464,10 @@
                             id: 2,
                             senderName: 'Фаррух',
                             senderPhone: '+992 901 234 567',
+                            senderEntrance: '2',
+                            senderFloor: '3',
+                            senderApartment: '15',
+                            senderIntercom: '4321',
                             receiverName: 'Саид',
                             receiverPhone: '+992 902 345 678',
                             packageType: 'Баста',
@@ -1337,7 +1600,7 @@
 
             handleMapClick(latlng) {
                 const activeInput = document.querySelector('.input-wrapper.active input');
-                if (activeInput) {
+                if (activeInput && !this.activeOrder) {
                     this.getAddressFromCoords(latlng.lat, latlng.lng, activeInput.id);
                 }
             }
@@ -1359,6 +1622,7 @@
                     }
 
                     if (this.pickupCoords && this.deliveryCoords) {
+                        this.calculateRoute();
                         this.calculatePrice();
                     }
                 } catch (error) {
@@ -1419,6 +1683,7 @@
                 }
 
                 if (this.pickupCoords && this.deliveryCoords) {
+                    this.calculateRoute();
                     this.calculatePrice();
                 }
 
@@ -1473,14 +1738,61 @@
                 }
             }
 
-            calculateWeightPrice(weight) {
-                if (weight <= 10) {
-                    return 0;
-                } else {
-                    const extraWeight = weight - 10;
-                    const extraPrice = Math.ceil(extraWeight / 2);
-                    return extraPrice;
+            setCourierLocation(lat, lng) {
+                if (this.courierMarker) {
+                    this.map.removeLayer(this.courierMarker);
                 }
+
+                const icon = L.divIcon({
+                    className: 'custom-courier-marker',
+                    html: `<div style="background:#007AFF; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border:3px solid white;"><i class="fas fa-motorcycle"></i></div>`,
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
+                });
+
+                this.courierMarker = L.marker([lat, lng], { icon }).addTo(this.map);
+            }
+
+            calculateRoute() {
+                if (this.routingControl) {
+                    this.map.removeControl(this.routingControl);
+                }
+
+                this.routingControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(this.pickupCoords.lat, this.pickupCoords.lng),
+                        L.latLng(this.deliveryCoords.lat, this.deliveryCoords.lng)
+                    ],
+                    routeWhileDragging: false,
+                    showAlternatives: false,
+                    lineOptions: {
+                        styles: [{color: '#FFD600', weight: 6}]
+                    },
+                    router: L.Routing.osrmv1({
+                        profile: 'driving'
+                    }),
+                    createMarker: function() { return null; }
+                }).addTo(this.map);
+
+                this.routingControl.on('routesfound', (e) => {
+                    const routes = e.routes;
+                    const summary = routes[0].summary;
+                    
+                    const distanceKm = (summary.totalDistance / 1000).toFixed(1);
+                    const durationMin = Math.round(summary.totalTime / 60);
+                    
+                    document.getElementById('distance').textContent = distanceKm + ' км';
+                    document.getElementById('duration').textContent = durationMin + ' дақ';
+                    document.getElementById('distanceKm').textContent = distanceKm;
+                    
+                    this.calculatePrice();
+                });
+            }
+
+            calculateWeightPrice(weight) {
+                if (weight <= 10) return 0;
+                const extraWeight = weight - 10;
+                return Math.ceil(extraWeight / 2);
             }
 
             calculatePrice() {
@@ -1499,7 +1811,6 @@
                 
                 const distancePrice = Math.round(distance * pricePerKm);
                 const totalPrice = basePrice + distancePrice + weightPrice;
-                
                 const finalPrice = Math.round(totalPrice * (1 - this.promoDiscount));
 
                 if (weight > 10) {
@@ -1527,7 +1838,6 @@
                 document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
 
                 this.showAvailableCourier(distance);
-                this.navigationMode = true;
             }
 
             calculateDistance(lat1, lon1, lat2, lon2) {
@@ -1548,14 +1858,15 @@
 
             showAvailableCourier(distance) {
                 const couriers = [
-                    { name: 'Алишер', rating: 4.8 },
-                    { name: 'Фаррух', rating: 4.9 },
-                    { name: 'Саид', rating: 4.7 },
-                    { name: 'Умед', rating: 5.0 },
-                    { name: 'Давлат', rating: 4.8 }
+                    { name: 'Алишер', rating: 4.8, trips: 1250, phone: '+992 900 123 456' },
+                    { name: 'Фаррух', rating: 4.9, trips: 2300, phone: '+992 901 234 567' },
+                    { name: 'Саид', rating: 4.7, trips: 890, phone: '+992 902 345 678' },
+                    { name: 'Умед', rating: 5.0, trips: 3120, phone: '+992 903 456 789' },
+                    { name: 'Давлат', rating: 4.8, trips: 1670, phone: '+992 904 567 890' }
                 ];
                 
                 const randomCourier = couriers[Math.floor(Math.random() * couriers.length)];
+                this.courierData = randomCourier;
                 
                 document.getElementById('courierName').textContent = randomCourier.name;
                 document.getElementById('courierDistance').textContent = distance.toFixed(1) + ' км';
@@ -1584,7 +1895,7 @@
                 const receiverName = document.getElementById('receiverName').value;
                 const receiverPhone = document.getElementById('receiverPhone').value;
                 
-                if (this.pickupCoords && this.deliveryCoords && senderName && senderPhone && receiverName && receiverPhone) {
+                if (this.pickupCoords && this.deliveryCoords && senderName && senderPhone && receiverName && receiverPhone && !this.activeOrder) {
                     submitBtn.disabled = false;
                 } else {
                     submitBtn.disabled = true;
@@ -1621,6 +1932,8 @@
             }
 
             clearLocation(type) {
+                if (this.activeOrder) return;
+                
                 if (type === 'pickup') {
                     if (this.pickupMarker) {
                         this.map.removeLayer(this.pickupMarker);
@@ -1639,13 +1952,19 @@
                     document.getElementById('deliveryWrapper').classList.remove('active');
                 }
                 
+                if (this.routingControl) {
+                    this.map.removeControl(this.routingControl);
+                    this.routingControl = null;
+                }
+                
                 document.getElementById('priceCard').style.display = 'none';
                 document.getElementById('courierCard').style.display = 'none';
-                this.navigationMode = false;
                 this.checkSubmitButton();
             }
 
             swapLocations() {
+                if (this.activeOrder) return;
+                
                 const pickupInput = document.getElementById('pickupInput');
                 const deliveryInput = document.getElementById('deliveryInput');
                 
@@ -1741,7 +2060,7 @@
                     }
                 });
 
-                // Sender and receiver inputs
+                // Input validation
                 document.getElementById('senderName').addEventListener('input', () => this.checkSubmitButton());
                 document.getElementById('senderPhone').addEventListener('input', () => this.checkSubmitButton());
                 document.getElementById('receiverName').addEventListener('input', () => this.checkSubmitButton());
@@ -1752,18 +2071,10 @@
                     if (e.key.startsWith('Arrow')) {
                         e.preventDefault();
                         switch(e.key) {
-                            case 'ArrowUp':
-                                this.navigate('north');
-                                break;
-                            case 'ArrowDown':
-                                this.navigate('south');
-                                break;
-                            case 'ArrowLeft':
-                                this.navigate('west');
-                                break;
-                            case 'ArrowRight':
-                                this.navigate('east');
-                                break;
+                            case 'ArrowUp': this.navigate('north'); break;
+                            case 'ArrowDown': this.navigate('south'); break;
+                            case 'ArrowLeft': this.navigate('west'); break;
+                            case 'ArrowRight': this.navigate('east'); break;
                         }
                     }
                 });
@@ -1776,6 +2087,10 @@
                         id: Date.now(),
                         senderName: document.getElementById('senderName').value,
                         senderPhone: document.getElementById('senderPhone').value,
+                        senderEntrance: document.getElementById('senderEntrance').value,
+                        senderFloor: document.getElementById('senderFloor').value,
+                        senderApartment: document.getElementById('senderApartment').value,
+                        senderIntercom: document.getElementById('senderIntercom').value,
                         receiverName: document.getElementById('receiverName').value,
                         receiverPhone: document.getElementById('receiverPhone').value,
                         packageType: document.querySelector('.package-option.active span').textContent,
@@ -1787,15 +2102,20 @@
                         apartment: document.getElementById('apartment').value,
                         intercom: document.getElementById('intercom').value,
                         comment: document.getElementById('comment').value,
+                        distance: document.getElementById('distance').textContent,
+                        duration: document.getElementById('duration').textContent,
+                        price: document.getElementById('totalPrice').textContent,
                         status: 'Ҷустуҷӯи курьер',
                         time: new Date().toLocaleString('tg-TJ')
                     };
 
                     this.saveOrder(order);
+                    this.activeOrder = order;
+                    localStorage.setItem('activeOrder', JSON.stringify(order));
                     
-                    alert('✅ Фармоиш қабул карда шуд!');
-                    
-                    this.startProgress();
+                    this.showOrderStatus();
+                    this.startOrderTimer();
+                    this.simulateCourierSearch();
                     
                     e.target.reset();
                     document.getElementById('weightSlider').value = 1;
@@ -1812,24 +2132,110 @@
                 });
             }
 
-            startProgress() {
+            showOrderStatus() {
+                document.getElementById('priceCard').style.display = 'none';
+                document.getElementById('courierCard').style.display = 'none';
+                document.getElementById('orderStatusCard').style.display = 'block';
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('cancelOrderBtn').style.display = 'block';
+                
+                document.getElementById('statusIcon').innerHTML = '<i class="fas fa-search"></i>';
+                document.getElementById('statusTitle').textContent = 'Ҷустуҷӯи курьер';
+                document.getElementById('statusMessage').textContent = 'Мо наздиктарин курьерро меҷӯем...';
+            }
+
+            startOrderTimer() {
+                let seconds = 0;
+                this.timerInterval = setInterval(() => {
+                    seconds++;
+                    const mins = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    document.getElementById('statusTimer').textContent = 
+                        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+
+            simulateCourierSearch() {
+                // После 8 секунд находим курьера
+                setTimeout(() => {
+                    if (!this.activeOrder) return;
+                    
+                    this.courierFound = true;
+                    
+                    document.getElementById('statusIcon').innerHTML = '<i class="fas fa-user-check"></i>';
+                    document.getElementById('statusTitle').textContent = 'Курьер ёфт шуд!';
+                    document.getElementById('statusMessage').textContent = 'Курьер ба назди шумо омода аст';
+                    
+                    document.getElementById('foundCourierAvatar').textContent = this.courierData.name[0];
+                    document.getElementById('foundCourierName').textContent = this.courierData.name + ' ' + this.courierData.phone;
+                    
+                    const fullStars = Math.floor(this.courierData.rating);
+                    const hasHalfStar = this.courierData.rating % 1 >= 0.5;
+                    let starsHtml = '';
+                    for (let i = 0; i < fullStars; i++) starsHtml += '<i class="fas fa-star"></i>';
+                    if (hasHalfStar) starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                    document.getElementById('foundCourierRating').innerHTML = starsHtml;
+                    
+                    document.getElementById('courierInfoCard').style.display = 'block';
+                    
+                    // Симуляция движения курьера
+                    this.simulateCourierMovement();
+                    
+                }, 8000);
+            }
+
+            simulateCourierMovement() {
+                if (!this.pickupCoords) return;
+                
+                // Ставим курьера рядом с точкой А
+                const courierLat = this.pickupCoords.lat + 0.01;
+                const courierLng = this.pickupCoords.lng + 0.01;
+                this.setCourierLocation(courierLat, courierLng);
+                
+                // Анимация движения
                 let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 2;
-                    document.getElementById('progressFill').style.width = progress + '%';
-                    document.getElementById('progressText').textContent = progress + '%';
+                const moveInterval = setInterval(() => {
+                    if (!this.activeOrder) {
+                        clearInterval(moveInterval);
+                        return;
+                    }
+                    
+                    progress += 5;
+                    
+                    // Двигаем курьера ближе к точке А
+                    const newLat = this.pickupCoords.lat + (0.01 * (1 - progress/100));
+                    const newLng = this.pickupCoords.lng + (0.01 * (1 - progress/100));
+                    this.setCourierLocation(newLat, newLng);
                     
                     if (progress >= 100) {
-                        clearInterval(interval);
-                        document.getElementById('progressText').textContent = 'Расид';
+                        clearInterval(moveInterval);
                         
-                        const orderStatuses = document.querySelectorAll('.order-status');
-                        if (orderStatuses.length > 0) {
-                            orderStatuses[0].textContent = 'Расид';
-                            orderStatuses[0].classList.add('completed');
-                        }
+                        document.getElementById('statusIcon').innerHTML = '<i class="fas fa-box"></i>';
+                        document.getElementById('statusTitle').textContent = 'Курьер борро гирифт';
+                        document.getElementById('statusMessage').textContent = 'Ба сӯи қабулкунанда равона шуд';
                     }
-                }, 200);
+                }, 1000);
+            }
+
+            cancelOrder() {
+                if (confirm('Шумо боварӣ доред, ки фармоишро бекор кардан мехоҳед?')) {
+                    clearInterval(this.timerInterval);
+                    this.activeOrder = null;
+                    this.courierFound = false;
+                    localStorage.removeItem('activeOrder');
+                    
+                    if (this.courierMarker) {
+                        this.map.removeLayer(this.courierMarker);
+                    }
+                    
+                    document.getElementById('orderStatusCard').style.display = 'none';
+                    document.getElementById('priceCard').style.display = 'block';
+                    document.getElementById('submitBtn').style.display = 'block';
+                    document.getElementById('cancelOrderBtn').style.display = 'none';
+                    document.getElementById('courierInfoCard').style.display = 'none';
+                    
+                    alert('Фармоиш бекор карда шуд');
+                }
             }
 
             saveOrder(order) {
@@ -1847,23 +2253,33 @@
 
                 let html = '';
                 this.orders.slice(0, 3).forEach(order => {
-                    const statusClass = order.status === 'completed' ? 'completed' : 'searching';
+                    let statusClass = 'searching';
+                    if (order.status === 'completed') statusClass = 'completed';
+                    else if (order.status === 'accepted') statusClass = 'accepted';
+                    
                     html += `
                         <div class="recent-order-item" onclick="loadOrder('${order.id}')">
                             <div class="order-icon">
                                 <i class="fas fa-box"></i>
                             </div>
                             <div class="order-info">
-                                <h6>${order.senderName} → ${order.receiverName || '?'}</h6>
-                                <p>${order.pickupAddress.substring(0, 20)}...</p>
-                                <small>Под.${order.entrance || '?'} Эт.${order.floor || '?'} Кв.${order.apartment || '?'}</small>
+                                <h6>${order.senderName} → ${order.receiverName}</h6>
+                                <p>Под.${order.senderEntrance || '?'} Эт.${order.senderFloor || '?'} Кв.${order.senderApartment || '?'}</p>
+                                <small>Қабулкунанда: Под.${order.entrance || '?'} Эт.${order.floor || '?'} Кв.${order.apartment || '?'}</small>
                             </div>
-                            <div class="order-status ${statusClass}">${order.status}</div>
+                            <div class="order-status-badge ${statusClass}">${order.status}</div>
                         </div>
                     `;
                 });
                 
                 list.innerHTML = html;
+            }
+
+            showActiveOrder() {
+                if (this.activeOrder) {
+                    this.showOrderStatus();
+                    this.startOrderTimer();
+                }
             }
         }
 
@@ -1916,6 +2332,10 @@
 
         function applyPromo() {
             if (app) app.applyPromo();
+        }
+
+        function cancelOrder() {
+            if (app) app.cancelOrder();
         }
 
         function loadOrder(orderId) {
