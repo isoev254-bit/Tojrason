@@ -1,10 +1,289 @@
-       padding: 8px 15px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 14px;
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ТоҷРасон - Курьер</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
-        /* Map */
+        body {
+            background: #f5f7fa;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            background: #f5f7fa;
+            padding-bottom: 20px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 0 0 40px 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header i {
+            font-size: 70px;
+            color: #ffd600;
+            margin-bottom: 15px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a237e;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #ffd600;
+            box-shadow: 0 0 0 3px rgba(255,214,0,0.2);
+        }
+
+        .phone-input-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .phone-prefix {
+            padding: 15px;
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #1a237e;
+            border-right: 2px solid #e0e0e0;
+        }
+
+        .phone-input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            font-size: 16px;
+        }
+
+        .phone-input:focus {
+            outline: none;
+        }
+
+        .phone-hint {
+            font-size: 12px;
+            color: #757575;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .camera-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ffd600, #ffc400);
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255,214,0,0.3);
+        }
+
+        .camera-button.secondary {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+        }
+
+        .camera-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,214,0,0.4);
+        }
+
+        .camera-button i {
+            margin-right: 10px;
+        }
+
+        .photo-preview-container {
+            position: relative;
+            margin-top: 15px;
+            border-radius: 16px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .photo-preview-container img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .remove-photo:hover {
+            background: #f44336;
+            transform: scale(1.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+            margin-bottom: 15px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            border: 2px solid #1a237e;
+            border-radius: 30px;
+            color: #1a237e;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #1a237e;
+            color: white;
+        }
+
+        .status-bar {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .online-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #4caf50;
+        }
+
+        .toggle-circle {
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-circle {
+            left: 32px;
+        }
+
+        .balance-info {
+            font-weight: 800;
+            font-size: 20px;
+            color: #1a237e;
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 30px;
+        }
+
         .map-container {
             height: 400px;
             position: relative;
@@ -45,7 +324,6 @@
             transform: scale(1.1);
         }
 
-        /* Waiting Card */
         .waiting-card {
             background: white;
             border-radius: 24px;
@@ -87,7 +365,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Order Card */
         .order-card {
             background: white;
             border-radius: 24px 24px 0 0;
@@ -254,7 +531,6 @@
             font-weight: 600;
         }
 
-        /* Balance Card */
         .balance-card {
             background: linear-gradient(135deg, #1a237e, #0d47a1);
             color: white;
@@ -281,7 +557,6 @@
             margin-top: 5px;
         }
 
-        /* Commission Info */
         .commission-info {
             background: #fff9e6;
             border-left: 4px solid #ffd600;
@@ -289,6 +564,89 @@
             border-radius: 12px;
             margin: 15px 0;
             font-size: 14px;
+        }
+
+        .camera-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: black;
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        .camera-modal.active {
+            display: flex;
+        }
+
+        .camera-header {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .camera-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .camera-view {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #ffd600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .flash-btn, .switch-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
@@ -302,13 +660,11 @@
         </div>
         
         <div class="content">
-            <!-- Name -->
             <div class="form-group">
                 <label class="form-label">Ном ва насаб</label>
                 <input type="text" class="form-control" id="fullName" placeholder="Масалан: Алишер Каримов">
             </div>
             
-            <!-- Phone Number -->
             <div class="form-group">
                 <label class="form-label">Рақами телефон</label>
                 <div class="phone-input-container">
@@ -318,7 +674,6 @@
                 <span class="phone-hint">Мисол: 90 123 45 67</span>
             </div>
             
-            <!-- Face Photo -->
             <div class="form-group">
                 <label class="form-label">Акси рӯй</label>
                 <button class="camera-button" type="button" onclick="openCamera('face')">
@@ -331,7 +686,6 @@
                 </div>
             </div>
             
-            <!-- Passport Photo -->
             <div class="form-group">
                 <label class="form-label">Акси паспорт</label>
                 <button class="camera-button secondary" type="button" onclick="openCamera('passport')">
@@ -344,7 +698,6 @@
                 </div>
             </div>
             
-            <!-- Selfie with Passport -->
             <div class="form-group">
                 <label class="form-label">Акси худ бо паспорт дар даст</label>
                 <button class="camera-button" type="button" onclick="openCamera('selfie')">
@@ -408,26 +761,22 @@
         </div>
 
         <div class="content">
-            <!-- Balance Card -->
             <div class="balance-card">
                 <div class="balance-title">Баланси шумо</div>
                 <div class="balance-amount-large" id="mainBalance">0 сом</div>
                 <div class="balance-note">Пас аз ҳар заказ комиссия 10%</div>
             </div>
 
-            <!-- Commission Info -->
             <div class="commission-info">
                 <i class="fas fa-percent" style="color: #ffd600; margin-right: 8px;"></i>
                 <span>Комиссияи система: 10% аз ҳар заказ</span>
             </div>
 
-            <!-- Success Message -->
             <div class="success-message" id="successMessage">
                 <i class="fas fa-check-circle"></i> Заказ бомуваффақият анҷом дода шуд!
             </div>
         </div>
 
-        <!-- Order Card -->
         <div class="order-card" id="orderCard">
             <div class="order-header">
                 <div class="order-icon">
@@ -479,49 +828,8 @@
         </div>
     </div>
 
-    <!-- Admin Panel (Hidden) -->
-    <div style="display: none;" id="adminPanel"></div>
-
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <!-- Firebase SDK -->
-    <script type="module">
-        // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-        import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
-
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
-            authDomain: "tojrason.firebaseapp.com",
-            databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
-            projectId: "tojrason",
-            storageBucket: "tojrason.firebasestorage.app",
-            messagingSenderId: "734402668671",
-            appId: "1:734402668671:web:ca983940b6870335d2374a",
-            measurementId: "G-M4LKWDWSB7"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const storage = getStorage(app);
-        
-        // Make Firebase available globally
-        window.firebaseDatabase = database;
-        window.firebaseRef = ref;
-        window.firebaseSet = set;
-        window.firebaseOnValue = onValue;
-        window.firebasePush = push;
-        window.firebaseStorage = storage;
-        window.firebaseStorageRef = storageRef;
-        window.firebaseUploadString = uploadString;
-        window.firebaseGetDownloadURL = getDownloadURL;
-        
-        console.log("Firebase initialized successfully");
-    </script>
-
     <script>
         // App State
         let courierData = JSON.parse(localStorage.getItem('courierData')) || null;
@@ -534,6 +842,11 @@
         let routeLine = null;
         let currentOrder = null;
         let watchId = null;
+        
+        // Default coordinates for Dushanbe
+        const defaultLocation = { lat: 38.5737, lng: 68.7864 };
+        
+        // Order coordinates
         let orderCoordinates = {
             pickup: { lat: 38.5737, lng: 68.7864 }, // 112-й микрорайон
             delivery: { lat: 38.5627, lng: 68.7739 } // 2-юм микрорайон
@@ -543,7 +856,6 @@
         let currentPhotoType = null;
         let cameraStream = null;
         let currentCamera = 'environment';
-        let flashOn = false;
 
         // Track uploaded photos
         let photos = {
@@ -557,176 +869,9 @@
             console.log('App initialized');
             updateBalance();
             checkAuth();
-            checkForApproval();
         });
 
-        // Check for admin approval
-        function checkForApproval() {
-            if (!courierData) return;
-            
-            const db = window.firebaseDatabase;
-            if (!db) return;
-            
-            const courierRef = window.firebaseRef(db, 'couriers/' + courierData.id);
-            
-            window.firebaseOnValue(courierRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.status === 'approved') {
-                    courierData.status = 'approved';
-                    localStorage.setItem('courierData', JSON.stringify(courierData));
-                    
-                    if (document.getElementById('screenWaiting').classList.contains('active')) {
-                        showScreen('main');
-                        setTimeout(() => {
-                            initMap();
-                            startLocationTracking();
-                        }, 500);
-                        alert('Табрик! Шумо тасдиқ карда шудед');
-                    }
-                }
-            });
-        }
-
-        // ========== CAMERA FUNCTIONS ==========
-        window.openCamera = async function(type) {
-            console.log('Opening camera for:', type);
-            currentPhotoType = type;
-            
-            document.getElementById('cameraTitle').textContent = 
-                type === 'face' ? 'Акси рӯй' : 
-                type === 'passport' ? 'Акси паспорт' : 
-                'Акси худ бо паспорт';
-            
-            document.getElementById('cameraModal').classList.add('active');
-            
-            try {
-                // Stop any existing stream
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
-                }
-                
-                const constraints = {
-                    video: {
-                        facingMode: 'environment',
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                };
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.getElementById('cameraVideo');
-                video.srcObject = cameraStream;
-                video.play().catch(e => console.log('Video play error:', e));
-                
-                console.log('Camera opened successfully');
-            } catch (err) {
-                console.error('Camera error:', err);
-                
-                // Try with different constraints
-                try {
-                    const fallbackConstraints = {
-                        video: true
-                    };
-                    
-                    cameraStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
-                    const video = document.getElementById('cameraVideo');
-                    video.srcObject = cameraStream;
-                    video.play().catch(e => console.log('Video play error:', e));
-                    
-                    console.log('Camera opened with fallback');
-                } catch (fallbackErr) {
-                    console.error('Fallback camera error:', fallbackErr);
-                    alert('Хатогӣ дар кушодани камера. Лутфан иҷозат диҳед ё камераи дигарро санҷед.');
-                    closeCamera();
-                }
-            }
-        }
-
-        window.closeCamera = function() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => {
-                    track.stop();
-                });
-                cameraStream = null;
-            }
-            
-            const video = document.getElementById('cameraVideo');
-            video.srcObject = null;
-            
-            document.getElementById('cameraModal').classList.remove('active');
-        }
-
-        window.switchCamera = async function() {
-            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
-            
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-            }
-            
-            try {
-                const constraints = {
-                    video: {
-                        facingMode: currentCamera,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                };
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.getElementById('cameraVideo');
-                video.srcObject = cameraStream;
-                video.play().catch(e => console.log('Video play error:', e));
-            } catch (err) {
-                console.error('Switch camera error:', err);
-            }
-        }
-
-        window.toggleFlash = function() {
-            flashOn = !flashOn;
-            alert('Flash ' + (flashOn ? 'фаъол' : 'ғайрифаъол') + ' (дар браузерҳои мобилӣ flash дастгирӣ намешавад)');
-        }
-
-        window.capturePhoto = function() {
-            const video = document.getElementById('cameraVideo');
-            
-            if (!video || !video.videoWidth) {
-                alert('Камера омода нест');
-                return;
-            }
-            
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            // Convert to data URL (JPEG format, 0.9 quality)
-            const photoData = canvas.toDataURL('image/jpeg', 0.9);
-            
-            // Save photo
-            photos[currentPhotoType] = photoData;
-            
-            // Show preview
-            const preview = document.getElementById(currentPhotoType + 'Preview');
-            const image = document.getElementById(currentPhotoType + 'Image');
-            image.src = photoData;
-            preview.style.display = 'block';
-            
-            console.log('Photo captured for:', currentPhotoType);
-            
-            // Close camera
-            closeCamera();
-        }
-
-        window.removePhoto = function(type) {
-            console.log('Removing photo:', type);
-            photos[type] = null;
-            document.getElementById(type + 'Preview').style.display = 'none';
-            document.getElementById(type + 'Image').src = '';
-        }
-
-        // ========== AUTH FUNCTIONS ==========
+        // ========== SCREEN FUNCTIONS ==========
         function checkAuth() {
             if (courierData) {
                 if (courierData.status === 'approved') {
@@ -755,47 +900,161 @@
             document.getElementById(screenMap[screenId]).classList.add('active');
         }
 
-        // Upload photo to Firebase Storage
-        async function uploadPhotoToStorage(photoData, courierId, photoType) {
-            if (!window.firebaseStorage || !window.firebaseStorageRef || !window.firebaseUploadString) {
-                console.warn('Firebase Storage not available');
-                return null;
-            }
-            
-            try {
-                const storage = window.firebaseStorage;
-                const photoRef = window.firebaseStorageRef(storage, `couriers/${courierId}/${photoType}.jpg`);
-                
-                await window.firebaseUploadString(photoRef, photoData, 'data_url');
-                const downloadURL = await window.firebaseGetDownloadURL(photoRef);
-                
-                console.log(`Photo ${photoType} uploaded:`, downloadURL);
-                return downloadURL;
-            } catch (error) {
-                console.error('Error uploading photo:', error);
-                return null;
+        window.checkStatus = function() {
+            if (courierData) {
+                if (courierData.status === 'approved') {
+                    showScreen('main');
+                    setTimeout(() => {
+                        initMap();
+                        startLocationTracking();
+                    }, 500);
+                } else {
+                    alert('Ҳолати шумо: Дар ҳоли баррасӣ. Лутфан интизор шавед.');
+                }
+            } else {
+                alert('Шумо сабти ном накардаед');
             }
         }
 
-        window.registerCourier = async function() {
+        // ========== CAMERA FUNCTIONS ==========
+        window.openCamera = async function(type) {
+            console.log('Opening camera for:', type);
+            currentPhotoType = type;
+            
+            const titles = {
+                'face': 'Акси рӯй',
+                'passport': 'Акси паспорт',
+                'selfie': 'Акси худ бо паспорт'
+            };
+            document.getElementById('cameraTitle').textContent = titles[type] || 'Гирифтани акс';
+            
+            document.getElementById('cameraModal').classList.add('active');
+            
+            try {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+                
+                const constraints = {
+                    video: {
+                        facingMode: currentCamera,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+            } catch (err) {
+                console.error('Camera error:', err);
+                
+                try {
+                    const fallbackConstraints = { video: true };
+                    cameraStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+                    const video = document.getElementById('cameraVideo');
+                    video.srcObject = cameraStream;
+                } catch (fallbackErr) {
+                    console.error('Fallback camera error:', fallbackErr);
+                    alert('Хатогӣ дар кушодани камера. Лутфан иҷозат диҳед.');
+                    closeCamera();
+                }
+            }
+        }
+
+        window.closeCamera = function() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            const video = document.getElementById('cameraVideo');
+            video.srcObject = null;
+            
+            document.getElementById('cameraModal').classList.remove('active');
+        }
+
+        window.switchCamera = async function() {
+            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+            
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: currentCamera,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = cameraStream;
+            } catch (err) {
+                console.error('Switch camera error:', err);
+            }
+        }
+
+        window.toggleFlash = function() {
+            alert('Flash танзимот дар браузер дастгирӣ намешавад');
+        }
+
+        window.capturePhoto = function() {
+            const video = document.getElementById('cameraVideo');
+            
+            if (!video || !video.videoWidth) {
+                alert('Камера омода нест');
+                return;
+            }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const photoData = canvas.toDataURL('image/jpeg', 0.9);
+            
+            photos[currentPhotoType] = photoData;
+            
+            const preview = document.getElementById(currentPhotoType + 'Preview');
+            const image = document.getElementById(currentPhotoType + 'Image');
+            image.src = photoData;
+            preview.style.display = 'block';
+            
+            console.log('Photo captured for:', currentPhotoType);
+            
+            closeCamera();
+        }
+
+        window.removePhoto = function(type) {
+            console.log('Removing photo:', type);
+            photos[type] = null;
+            document.getElementById(type + 'Preview').style.display = 'none';
+            document.getElementById(type + 'Image').src = '';
+        }
+
+        // ========== REGISTRATION ==========
+        window.registerCourier = function() {
             const fullName = document.getElementById('fullName').value.trim();
             const phone = document.getElementById('phone').value.trim();
             
             console.log('Registering courier:', { fullName, phone });
             
-            // Validate name
             if (!fullName) {
                 alert('Лутфан ном ва насаби худро ворид кунед');
                 return;
             }
 
-            // Validate phone
             if (!phone) {
                 alert('Лутфан рақами телефони худро ворид кунед');
                 return;
             }
 
-            // Check photos
             if (!photos.face) {
                 alert('Лутфан акси рӯйро гиред');
                 return;
@@ -812,7 +1071,8 @@
             }
 
             // Format phone number
-            const formattedPhone = phone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+            const cleanPhone = phone.replace(/\D/g, '');
+            const formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
             const fullPhone = '+992 ' + formattedPhone;
 
             const courierId = 'C' + Date.now();
@@ -825,99 +1085,23 @@
                 balance: 0,
                 registeredAt: new Date().toLocaleString('tg-TJ'),
                 photos: {
-                    face: photos.face ? 'uploaded' : null,
-                    passport: photos.passport ? 'uploaded' : null,
-                    selfie: photos.selfie ? 'uploaded' : null
+                    face: 'uploaded',
+                    passport: 'uploaded',
+                    selfie: 'uploaded'
                 }
             };
 
-            // Upload photos to Firebase Storage
-            if (window.firebaseStorage) {
-                try {
-                    // Upload face photo
-                    if (photos.face) {
-                        await uploadPhotoToStorage(photos.face, courierId, 'face');
-                    }
-                    
-                    // Upload passport photo
-                    if (photos.passport) {
-                        await uploadPhotoToStorage(photos.passport, courierId, 'passport');
-                    }
-                    
-                    // Upload selfie photo
-                    if (photos.selfie) {
-                        await uploadPhotoToStorage(photos.selfie, courierId, 'selfie');
-                    }
-                    
-                    console.log('All photos uploaded to Firebase Storage');
-                } catch (uploadError) {
-                    console.error('Error uploading photos:', uploadError);
-                }
-            }
-
-            // Save to Firebase Database
-            if (window.firebaseDatabase && window.firebaseRef && window.firebaseSet) {
-                try {
-                    const db = window.firebaseDatabase;
-                    const courierRef = window.firebaseRef(db, 'couriers/' + courierId);
-                    
-                    await window.firebaseSet(courierRef, courierData);
-                    
-                    // Also save to pending list for admin
-                    const pendingRef = window.firebaseRef(db, 'pending_couriers/' + courierId);
-                    await window.firebaseSet(pendingRef, {
-                        ...courierData,
-                        submittedAt: new Date().toISOString()
-                    });
-                    
-                    console.log('✅ Курьер ба Firebase сабт шуд');
-                } catch (error) {
-                    console.error('❌ Хато дар сабт ба Firebase:', error);
-                }
-            }
-
-            // LocalStorage ga saqlash
             localStorage.setItem('courierData', JSON.stringify(courierData));
             localStorage.setItem('balance', '0');
             
             showScreen('waiting');
             alert('Маълумоти шумо барои санҷиш фиристода шуд. Админ пас аз санҷиш шуморо тасдиқ мекунад.');
-            
-            // Start checking for approval
-            checkForApproval();
-        }
-
-        window.checkStatus = function() {
-            if (courierData && courierData.status === 'approved') {
-                showScreen('main');
-                setTimeout(() => {
-                    initMap();
-                    startLocationTracking();
-                }, 500);
-            } else if (courierData && courierData.status === 'pending') {
-                alert('Ҳолати шумо: Дар ҳоли баррасӣ. Лутфан интизор шавед.');
-            } else {
-                alert('Шумо сабти ном накардаед');
-            }
-        }
-
-        // Admin functions (for testing)
-        window.adminApproveCourier = function(courierId) {
-            if (!window.firebaseDatabase) return;
-            
-            const db = window.firebaseDatabase;
-            const courierRef = window.firebaseRef(db, 'couriers/' + courierId);
-            
-            window.firebaseSet(courierRef, {
-                ...courierData,
-                status: 'approved'
-            });
         }
 
         // ========== MAP FUNCTIONS ==========
         function initMap() {
             if (!map) {
-                map = L.map('map').setView([38.5737, 68.7864], 13);
+                map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 13);
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© Courier App'
@@ -934,15 +1118,13 @@
                         
                         updateCourierMarker(lat, lng);
                         
-                        // Агар заказ қабул шуда бошад, маршрутро навсозӣ кун
                         if (currentOrder) {
                             updateRoute(lat, lng);
                         }
                     },
                     (error) => {
                         console.error('Location error:', error);
-                        // Агар GPS кор накунад, нуқтаи собит истифода барем
-                        updateCourierMarker(38.5737, 68.7864);
+                        updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
                     },
                     {
                         enableHighAccuracy: true,
@@ -951,8 +1133,7 @@
                     }
                 );
             } else {
-                // Агар GPS дастгирӣ накунад
-                updateCourierMarker(38.5737, 68.7864);
+                updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
             }
         }
 
@@ -960,10 +1141,9 @@
             if (courierMarker) {
                 courierMarker.setLatLng([lat, lng]);
             } else {
-                // Иконаи курьер
                 const courierIcon = L.divIcon({
                     className: 'custom-marker',
-                    html: '<div style="background:#ffd600; width:24px; height:24px; border-radius:50%; border:4px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center;"><i class="fas fa-motorcycle" style="color:#1a237e; font-size:12px;"></i></div>',
+                    html: '<div style="background:#ffd600; width:24px; height:24px; border-radius:50%; border:4px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3);"></div>',
                     iconSize: [24, 24]
                 });
                 
@@ -973,25 +1153,21 @@
                 }).addTo(map).bindPopup('Шумо дар ин ҷо');
             }
             
-            // Агар заказ надошта бошем, харитаро ба курьер марказ кун
             if (!currentOrder) {
                 map.setView([lat, lng], 15);
             }
         }
 
         function addOrderMarkers() {
-            // Тоза кардани маркерҳои кӯҳна
             if (pickupMarker) map.removeLayer(pickupMarker);
             if (deliveryMarker) map.removeLayer(deliveryMarker);
             
-            // Икона барои нуқтаи гирифтан (А)
             const pickupIcon = L.divIcon({
                 className: 'pickup-marker',
                 html: '<div style="background:#ffd600; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:#1a237e; font-weight:bold; font-size:16px;">A</div>',
                 iconSize: [30, 30]
             });
             
-            // Икона барои нуқтаи расонидан (Б)
             const deliveryIcon = L.divIcon({
                 className: 'delivery-marker',
                 html: '<div style="background:#4caf50; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:16px;">Б</div>',
@@ -1000,11 +1176,11 @@
             
             pickupMarker = L.marker([orderCoordinates.pickup.lat, orderCoordinates.pickup.lng], {
                 icon: pickupIcon
-            }).addTo(map).bindPopup('Нуқтаи гирифтан: 112-й микрорайон');
+            }).addTo(map).bindPopup('Нуқтаи гирифтан');
             
             deliveryMarker = L.marker([orderCoordinates.delivery.lat, orderCoordinates.delivery.lng], {
                 icon: deliveryIcon
-            }).addTo(map).bindPopup('Нуқтаи расонидан: 2-юм микрорайон');
+            }).addTo(map).bindPopup('Нуқтаи расонидан');
         }
 
         function updateRoute(courierLat, courierLng) {
@@ -1012,7 +1188,6 @@
                 map.removeLayer(routeLine);
             }
             
-            // Маршрут аз курьер то нуқтаи гирифтан ва то нуқтаи расонидан
             const points = [
                 [courierLat, courierLng],
                 [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
@@ -1026,7 +1201,6 @@
                 dashArray: '5, 10'
             }).addTo(map);
             
-            // Нишон додани тамоми маршрут
             showFullRoute();
         }
 
@@ -1041,7 +1215,6 @@
             if (routeLine) {
                 map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
             } else if (currentOrder) {
-                // Агар маршрут накашида бошад, ҳама нуқтаҳоро нишон диҳ
                 const bounds = L.latLngBounds([
                     [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
                     [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
@@ -1062,7 +1235,6 @@
             if (isOnline) {
                 toggle.classList.add('active');
                 statusText.textContent = 'Онлайн';
-                // Барои санҷиш, заказро фавран нишон диҳ
                 if (!currentOrder) {
                     showNewOrder();
                 }
@@ -1099,12 +1271,10 @@
             document.getElementById('orderCard').style.display = 'block';
             document.getElementById('lowBalanceAlert').style.display = 'none';
             
-            // Нишон додани нуқтаҳо дар харита
             addOrderMarkers();
         }
 
         window.acceptOrder = function() {
-            // Calculate commission (10%)
             const commission = Math.ceil(currentOrder.price * 0.1);
             balance += (currentOrder.price - commission);
             updateBalance();
@@ -1114,12 +1284,11 @@
             document.getElementById('declineBtn').style.display = 'none';
             document.getElementById('orderTitle').textContent = 'Заказ қабул шуд';
             
-            // Кашидани маршрут
             if (courierMarker) {
                 const pos = courierMarker.getLatLng();
                 updateRoute(pos.lat, pos.lng);
             } else {
-                updateRoute(38.5737, 68.7864);
+                updateRoute(defaultLocation.lat, defaultLocation.lng);
             }
         }
 
@@ -1127,7 +1296,6 @@
             currentOrder = null;
             document.getElementById('orderCard').style.display = 'none';
             
-            // Тоза кардани маркерҳо
             if (pickupMarker) {
                 map.removeLayer(pickupMarker);
                 pickupMarker = null;
@@ -1146,7 +1314,6 @@
             document.getElementById('successMessage').style.display = 'block';
             document.getElementById('orderCard').style.display = 'none';
             
-            // Тоза кардани маркерҳо
             if (pickupMarker) {
                 map.removeLayer(pickupMarker);
                 pickupMarker = null;
@@ -1166,7 +1333,6 @@
                 document.getElementById('successMessage').style.display = 'none';
             }, 3000);
 
-            // Баъди 5 сония закази нав нишон диҳ
             setTimeout(() => {
                 if (isOnline) {
                     showNewOrder();
@@ -1179,4 +1345,10 @@
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
             }
-            if (cameraStream
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>
