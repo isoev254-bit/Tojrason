@@ -1,4 +1,4 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tg">
 <head>
     <meta charset="UTF-8">
@@ -138,19 +138,22 @@ DOCTYPE html>
         }
 
         .input-icon {
-            width: 24px;
-            height: 24px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 700;
+            color: white;
         }
 
         .input-icon.pickup {
-            color: #FFD600;
+            background: #FFD600;
         }
 
         .input-icon.delivery {
-            color: #00A85C;
+            background: #00A85C;
         }
 
         .input-field {
@@ -752,33 +755,9 @@ DOCTYPE html>
         }
 
         /* Map Markers */
-        .custom-marker {
+        .custom-pickup-marker, .custom-delivery-marker {
             background: transparent;
             border: none;
-        }
-
-        .pickup-marker, .delivery-marker {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border: 3px solid white;
-        }
-
-        .pickup-marker {
-            background: #FFD600;
-        }
-
-        .delivery-marker {
-            background: #00A85C;
-        }
-
-        .pickup-marker i, .delivery-marker i {
-            color: white;
-            font-size: 24px;
         }
 
         /* Direction Arrow */
@@ -866,6 +845,13 @@ DOCTYPE html>
             margin-right: 5px;
         }
 
+        /* Receiver Info Section */
+        .receiver-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #F0F0F0;
+        }
+
         @media (max-width: 768px) {
             .package-options {
                 grid-template-columns: repeat(2, 1fr);
@@ -934,23 +920,19 @@ DOCTYPE html>
         <!-- Search Panel -->
         <div class="search-panel">
             <div class="location-inputs">
-                <!-- Pickup Address -->
+                <!-- Pickup Address (Точка А) -->
                 <div class="input-wrapper" id="pickupWrapper">
-                    <div class="input-icon pickup">
-                        <i class="fas fa-circle"></i>
-                    </div>
-                    <input type="text" class="input-field" id="pickupInput" placeholder="Аз куҷо? (адресро ворид кунед)" autocomplete="off">
+                    <div class="input-icon pickup">А</div>
+                    <input type="text" class="input-field" id="pickupInput" placeholder="Аз куҷо? (Точка А)" autocomplete="off">
                     <i class="fas fa-times clear-btn" onclick="clearLocation('pickup')"></i>
                 </div>
                 <!-- Suggestions for pickup -->
                 <div class="suggestions-box" id="pickupSuggestions"></div>
 
-                <!-- Delivery Address -->
+                <!-- Delivery Address (Точка Б) -->
                 <div class="input-wrapper" id="deliveryWrapper">
-                    <div class="input-icon delivery">
-                        <i class="fas fa-flag-checkered"></i>
-                    </div>
-                    <input type="text" class="input-field" id="deliveryInput" placeholder="Ба куҷо? (адресро ворид кунед)" autocomplete="off">
+                    <div class="input-icon delivery">Б</div>
+                    <input type="text" class="input-field" id="deliveryInput" placeholder="Ба куҷо? (Точка Б)" autocomplete="off">
                     <i class="fas fa-times clear-btn" onclick="clearLocation('delivery')"></i>
                 </div>
                 <!-- Suggestions for delivery -->
@@ -1021,6 +1003,32 @@ DOCTYPE html>
                     </div>
                 </div>
 
+                <!-- Sender Information -->
+                <div class="form-group">
+                    <label class="form-label">Номи шумо (Фиристода)</label>
+                    <input type="text" class="form-control" id="senderName" placeholder="Масалан: Алишер" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Рақами телефони шумо</label>
+                    <input type="tel" class="form-control" id="senderPhone" placeholder="+992 900 000 000" required>
+                </div>
+
+                <!-- Receiver Information -->
+                <div class="receiver-info">
+                    <h3 style="margin-bottom: 15px; font-size: 18px;">Маълумоти қабулкунанда</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Номи қабулкунанда</label>
+                        <input type="text" class="form-control" id="receiverName" placeholder="Масалан: Фаррух" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Рақами телефони қабулкунанда</label>
+                        <input type="tel" class="form-control" id="receiverPhone" placeholder="+992 901 234 567" required>
+                    </div>
+                </div>
+
                 <!-- Address Details for Delivery -->
                 <div class="address-details-grid">
                     <div class="detail-item">
@@ -1054,16 +1062,6 @@ DOCTYPE html>
 
                 <!-- Order Form -->
                 <form id="orderForm">
-                    <div class="form-group">
-                        <label class="form-label">Номи шумо</label>
-                        <input type="text" class="form-control" id="senderName" placeholder="Масалан: Алишер" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Рақами телефон</label>
-                        <input type="tel" class="form-control" id="senderPhone" placeholder="+992 900 000 000" required>
-                    </div>
-
                     <div class="form-group">
                         <label class="form-label">Намуди бор</label>
                         <div class="package-options" id="packageOptions">
@@ -1145,6 +1143,18 @@ DOCTYPE html>
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // Firebase Configuration (optional)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
+            authDomain: "tojrason.firebaseapp.com",
+            databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
+            projectId: "tojrason",
+            storageBucket: "tojrason.firebasestorage.app",
+            messagingSenderId: "734402668671",
+            appId: "1:734402668671:web:ca983940b6870335d2374a"
+        };
+
+        // Main Application Class
         class YandexCourierApp {
             constructor() {
                 this.map = null;
@@ -1158,7 +1168,7 @@ DOCTYPE html>
                 this.currentDirection = 0;
                 this.navigationMode = false;
                 this.promoDiscount = 0;
-                this.baseRatePerKm = 10 / 3; // 10 сом барои 3 км
+                this.baseRatePerKm = 10 / 3;
                 
                 this.init();
             }
@@ -1168,8 +1178,6 @@ DOCTYPE html>
                 this.initEventListeners();
                 this.displayRecentOrders();
                 this.updateZoomIndicator();
-                
-                // Load sample data for demo
                 this.loadSampleData();
             }
 
@@ -1180,6 +1188,8 @@ DOCTYPE html>
                             id: 1,
                             senderName: 'Алишер',
                             senderPhone: '+992 900 123 456',
+                            receiverName: 'Фаррух',
+                            receiverPhone: '+992 901 234 567',
                             packageType: 'Ҳуҷҷат',
                             weight: 0.5,
                             pickupAddress: 'Хиёбони Неъмат Қаробов, 72/1',
@@ -1189,12 +1199,14 @@ DOCTYPE html>
                             apartment: '42',
                             intercom: '1234',
                             status: 'completed',
-                            time: '2024-03-08 10:30'
+                            time: new Date().toLocaleString('tg-TJ')
                         },
                         {
                             id: 2,
                             senderName: 'Фаррух',
                             senderPhone: '+992 901 234 567',
+                            receiverName: 'Саид',
+                            receiverPhone: '+992 902 345 678',
                             packageType: 'Баста',
                             weight: 12.5,
                             pickupAddress: 'Маркази савдои "Садбарг"',
@@ -1204,7 +1216,7 @@ DOCTYPE html>
                             apartment: '15',
                             intercom: '4321',
                             status: 'searching',
-                            time: '2024-03-08 11:45'
+                            time: new Date().toLocaleString('tg-TJ')
                         }
                     ];
                     this.orders = sampleOrders;
@@ -1216,7 +1228,7 @@ DOCTYPE html>
                 this.map = L.map('map').setView([38.5737, 68.7864], 13);
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© Yandex Style'
+                    attribution: '© OpenStreetMap'
                 }).addTo(this.map);
 
                 this.map.on('click', (e) => {
@@ -1421,10 +1433,10 @@ DOCTYPE html>
                 this.pickupCoords = { lat, lng };
 
                 const icon = L.divIcon({
-                    className: 'custom-marker',
-                    html: `<div class="pickup-marker"><i class="fas fa-circle"></i></div>`,
-                    iconSize: [48, 48],
-                    iconAnchor: [24, 24]
+                    className: 'custom-pickup-marker',
+                    html: `<div style="background:#FFD600; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border:3px solid white;">А</div>`,
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
                 });
 
                 this.pickupMarker = L.marker([lat, lng], { icon }).addTo(this.map);
@@ -1443,10 +1455,10 @@ DOCTYPE html>
                 this.deliveryCoords = { lat, lng };
 
                 const icon = L.divIcon({
-                    className: 'custom-marker',
-                    html: `<div class="delivery-marker"><i class="fas fa-flag-checkered"></i></div>`,
-                    iconSize: [48, 48],
-                    iconAnchor: [24, 24]
+                    className: 'custom-delivery-marker',
+                    html: `<div style="background:#00A85C; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border:3px solid white;">Б</div>`,
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
                 });
 
                 this.deliveryMarker = L.marker([lat, lng], { icon }).addTo(this.map);
@@ -1463,9 +1475,8 @@ DOCTYPE html>
 
             calculateWeightPrice(weight) {
                 if (weight <= 10) {
-                    return 0; // То 10 кг ройгон
+                    return 0;
                 } else {
-                    // Барои ҳар 2 кг иловагӣ 1 сом
                     const extraWeight = weight - 10;
                     const extraPrice = Math.ceil(extraWeight / 2);
                     return extraPrice;
@@ -1491,7 +1502,6 @@ DOCTYPE html>
                 
                 const finalPrice = Math.round(totalPrice * (1 - this.promoDiscount));
 
-                // Update weight info
                 if (weight > 10) {
                     const extraWeight = weight - 10;
                     const extraPrice = Math.ceil(extraWeight / 2);
@@ -1504,7 +1514,6 @@ DOCTYPE html>
                     document.getElementById('weightNote').textContent = '* Вазн то 10 кг ройгон';
                 }
 
-                // Update price details
                 document.getElementById('priceCard').style.display = 'block';
                 document.getElementById('basePrice').textContent = basePrice + ' сом';
                 document.getElementById('distanceKm').textContent = distance.toFixed(1);
@@ -1539,11 +1548,11 @@ DOCTYPE html>
 
             showAvailableCourier(distance) {
                 const couriers = [
-                    { name: 'Алишер', rating: 4.8, trips: 1250 },
-                    { name: 'Фаррух', rating: 4.9, trips: 2300 },
-                    { name: 'Саид', rating: 4.7, trips: 890 },
-                    { name: 'Умед', rating: 5.0, trips: 3120 },
-                    { name: 'Давлат', rating: 4.8, trips: 1670 }
+                    { name: 'Алишер', rating: 4.8 },
+                    { name: 'Фаррух', rating: 4.9 },
+                    { name: 'Саид', rating: 4.7 },
+                    { name: 'Умед', rating: 5.0 },
+                    { name: 'Давлат', rating: 4.8 }
                 ];
                 
                 const randomCourier = couriers[Math.floor(Math.random() * couriers.length)];
@@ -1570,16 +1579,21 @@ DOCTYPE html>
 
             checkSubmitButton() {
                 const submitBtn = document.getElementById('submitBtn');
-                if (this.pickupCoords && this.deliveryCoords) {
+                const senderName = document.getElementById('senderName').value;
+                const senderPhone = document.getElementById('senderPhone').value;
+                const receiverName = document.getElementById('receiverName').value;
+                const receiverPhone = document.getElementById('receiverPhone').value;
+                
+                if (this.pickupCoords && this.deliveryCoords && senderName && senderPhone && receiverName && receiverPhone) {
                     submitBtn.disabled = false;
                 } else {
                     submitBtn.disabled = true;
                 }
             }
 
-            applyPromo(code) {
+            applyPromo() {
                 const promoInput = document.getElementById('promoCode');
-                const code_ = code || promoInput.value.toUpperCase();
+                const code = promoInput.value.toUpperCase();
                 
                 const promos = {
                     'YANDEX10': 0.1,
@@ -1590,8 +1604,8 @@ DOCTYPE html>
                     'COURIER': 0.1
                 };
                 
-                if (promos[code_]) {
-                    this.promoDiscount = promos[code_];
+                if (promos[code]) {
+                    this.promoDiscount = promos[code];
                     document.getElementById('promoActive').style.display = 'block';
                     document.getElementById('promoMessage').textContent = 
                         'Промо код татбиқ шуд: ' + (this.promoDiscount * 100) + '%';
@@ -1727,6 +1741,12 @@ DOCTYPE html>
                     }
                 });
 
+                // Sender and receiver inputs
+                document.getElementById('senderName').addEventListener('input', () => this.checkSubmitButton());
+                document.getElementById('senderPhone').addEventListener('input', () => this.checkSubmitButton());
+                document.getElementById('receiverName').addEventListener('input', () => this.checkSubmitButton());
+                document.getElementById('receiverPhone').addEventListener('input', () => this.checkSubmitButton());
+
                 // Keyboard navigation
                 document.addEventListener('keydown', (e) => {
                     if (e.key.startsWith('Arrow')) {
@@ -1756,6 +1776,8 @@ DOCTYPE html>
                         id: Date.now(),
                         senderName: document.getElementById('senderName').value,
                         senderPhone: document.getElementById('senderPhone').value,
+                        receiverName: document.getElementById('receiverName').value,
+                        receiverPhone: document.getElementById('receiverPhone').value,
                         packageType: document.querySelector('.package-option.active span').textContent,
                         weight: document.getElementById('weightSlider').value,
                         pickupAddress: document.getElementById('pickupInput').value,
@@ -1771,7 +1793,7 @@ DOCTYPE html>
 
                     this.saveOrder(order);
                     
-                    alert('✅ Фармоиш қабул карда шуд! Курьер дар ҳоли расидан аст.');
+                    alert('✅ Фармоиш қабул карда шуд!');
                     
                     this.startProgress();
                     
@@ -1832,8 +1854,8 @@ DOCTYPE html>
                                 <i class="fas fa-box"></i>
                             </div>
                             <div class="order-info">
-                                <h6>${order.senderName}</h6>
-                                <p>${order.pickupAddress.substring(0, 30)}...</p>
+                                <h6>${order.senderName} → ${order.receiverName || '?'}</h6>
+                                <p>${order.pickupAddress.substring(0, 20)}...</p>
                                 <small>Под.${order.entrance || '?'} Эт.${order.floor || '?'} Кв.${order.apartment || '?'}</small>
                             </div>
                             <div class="order-status ${statusClass}">${order.status}</div>
@@ -1901,26 +1923,5 @@ DOCTYPE html>
             alert('Тафсилоти фармоиш №' + orderId);
         }
     </script>
-    </script>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
-  authDomain: "tojrason.firebaseapp.com",
-  databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
-  projectId: "tojrason",
-  storageBucket: "tojrason.firebasestorage.app",
-  messagingSenderId: "734402668671",
-  appId: "1:734402668671:web:ca983940b6870335d2374a",
-  measurementId: "G-M4LKWDWSB7"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-</script>
-
 </body>
 </html>
