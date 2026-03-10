@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="tg">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-88">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ТоҷРасон - Курьер</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -225,6 +225,25 @@
             color: white;
         }
 
+        .btn-danger {
+            width: 100%;
+            padding: 15px;
+            background: #f44336;
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-danger:hover {
+            background: #ff6659;
+            transform: translateY(-2px);
+        }
+
         .status-bar {
             background: white;
             padding: 15px 20px;
@@ -235,6 +254,27 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+        }
+
+        .profile-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ffd600, #ffc400);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a237e;
+            font-size: 20px;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .online-toggle {
@@ -648,6 +688,171 @@
             cursor: pointer;
             backdrop-filter: blur(5px);
         }
+
+        /* Profile Modal */
+        .profile-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .profile-modal.active {
+            display: flex;
+        }
+
+        .profile-content {
+            background: white;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 30px 30px 0 0;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: #ffd600;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #1a237e;
+            border: 4px solid white;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .profile-phone {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .profile-stats {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a237e;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .profile-info {
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row i {
+            width: 30px;
+            color: #ffd600;
+            font-size: 18px;
+        }
+
+        .info-row .label {
+            flex: 1;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-row .value {
+            color: #1a237e;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-actions {
+            padding: 20px;
+            gap: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logout-btn {
+            padding: 15px;
+            background: #f44336;
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff6659;
+            transform: translateY(-2px);
+        }
+
+        .close-profile {
+            padding: 12px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 16px;
+            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -738,12 +943,17 @@
     <!-- SCREEN 3: Main App -->
     <div class="screen" id="screenMain">
         <div class="status-bar">
-            <div class="online-toggle">
-                <span>Ҳолат:</span>
-                <div class="toggle-switch" id="onlineToggle" onclick="toggleOnline()">
-                    <div class="toggle-circle"></div>
+            <div class="profile-menu">
+                <div class="profile-icon" onclick="openProfile()">
+                    <i class="fas fa-user"></i>
                 </div>
-                <span id="statusText">Офлайн</span>
+                <div class="online-toggle">
+                    <span>Ҳолат:</span>
+                    <div class="toggle-switch" id="onlineToggle" onclick="toggleOnline()">
+                        <div class="toggle-circle"></div>
+                    </div>
+                    <span id="statusText">Офлайн</span>
+                </div>
             </div>
             <div class="balance-info" id="balanceDisplay">0 сом</div>
         </div>
@@ -828,6 +1038,56 @@
         </div>
     </div>
 
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal" onclick="closeProfileOnClickOutside(event)">
+        <div class="profile-content">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-name" id="profileName">Алишер Каримов</div>
+                <div class="profile-phone" id="profilePhone">+992 90 123 45 67</div>
+            </div>
+            
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="profileBalance">0</div>
+                    <div class="stat-label">Баланс (сом)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="profileOrders">0</div>
+                    <div class="stat-label">Заказҳо</div>
+                </div>
+            </div>
+            
+            <div class="profile-info">
+                <div class="info-row">
+                    <i class="fas fa-id-card"></i>
+                    <span class="label">ID курьер:</span>
+                    <span class="value" id="profileId">C123456789</span>
+                </div>
+                <div class="info-row">
+                    <i class="fas fa-calendar"></i>
+                    <span class="label">Санаи сабти ном:</span>
+                    <span class="value" id="profileDate">01.01.2024</span>
+                </div>
+                <div class="info-row">
+                    <i class="fas fa-star"></i>
+                    <span class="label">Ҳолат:</span>
+                    <span class="value" id="profileStatus">Тасдиқ шудааст</span>
+                </div>
+            </div>
+            
+            <div class="profile-actions">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Берун шудан
+                </button>
+                <button class="close-profile" onclick="closeProfile()">Пӯшидан</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
@@ -835,6 +1095,7 @@
         let courierData = JSON.parse(localStorage.getItem('courierData')) || null;
         let isOnline = false;
         let balance = parseFloat(localStorage.getItem('balance')) || 0;
+        let totalOrders = parseInt(localStorage.getItem('totalOrders')) || 0;
         let map = null;
         let courierMarker = null;
         let pickupMarker = null;
@@ -876,6 +1137,7 @@
             if (courierData) {
                 if (courierData.status === 'approved') {
                     showScreen('main');
+                    updateProfileInfo();
                     setTimeout(() => {
                         initMap();
                         startLocationTracking();
@@ -904,6 +1166,7 @@
             if (courierData) {
                 if (courierData.status === 'approved') {
                     showScreen('main');
+                    updateProfileInfo();
                     setTimeout(() => {
                         initMap();
                         startLocationTracking();
@@ -913,6 +1176,98 @@
                 }
             } else {
                 alert('Шумо сабти ном накардаед');
+            }
+        }
+
+        // ========== PROFILE FUNCTIONS ==========
+        window.openProfile = function() {
+            updateProfileInfo();
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        window.closeProfile = function() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        window.closeProfileOnClickOutside = function(event) {
+            if (event.target.classList.contains('profile-modal')) {
+                closeProfile();
+            }
+        }
+
+        function updateProfileInfo() {
+            if (courierData) {
+                document.getElementById('profileName').textContent = courierData.name || 'Курьер';
+                document.getElementById('profilePhone').textContent = courierData.phone || '+992 00 000 00 00';
+                document.getElementById('profileId').textContent = courierData.id || 'C000000';
+                document.getElementById('profileBalance').textContent = balance;
+                document.getElementById('profileOrders').textContent = totalOrders;
+                
+                const date = courierData.registeredAt || new Date().toLocaleString('tg-TJ');
+                document.getElementById('profileDate').textContent = date;
+                
+                const status = courierData.status === 'approved' ? 'Тасдиқ шудааст' : 'Дар ҳоли баррасӣ';
+                document.getElementById('profileStatus').textContent = status;
+            }
+        }
+
+        window.logout = function() {
+            if (confirm('Шумо мехоҳед аз акаунт бароед?')) {
+                // Stop location tracking
+                if (watchId) {
+                    navigator.geolocation.clearWatch(watchId);
+                    watchId = null;
+                }
+                
+                // Stop camera if open
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+                
+                // Clear markers
+                if (courierMarker) {
+                    map.removeLayer(courierMarker);
+                    courierMarker = null;
+                }
+                if (pickupMarker) {
+                    map.removeLayer(pickupMarker);
+                    pickupMarker = null;
+                }
+                if (deliveryMarker) {
+                    map.removeLayer(deliveryMarker);
+                    deliveryMarker = null;
+                }
+                if (routeLine) {
+                    map.removeLayer(routeLine);
+                    routeLine = null;
+                }
+                
+                // Clear state
+                currentOrder = null;
+                isOnline = false;
+                
+                // Clear localStorage
+                localStorage.removeItem('courierData');
+                localStorage.removeItem('balance');
+                localStorage.removeItem('totalOrders');
+                
+                // Reset UI
+                courierData = null;
+                balance = 0;
+                totalOrders = 0;
+                updateBalance();
+                
+                // Close profile
+                closeProfile();
+                
+                // Go to register screen
+                showScreen('register');
+                
+                // Reset toggle
+                document.getElementById('onlineToggle').classList.remove('active');
+                document.getElementById('statusText').textContent = 'Офлайн';
+                document.getElementById('orderCard').style.display = 'none';
             }
         }
 
@@ -1249,6 +1604,7 @@
             document.getElementById('balanceDisplay').textContent = balance + ' сом';
             document.getElementById('mainBalance').textContent = balance + ' сом';
             localStorage.setItem('balance', balance.toString());
+            updateProfileInfo();
         }
 
         function showNewOrder() {
@@ -1277,6 +1633,8 @@
         window.acceptOrder = function() {
             const commission = Math.ceil(currentOrder.price * 0.1);
             balance += (currentOrder.price - commission);
+            totalOrders++;
+            localStorage.setItem('totalOrders', totalOrders.toString());
             updateBalance();
 
             document.getElementById('acceptBtn').style.display = 'none';
