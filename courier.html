@@ -303,6 +303,29 @@
             color: white;
         }
 
+        .btn-danger {
+            width: 100%;
+            padding: 16px;
+            background: var(--danger);
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+
         /* ========== STATUS BAR ========== */
         .status-bar {
             background: white;
@@ -363,6 +386,13 @@
             padding: 8px 15px;
             border-radius: 30px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .balance-info:hover {
+            background: var(--primary);
+            color: white;
         }
 
         /* ========== PROFILE ICON ========== */
@@ -831,6 +861,7 @@
             color: white;
             padding: 30px 20px;
             text-align: center;
+            position: relative;
         }
 
         .modal-avatar {
@@ -845,6 +876,18 @@
             font-size: 40px;
             color: var(--primary);
             border: 4px solid white;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .modal-phone {
+            font-size: 16px;
+            opacity: 0.9;
         }
 
         .modal-body {
@@ -862,6 +905,19 @@
         .modal-info i {
             width: 30px;
             color: var(--primary);
+            font-size: 18px;
+        }
+
+        .modal-info .label {
+            flex: 1;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .modal-info .value {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .modal-footer {
@@ -883,6 +939,13 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
         }
 
         .btn-close {
@@ -893,6 +956,11 @@
             color: var(--gray);
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-close:hover {
+            background: #e2e8f0;
         }
 
         /* ========== NOTIFICATION ========== */
@@ -1133,6 +1201,58 @@
             object-fit: cover;
             border: 2px solid var(--border);
         }
+
+        /* ========== PROFILE CARD IN STATS ========== */
+        .profile-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .profile-card-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+        }
+
+        .profile-card-info h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .profile-card-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .profile-card-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 30px;
+            font-size: 12px;
+            margin-top: 5px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -1272,7 +1392,7 @@
                     <span id="statusText">Офлайн</span>
                 </div>
             </div>
-            <div class="balance-info" id="balanceDisplay">0 сом</div>
+            <div class="balance-info" id="balanceDisplay" onclick="openProfile()">0 сом</div>
         </div>
 
         <!-- Map Container -->
@@ -1317,38 +1437,40 @@
                 <div class="modal-avatar">
                     <i class="fas fa-user"></i>
                 </div>
-                <h2 id="profileName">Алишер Каримов</h2>
-                <p id="profilePhone">+992 90 123 45 67</p>
+                <div class="modal-name" id="profileName">Алишер Каримов</div>
+                <div class="modal-phone" id="profilePhone">+992 90 123 45 67</div>
             </div>
             
             <div class="modal-body">
                 <div class="modal-info">
                     <i class="fas fa-id-card"></i>
-                    <div>
-                        <div style="font-weight: 600;">ID курьер</div>
-                        <div style="color: var(--gray);" id="profileId">C12345</div>
-                    </div>
+                    <span class="label">ID курьер:</span>
+                    <span class="value" id="profileId">C12345</span>
                 </div>
                 <div class="modal-info">
-                    <i class="fas fa-calendar"></i>
-                    <div>
-                        <div style="font-weight: 600;">Санаи сабти ном</div>
-                        <div style="color: var(--gray);" id="profileDate">01.01.2024</div>
-                    </div>
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="label">Санаи сабти ном:</span>
+                    <span class="value" id="profileDate">01.01.2024</span>
                 </div>
                 <div class="modal-info">
                     <i class="fas fa-star"></i>
-                    <div>
-                        <div style="font-weight: 600;">Рейтинг</div>
-                        <div style="color: var(--gray);" id="profileRating">4.8 ⭐ (124 заказ)</div>
-                    </div>
+                    <span class="label">Рейтинг:</span>
+                    <span class="value" id="profileRating">4.8 ⭐</span>
+                </div>
+                <div class="modal-info">
+                    <i class="fas fa-box"></i>
+                    <span class="label">Заказҳои иҷрошуда:</span>
+                    <span class="value" id="profileOrders">124</span>
+                </div>
+                <div class="modal-info">
+                    <i class="fas fa-wallet"></i>
+                    <span class="label">Баланс:</span>
+                    <span class="value" id="profileBalance">1250 сом</span>
                 </div>
                 <div class="modal-info">
                     <i class="fas fa-image"></i>
-                    <div>
-                        <div style="font-weight: 600;">Ҳолати аксҳо</div>
-                        <div style="color: var(--gray);" id="profilePhotosStatus">Тасдиқ шудааст</div>
-                    </div>
+                    <span class="label">Ҳолати аксҳо:</span>
+                    <span class="value" id="profilePhotosStatus">Тасдиқ шудааст</span>
                 </div>
             </div>
             
@@ -1820,7 +1942,7 @@
                                 </div>
                                 <div style="display: flex; gap: 10px;">
                                     <button class="btn-secondary" style="padding: 8px 15px; font-size: 12px;" onclick="approveCourier('${courier.id}')">Тасдиқ</button>
-                                    <button class="btn-danger" style="padding: 8px 15px; font-size: 12px; background: var(--danger); color: white; border: none; border-radius: var(--radius-xs);" onclick="rejectCourier('${courier.id}')">Рад</button>
+                                    <button style="padding: 8px 15px; font-size: 12px; background: var(--danger); color: white; border: none; border-radius: var(--radius-xs); cursor: pointer;" onclick="rejectCourier('${courier.id}')">Рад</button>
                                 </div>
                             </div>
                             <div class="courier-photos">
@@ -1909,7 +2031,9 @@
                 document.getElementById('profilePhone').textContent = currentUser.phone;
                 document.getElementById('profileId').textContent = currentUser.id;
                 document.getElementById('profileDate').textContent = currentUser.registeredAt;
-                document.getElementById('profileRating').textContent = currentUser.rating + ' ⭐ (' + totalOrders + ' заказ)';
+                document.getElementById('profileRating').textContent = currentUser.rating + ' ⭐';
+                document.getElementById('profileOrders').textContent = totalOrders;
+                document.getElementById('profileBalance').textContent = balance + ' сом';
                 
                 let photoStatus = currentUser.photos ? 'Тасдиқ шудааст' : 'Мавҷуд нест';
                 document.getElementById('profilePhotosStatus').textContent = photoStatus;
@@ -1921,6 +2045,16 @@
                 // Stop tracking
                 if (watchId) {
                     navigator.geolocation.clearWatch(watchId);
+                }
+                
+                // Stop camera if open
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Stop timer
+                if (orderTimer) {
+                    clearInterval(orderTimer);
                 }
                 
                 // Clear localStorage
@@ -1942,6 +2076,23 @@
                 // Reset form
                 document.getElementById('loginId').value = '';
                 document.getElementById('loginPassword').value = '';
+                document.getElementById('fullName').value = '';
+                document.getElementById('phone').value = '';
+                document.getElementById('password').value = '';
+                
+                // Reset photos
+                photos = {
+                    face: null,
+                    passport: null,
+                    selfie: null
+                };
+                
+                // Hide previews
+                document.querySelectorAll('.photo-preview-container').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                showNotification('Муваффақият', 'Шумо аз акаунт баромадед', 'success');
             }
         }
 
@@ -2476,6 +2627,22 @@
             
             let statsHtml = '<div style="margin-bottom: 20px;">';
             
+            // Profile Card
+            statsHtml += `
+                <div class="profile-card" onclick="openProfile()">
+                    <div class="profile-card-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-card-info">
+                        <h3>${currentUser?.name || 'Курьер'}</h3>
+                        <p>ID: ${currentUser?.id || 'C00000'}</p>
+                        <span class="profile-card-badge">
+                            <i class="fas fa-star"></i> ${currentUser?.rating || 5.0}
+                        </span>
+                    </div>
+                </div>
+            `;
+            
             statsHtml += `
                 <div class="balance-card">
                     <div class="balance-title">Баланси шумо</div>
@@ -2496,8 +2663,8 @@
                         <div class="stat-label">Рад карда шуд</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">${currentUser?.rating || 5.0}</div>
-                        <div class="stat-label">Рейтинг</div>
+                        <div class="stat-value">${((completedOrders / (totalOrders || 1)) * 100).toFixed(1)}%</div>
+                        <div class="stat-label">Муваффақият</div>
                     </div>
                 </div>
                 
