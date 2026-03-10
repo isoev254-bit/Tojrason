@@ -1,30 +1,625 @@
-und: #f44336;
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ТоҷРасон - Курьер</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* ========== RESET & VARIABLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #ffd600;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+            --radius: 24px;
+            --radius-sm: 16px;
+            --radius-xs: 12px;
+        }
+
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== SCREENS ========== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            background: var(--light);
+            position: relative;
+            padding-bottom: 80px; /* For bottom nav */
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== HEADER ========== */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 15px;
-            border-radius: 16px;
+            padding: 40px 20px;
+            border-radius: 0 0 40px 40px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header i {
+            font-size: 70px;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== CONTENT ========== */
+        .content {
+            padding: 20px;
+        }
+
+        /* ========== FORM ELEMENTS ========== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        .phone-input-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .phone-prefix {
+            padding: 16px;
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--primary);
+            border-right: 2px solid var(--border);
+        }
+
+        .phone-input {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            font-size: 16px;
+        }
+
+        .phone-input:focus {
+            outline: none;
+        }
+
+        .phone-hint {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 5px;
+            display: block;
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: var(--radius);
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #0d9488);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        /* ========== STATUS BAR ========== */
+        .status-bar {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .online-toggle {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 15px;
-            font-weight: 500;
-        }
-
-        .success-message {
-            background: #4caf50;
-            color: white;
-            padding: 16px;
-            border-radius: 16px;
-            text-align: center;
-            margin: 20px 0;
-            display: none;
             font-weight: 600;
         }
 
+        .toggle-switch {
+            width: 60px;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--success);
+        }
+
+        .toggle-circle {
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .toggle-switch.active .toggle-circle {
+            left: 32px;
+        }
+
+        .balance-info {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--primary);
+            background: #f1f5f9;
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        /* ========== PROFILE ICON ========== */
+        .profile-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.05);
+        }
+
+        /* ========== MAP CONTAINER ========== */
+        .map-container {
+            height: 350px;
+            position: relative;
+            margin: 0 0 20px 0;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .map-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .map-button {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--primary);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* ========== ORDER CARD ========== */
+        .order-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            animation: slideUp 0.5s ease;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .order-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .order-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .order-info h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--dark);
+            font-size: 18px;
+        }
+
+        .order-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .order-timer {
+            background: #f1f5f9;
+            padding: 10px 15px;
+            border-radius: var(--radius-xs);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .order-timer i {
+            color: var(--primary);
+        }
+
+        .timer-value {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .route-info {
+            background: #f8fafc;
+            border-radius: var(--radius-sm);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .route-point {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .route-point:last-child {
+            margin-bottom: 0;
+        }
+
+        .route-point:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 20px;
+            width: 2px;
+            height: 30px;
+            background: var(--border);
+        }
+
+        .point-marker {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .point-marker.pickup {
+            background: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        }
+
+        .point-marker.delivery {
+            background: var(--success);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+        }
+
+        .point-address {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .point-distance {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .order-actions button {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, var(--success), #0d9488);
+            color: white;
+        }
+
+        .btn-arrived {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+            display: none;
+        }
+
+        .btn-delivered {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: none;
+        }
+
+        .btn-decline {
+            background: white;
+            border: 2px solid var(--danger) !important;
+            color: var(--danger);
+        }
+
+        /* ========== WAITING CARD ========== */
+        .waiting-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin: 20px 0;
+        }
+
+        .waiting-card i {
+            font-size: 70px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .waiting-card h3 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .waiting-card p {
+            color: var(--gray);
+            margin-bottom: 25px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== BALANCE CARD ========== */
         .balance-card {
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             padding: 20px;
-            border-radius: 20px;
+            border-radius: var(--radius);
             margin-bottom: 20px;
         }
 
@@ -34,131 +629,144 @@ und: #f44336;
             margin-bottom: 5px;
         }
 
-        .balance-amount-large {
+        .balance-amount {
             font-size: 36px;
             font-weight: 800;
-            color: #ffd600;
+            color: var(--secondary);
         }
 
-        .balance-note {
+        /* ========== STATS CARDS ========== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
             font-size: 12px;
-            opacity: 0.7;
+            color: var(--gray);
             margin-top: 5px;
         }
 
-        .commission-info {
-            background: #fff9e6;
-            border-left: 4px solid #ffd600;
-            padding: 12px 15px;
-            border-radius: 12px;
-            margin: 15px 0;
-            font-size: 14px;
-        }
-
-        .camera-modal {
-            display: none;
+        /* ========== BOTTOM NAVIGATION ========== */
+        .bottom-nav {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: black;
-            z-index: 2000;
-            flex-direction: column;
-        }
-
-        .camera-modal.active {
+            background: white;
             display: flex;
+            justify-content: space-around;
+            padding: 10px 20px 20px;
+            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid var(--border);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
         }
 
-        .camera-header {
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 20px;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: var(--gray);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 5px 15px;
+            border-radius: 30px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.1);
+        }
+
+        /* ========== ORDER HISTORY ========== */
+        .history-item {
+            background: white;
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            animation: fadeIn 0.3s ease;
         }
 
-        .camera-header button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
+        .history-info h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
-        .camera-view {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: #000;
+        .history-info p {
+            font-size: 12px;
+            color: var(--gray);
         }
 
-        #cameraVideo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .history-status {
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .camera-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
+        .status-delivered {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
         }
 
-        .capture-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: white;
-            border: 4px solid #ffd600;
-            cursor: pointer;
-            transition: all 0.3s;
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
         }
 
-        .capture-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .flash-btn, .switch-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-        }
-
-        .profile-modal {
+        /* ========== PROFILE MODAL ========== */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1500;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            backdrop-filter: blur(5px);
         }
 
-        .profile-modal.active {
+        .modal.active {
             display: flex;
+            animation: fadeIn 0.3s ease;
         }
 
-        .profile-content {
+        .modal-content {
             background: white;
-            border-radius: 30px;
+            border-radius: var(--radius);
             width: 100%;
             max-width: 400px;
             max-height: 90vh;
@@ -166,152 +774,216 @@ und: #f44336;
             animation: slideUp 0.3s ease;
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .profile-header {
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             padding: 30px 20px;
             text-align: center;
-            border-radius: 30px 30px 0 0;
         }
 
-        .profile-avatar {
+        .modal-avatar {
             width: 100px;
             height: 100px;
-            background: #ffd600;
+            background: var(--secondary);
             border-radius: 50%;
             margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 40px;
-            color: #1a237e;
+            color: var(--primary);
             border: 4px solid white;
         }
 
-        .profile-name {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-
-        .profile-phone {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .profile-stats {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: #1a237e;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .profile-info {
+        .modal-body {
             padding: 20px;
         }
 
-        .info-row {
+        .modal-info {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 15px;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
         }
 
-        .info-row i {
+        .modal-info i {
             width: 30px;
-            color: #ffd600;
-            font-size: 18px;
+            color: var(--primary);
         }
 
-        .info-row .label {
-            flex: 1;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .info-row .value {
-            color: #1a237e;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .profile-actions {
+        .modal-footer {
             padding: 20px;
-            gap: 10px;
             display: flex;
+            gap: 10px;
             flex-direction: column;
         }
 
-        .logout-btn {
+        .btn-logout {
             padding: 15px;
-            background: #f44336;
+            background: var(--danger);
             border: none;
-            border-radius: 16px;
+            border-radius: var(--radius-sm);
             color: white;
-            font-weight: 700;
-            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: all 0.3s;
         }
 
-        .logout-btn:hover {
-            background: #ff6659;
-            transform: translateY(-2px);
-        }
-
-        .close-profile {
+        .btn-close {
             padding: 12px;
-            background: #f5f5f5;
+            background: #f1f5f9;
             border: none;
-            border-radius: 16px;
-            color: #666;
+            border-radius: var(--radius-sm);
+            color: var(--gray);
             font-weight: 600;
             cursor: pointer;
+        }
+
+        /* ========== NOTIFICATION ========== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 2000;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            max-width: 400px;
+            margin: 0 auto;
+            border-left: 4px solid var(--primary);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .notification-text {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* ========== LOADER ========== */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: var(--border);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        /* ========== LOGIN SECTION ========== */
+        .login-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .divider {
+            text-align: center;
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 30px);
+            height: 2px;
+            background: var(--border);
+        }
+
+        .divider::before {
+            left: 0;
+        }
+
+        .divider::after {
+            right: 0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: var(--gray);
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="screen active" id="screenRegister">
+    <!-- ========== SCREEN 1: REGISTER/LOGIN ========== -->
+    <div class="screen active" id="screenAuth">
         <div class="header">
-            <i class="fas fa-motorcycle"></i>
-            <h1>Сабти номи курьер</h1>
-            <p>Барои шурӯъи кор маълумоти худро ворид кунед</p>
+            <i class="fas fa-bolt"></i>
+            <h1>ТоҷРасон</h1>
+            <p>Барои курьерҳо - ба мисли Glovo, Bolt</p>
         </div>
         
         <div class="content">
+            <!-- Login Form -->
+            <div class="login-section">
+                <h3 style="color: var(--dark); margin-bottom: 20px;">Ворид шудан</h3>
+                <div class="form-group">
+                    <label class="form-label">ID курьер</label>
+                    <input type="text" class="form-control" id="loginId" placeholder="Масалан: C12345">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Пароли худро ворид кунед">
+                </div>
+                <button class="btn-primary" onclick="login()">Ворид шудан</button>
+            </div>
+
+            <div class="divider">
+                <span>ё</span>
+            </div>
+
+            <!-- Register Form -->
+            <h3 style="color: var(--dark); margin-bottom: 20px;">Сабти номи нав</h3>
             <div class="form-group">
                 <label class="form-label">Ном ва насаб</label>
                 <input type="text" class="form-control" id="fullName" placeholder="Масалан: Алишер Каримов">
@@ -323,72 +995,43 @@ und: #f44336;
                     <span class="phone-prefix">+992</span>
                     <input type="tel" class="phone-input" id="phone" placeholder="90 000 00 00">
                 </div>
-                <span class="phone-hint">Мисол: 90 123 45 67</span>
             </div>
-            
+
             <div class="form-group">
-                <label class="form-label">Акси рӯй</label>
-                <button class="camera-button" type="button" onclick="openCamera('face')">
-                    <i class="fas fa-camera"></i>
-                    Гирифтани акси рӯй
-                </button>
-                <div class="photo-preview-container" id="facePreview">
-                    <img src="" alt="Face" id="faceImage">
-                    <button class="remove-photo" type="button" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
-                </div>
+                <label class="form-label">Пароль</label>
+                <input type="password" class="form-control" id="password" placeholder="Пароли худро ворид кунед">
             </div>
             
-            <div class="form-group">
-                <label class="form-label">Акси паспорт</label>
-                <button class="camera-button secondary" type="button" onclick="openCamera('passport')">
-                    <i class="fas fa-id-card"></i>
-                    Гирифтани акси паспорт
-                </button>
-                <div class="photo-preview-container" id="passportPreview">
-                    <img src="" alt="Passport" id="passportImage">
-                    <button class="remove-photo" type="button" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Акси худ бо паспорт дар даст</label>
-                <button class="camera-button" type="button" onclick="openCamera('selfie')">
-                    <i class="fas fa-user-check"></i>
-                    Гирифтани акси худ бо паспорт
-                </button>
-                <div class="photo-preview-container" id="selfiePreview">
-                    <img src="" alt="Selfie" id="selfieImage">
-                    <button class="remove-photo" type="button" onclick="removePhoto('selfie')"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            
-            <button class="btn-primary" onclick="registerCourier()">Сабти ном</button>
-            <button class="btn-secondary" onclick="checkStatus()">Санҷидани ҳолат</button>
+            <button class="btn-primary" onclick="register()">Сабти ном</button>
+            <button class="btn-secondary" onclick="checkDemo()">Режими демо</button>
         </div>
     </div>
 
+    <!-- ========== SCREEN 2: WAITING FOR APPROVAL ========== -->
     <div class="screen" id="screenWaiting">
         <div class="header">
             <i class="fas fa-hourglass-half"></i>
             <h1>Интизори тасдиқ</h1>
-            <p>Маълумоти шумо ба админ фиристода шуд</p>
+            <p>Маълумоти шумо дар ҳоли санҷиш аст</p>
         </div>
         
         <div class="content">
             <div class="waiting-card">
                 <i class="fas fa-clock"></i>
                 <h3>Дар ҳоли баррасӣ</h3>
-                <p>Маълумоти шумо аз ҷониби админ санҷида мешавад. Баъди тасдиқ шумо метавонед корро оғоз кунед.</p>
+                <p>Одатан ин раванд то 24 соат давом мекунад. Баъди тасдиқ ба шумо паём мефиристем.</p>
                 <div class="loading-spinner"></div>
             </div>
             
-            <button class="btn-secondary" onclick="checkStatus()">Санҷидани ҳолат</button>
+            <button class="btn-secondary" onclick="checkApproval()">Санҷидани ҳолат</button>
         </div>
     </div>
 
+    <!-- ========== SCREEN 3: MAIN DASHBOARD ========== -->
     <div class="screen" id="screenMain">
+        <!-- Status Bar -->
         <div class="status-bar">
-            <div class="profile-menu">
+            <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="profile-icon" onclick="openProfile()">
                     <i class="fas fa-user"></i>
                 </div>
@@ -400,184 +1043,166 @@ und: #f44336;
                     <span id="statusText">Офлайн</span>
                 </div>
             </div>
-            <div class="balance-info" id="balanceDisplay">0 сом</div>
+            <div class="balance-info" id="balanceDisplay">$0</div>
         </div>
 
+        <!-- Map Container -->
         <div class="map-container">
             <div id="map"></div>
             <div class="map-controls">
                 <button class="map-button" onclick="centerOnCourier()" title="Ҷойгиршавии ман">
                     <i class="fas fa-location-dot"></i>
                 </button>
-                <button class="map-button" onclick="showFullRoute()" title="Тамоми маршрут">
+                <button class="map-button" onclick="fitMapBounds()" title="Тамоми маршрут">
                     <i class="fas fa-route"></i>
                 </button>
             </div>
         </div>
 
-        <div class="content">
-            <div class="balance-card">
-                <div class="balance-title">Баланси шумо</div>
-                <div class="balance-amount-large" id="mainBalance">0 сом</div>
-                <div class="balance-note">Пас аз ҳар заказ комиссия 10%</div>
-            </div>
-
-            <div class="commission-info">
-                <i class="fas fa-percent" style="color: #ffd600; margin-right: 8px;"></i>
-                <span>Комиссияи система: 10% аз ҳар заказ</span>
-            </div>
-
-            <div class="success-message" id="successMessage">
-                <i class="fas fa-check-circle"></i> Заказ бомуваффақият анҷом дода шуд!
-            </div>
+        <!-- Content Area (Changes based on bottom nav) -->
+        <div class="content" id="mainContent">
+            <!-- This will be dynamically updated -->
         </div>
 
-        <div class="order-card" id="orderCard">
-            <div class="order-header">
-                <div class="order-icon">
-                    <i class="fas fa-box"></i>
-                </div>
-                <div class="order-info">
-                    <h3 id="orderTitle">Закази нав</h3>
-                    <p id="orderDistance">Масофа: 4.1 км</p>
-                </div>
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchTab('orders')" id="navOrders">
+                <i class="fas fa-box"></i>
+                <span>Заказҳо</span>
             </div>
-            
-            <div class="route-info">
-                <div class="route-point">
-                    <div class="point-marker pickup"></div>
-                    <div class="point-address" id="pickupAddress">112-й микрорайон</div>
-                </div>
-                <div class="route-point">
-                    <div class="point-marker delivery"></div>
-                    <div class="point-address" id="deliveryAddress">2-юм микрорайон</div>
-                </div>
+            <div class="nav-item" onclick="switchTab('history')" id="navHistory">
+                <i class="fas fa-clock"></i>
+                <span>Таърих</span>
             </div>
-            
-            <div class="order-actions">
-                <button class="btn-accept" id="acceptBtn" onclick="acceptOrder()">Қабул кардан</button>
-                <button class="btn-complete" id="completeBtn" onclick="completeOrder()">Заказро додам</button>
-                <button class="btn-decline" id="declineBtn" onclick="declineOrder()" style="display: none;">Рад кардан</button>
-            </div>
-            
-            <div class="low-balance-alert" id="lowBalanceAlert" style="display: none;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Барои қабули заказ камаш 10 сом баланс лозим аст</span>
+            <div class="nav-item" onclick="switchTab('stats')" id="navStats">
+                <i class="fas fa-chart-line"></i>
+                <span>Статистика</span>
             </div>
         </div>
     </div>
 
-    <div class="camera-modal" id="cameraModal">
-        <div class="camera-header">
-            <h3 id="cameraTitle">Гирифтани акс</h3>
-            <button onclick="closeCamera()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="camera-view">
-            <video id="cameraVideo" autoplay playsinline></video>
-        </div>
-        <div class="camera-controls">
-            <button class="flash-btn" onclick="toggleFlash()"><i class="fas fa-bolt"></i></button>
-            <button class="capture-btn" onclick="capturePhoto()"></button>
-            <button class="switch-btn" onclick="switchCamera()"><i class="fas fa-sync-alt"></i></button>
-        </div>
-    </div>
-
-    <div class="profile-modal" id="profileModal" onclick="closeProfileOnClickOutside(event)">
-        <div class="profile-content">
-            <div class="profile-header">
-                <div class="profile-avatar">
+    <!-- ========== PROFILE MODAL ========== -->
+    <div class="modal" id="profileModal" onclick="closeModalOnClickOutside(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-avatar">
                     <i class="fas fa-user"></i>
                 </div>
-                <div class="profile-name" id="profileName">Алишер Каримов</div>
-                <div class="profile-phone" id="profilePhone">+992 90 123 45 67</div>
+                <h2 id="profileName">Алишер Каримов</h2>
+                <p id="profilePhone">+992 90 123 45 67</p>
             </div>
             
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="profileBalance">0</div>
-                    <div class="stat-label">Баланс (сом)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="profileOrders">0</div>
-                    <div class="stat-label">Заказҳо</div>
-                </div>
-            </div>
-            
-            <div class="profile-info">
-                <div class="info-row">
+            <div class="modal-body">
+                <div class="modal-info">
                     <i class="fas fa-id-card"></i>
-                    <span class="label">ID курьер:</span>
-                    <span class="value" id="profileId">C123456789</span>
+                    <div>
+                        <div style="font-weight: 600;">ID курьер</div>
+                        <div style="color: var(--gray);" id="profileId">C12345</div>
+                    </div>
                 </div>
-                <div class="info-row">
+                <div class="modal-info">
                     <i class="fas fa-calendar"></i>
-                    <span class="label">Санаи сабти ном:</span>
-                    <span class="value" id="profileDate">01.01.2024</span>
+                    <div>
+                        <div style="font-weight: 600;">Санаи сабти ном</div>
+                        <div style="color: var(--gray);" id="profileDate">01.01.2024</div>
+                    </div>
                 </div>
-                <div class="info-row">
+                <div class="modal-info">
                     <i class="fas fa-star"></i>
-                    <span class="label">Ҳолат:</span>
-                    <span class="value" id="profileStatus">Тасдиқ шудааст</span>
+                    <div>
+                        <div style="font-weight: 600;">Рейтинг</div>
+                        <div style="color: var(--gray);" id="profileRating">4.8 ⭐ (124 заказ)</div>
+                    </div>
                 </div>
             </div>
             
-            <div class="profile-actions">
-                <button class="logout-btn" onclick="logout()">
+            <div class="modal-footer">
+                <button class="btn-logout" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i>
                     Берун шудан
                 </button>
-                <button class="close-profile" onclick="closeProfile()">Пӯшидан</button>
+                <button class="btn-close" onclick="closeProfile()">Пӯшидан</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ========== NOTIFICATION ========== -->
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i>
+        <div class="notification-content">
+            <div class="notification-title" id="notificationTitle">Закази нав</div>
+            <div class="notification-text" id="notificationText">Закази #1234 пайдо шуд</div>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        let courierData = JSON.parse(localStorage.getItem('courierData')) || null;
+        // ========== APP STATE ==========
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
         let isOnline = false;
         let balance = parseFloat(localStorage.getItem('balance')) || 0;
         let totalOrders = parseInt(localStorage.getItem('totalOrders')) || 0;
+        let completedOrders = parseInt(localStorage.getItem('completedOrders')) || 0;
+        let cancelledOrders = parseInt(localStorage.getItem('cancelledOrders')) || 0;
         let map = null;
         let courierMarker = null;
-        let pickupMarker = null;
-        let deliveryMarker = null;
+        let customerMarker = null;
         let routeLine = null;
         let currentOrder = null;
         let watchId = null;
+        let orderTimer = null;
+        let timerSeconds = 0;
+        let notificationTimeout = null;
         
+        // Default location (Dushanbe)
         const defaultLocation = { lat: 38.5737, lng: 68.7864 };
         
-        let orderCoordinates = {
-            pickup: { lat: 38.5737, lng: 68.7864 },
-            delivery: { lat: 38.5627, lng: 68.7739 }
-        };
+        // Demo orders
+        let availableOrders = [
+            {
+                id: 'ORD' + Date.now(),
+                customer: 'Фаррух Раҳимов',
+                pickup: '112-й микрорайон',
+                delivery: '2-юм микрорайон',
+                distance: '4.1',
+                price: 25,
+                lat: 38.5737,
+                lng: 68.7864,
+                status: 'pending'
+            },
+            {
+                id: 'ORD' + (Date.now() + 1),
+                customer: 'Дилшод Каримов',
+                pickup: 'Зарафшон',
+                delivery: 'Сомон',
+                distance: '3.2',
+                price: 20,
+                lat: 38.5627,
+                lng: 68.7739,
+                status: 'pending'
+            }
+        ];
 
-        let currentPhotoType = null;
-        let cameraStream = null;
-        let currentCamera = 'environment';
+        let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
 
-        let photos = {
-            face: null,
-            passport: null,
-            selfie: null
-        };
-
+        // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', function() {
             updateBalance();
             checkAuth();
         });
 
+        // ========== AUTH FUNCTIONS ==========
         function checkAuth() {
-            if (courierData) {
-                if (courierData.status === 'approved') {
+            if (currentUser) {
+                if (currentUser.status === 'approved') {
                     showScreen('main');
                     updateProfileInfo();
-                    setTimeout(() => {
-                        initMap();
-                        startLocationTracking();
-                    }, 500);
-                } else if (courierData.status === 'pending') {
+                    initMap();
+                    startLocationTracking();
+                    loadOrdersTab();
+                } else if (currentUser.status === 'pending') {
                     showScreen('waiting');
                 }
             }
@@ -588,32 +1213,155 @@ und: #f44336;
                 screen.classList.remove('active');
             });
             
-            const screenMap = {
-                'register': 'screenRegister',
+            const screens = {
+                'auth': 'screenAuth',
                 'waiting': 'screenWaiting',
                 'main': 'screenMain'
             };
             
-            document.getElementById(screenMap[screenId]).classList.add('active');
+            document.getElementById(screens[screenId]).classList.add('active');
         }
 
-        window.checkStatus = function() {
-            if (courierData) {
-                if (courierData.status === 'approved') {
+        // ========== REGISTER ==========
+        window.register = function() {
+            let fullName = document.getElementById('fullName').value.trim();
+            let phone = document.getElementById('phone').value.trim();
+            let password = document.getElementById('password').value.trim();
+            
+            if (!fullName || !phone || !password) {
+                showNotification('Хатогӣ', 'Лутфан ҳамаи майдонҳоро пур кунед', 'error');
+                return;
+            }
+
+            // Format phone
+            let cleanPhone = phone.replace(/\D/g, '');
+            let formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+            let fullPhone = '+992 ' + formattedPhone;
+
+            let userId = 'C' + Math.floor(10000 + Math.random() * 90000);
+            
+            let newUser = {
+                id: userId,
+                name: fullName,
+                phone: fullPhone,
+                password: password,
+                status: 'pending',
+                balance: 0,
+                totalOrders: 0,
+                completedOrders: 0,
+                cancelledOrders: 0,
+                rating: 5.0,
+                registeredAt: new Date().toLocaleDateString('tg-TJ')
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            showScreen('waiting');
+            showNotification('Муваффақият', 'ID шумо: ' + userId + '. Интизори тасдиқ аз ҷониби админ.', 'success');
+        }
+
+        // ========== LOGIN ==========
+        window.login = function() {
+            let loginId = document.getElementById('loginId').value.trim();
+            let password = document.getElementById('loginPassword').value.trim();
+            
+            if (!loginId || !password) {
+                showNotification('Хатогӣ', 'Лутфан ID ва паролро ворид кунед', 'error');
+                return;
+            }
+            
+            let user = users.find(u => u.id === loginId && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                balance = user.balance || 0;
+                totalOrders = user.totalOrders || 0;
+                completedOrders = user.completedOrders || 0;
+                cancelledOrders = user.cancelledOrders || 0;
+                
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('balance', balance.toString());
+                localStorage.setItem('totalOrders', totalOrders.toString());
+                localStorage.setItem('completedOrders', completedOrders.toString());
+                localStorage.setItem('cancelledOrders', cancelledOrders.toString());
+                
+                if (currentUser.status === 'approved') {
                     showScreen('main');
                     updateProfileInfo();
-                    setTimeout(() => {
-                        initMap();
-                        startLocationTracking();
-                    }, 500);
+                    initMap();
+                    startLocationTracking();
+                    loadOrdersTab();
+                    showNotification('Хуш омадед', 'Шумо ба система ворид шудед', 'success');
+                } else if (currentUser.status === 'pending') {
+                    showScreen('waiting');
                 } else {
-                    alert('Ҳолати шумо: Дар ҳоли баррасӣ. Лутфан интизор шавед.');
+                    showNotification('Хатогӣ', 'Ҳисоби шумо банд аст', 'error');
                 }
             } else {
-                alert('Шумо сабти ном накардаед');
+                showNotification('Хатогӣ', 'ID ё парол нодуруст аст', 'error');
             }
         }
 
+        // ========== DEMO MODE ==========
+        window.checkDemo = function() {
+            // Create demo user
+            let demoUser = {
+                id: 'C12345',
+                name: 'Алишер Каримов',
+                phone: '+992 90 123 45 67',
+                password: 'demo123',
+                status: 'approved',
+                balance: 1250,
+                totalOrders: 124,
+                completedOrders: 120,
+                cancelledOrders: 4,
+                rating: 4.8,
+                registeredAt: '15.01.2024'
+            };
+
+            currentUser = demoUser;
+            balance = demoUser.balance;
+            totalOrders = demoUser.totalOrders;
+            completedOrders = demoUser.completedOrders;
+            cancelledOrders = demoUser.cancelledOrders;
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('balance', balance.toString());
+            localStorage.setItem('totalOrders', totalOrders.toString());
+            localStorage.setItem('completedOrders', completedOrders.toString());
+            localStorage.setItem('cancelledOrders', cancelledOrders.toString());
+            
+            showScreen('main');
+            updateProfileInfo();
+            initMap();
+            startLocationTracking();
+            loadOrdersTab();
+            showNotification('Режими демо', 'Шумо дар режими демо ҳастед', 'info');
+        }
+
+        // ========== CHECK APPROVAL ==========
+        window.checkApproval = function() {
+            if (currentUser && currentUser.status === 'pending') {
+                // Simulate approval after 5 seconds (for demo)
+                setTimeout(() => {
+                    currentUser.status = 'approved';
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showScreen('main');
+                    initMap();
+                    startLocationTracking();
+                    loadOrdersTab();
+                    showNotification('Табрик!', 'Шумо тасдиқ карда шудед', 'success');
+                }, 3000);
+                
+                showNotification('Интизор шавед', 'Ҳолати шумо санҷида мешавад...', 'info');
+            }
+        }
+
+        // ========== PROFILE FUNCTIONS ==========
         window.openProfile = function() {
             updateProfileInfo();
             document.getElementById('profileModal').classList.add('active');
@@ -623,257 +1371,58 @@ und: #f44336;
             document.getElementById('profileModal').classList.remove('active');
         }
 
-        window.closeProfileOnClickOutside = function(event) {
-            if (event.target.classList.contains('profile-modal')) {
+        window.closeModalOnClickOutside = function(event) {
+            if (event.target.classList.contains('modal')) {
                 closeProfile();
             }
         }
 
         function updateProfileInfo() {
-            if (courierData) {
-                document.getElementById('profileName').textContent = courierData.name || 'Курьер';
-                document.getElementById('profilePhone').textContent = courierData.phone || '+992 00 000 00 00';
-                document.getElementById('profileId').textContent = courierData.id || 'C000000';
-                document.getElementById('profileBalance').textContent = balance;
-                document.getElementById('profileOrders').textContent = totalOrders;
-                
-                let date = courierData.registeredAt || new Date().toLocaleDateString('tg-TJ');
-                document.getElementById('profileDate').textContent = date;
-                
-                let status = courierData.status === 'approved' ? 'Тасдиқ шудааст' : 'Дар ҳоли баррасӣ';
-                document.getElementById('profileStatus').textContent = status;
+            if (currentUser) {
+                document.getElementById('profileName').textContent = currentUser.name;
+                document.getElementById('profilePhone').textContent = currentUser.phone;
+                document.getElementById('profileId').textContent = currentUser.id;
+                document.getElementById('profileDate').textContent = currentUser.registeredAt;
+                document.getElementById('profileRating').textContent = currentUser.rating + ' ⭐ (' + totalOrders + ' заказ)';
             }
         }
 
         window.logout = function() {
             if (confirm('Шумо мехоҳед аз акаунт бароед?')) {
+                // Stop tracking
                 if (watchId) {
                     navigator.geolocation.clearWatch(watchId);
-                    watchId = null;
                 }
                 
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
-                    cameraStream = null;
-                }
-                
-                if (map) {
-                    if (courierMarker) {
-                        map.removeLayer(courierMarker);
-                        courierMarker = null;
-                    }
-                    if (pickupMarker) {
-                        map.removeLayer(pickupMarker);
-                        pickupMarker = null;
-                    }
-                    if (deliveryMarker) {
-                        map.removeLayer(deliveryMarker);
-                        deliveryMarker = null;
-                    }
-                    if (routeLine) {
-                        map.removeLayer(routeLine);
-                        routeLine = null;
-                    }
-                }
-                
-                currentOrder = null;
-                isOnline = false;
-                
-                localStorage.removeItem('courierData');
+                // Clear localStorage
+                localStorage.removeItem('currentUser');
                 localStorage.removeItem('balance');
                 localStorage.removeItem('totalOrders');
+                localStorage.removeItem('completedOrders');
+                localStorage.removeItem('cancelledOrders');
                 
-                courierData = null;
+                currentUser = null;
                 balance = 0;
                 totalOrders = 0;
-                updateBalance();
+                completedOrders = 0;
+                cancelledOrders = 0;
                 
                 closeProfile();
+                showScreen('auth');
                 
-                showScreen('register');
-                
-                document.getElementById('onlineToggle').classList.remove('active');
-                document.getElementById('statusText').textContent = 'Офлайн';
-                document.getElementById('orderCard').style.display = 'none';
+                // Reset form
+                document.getElementById('loginId').value = '';
+                document.getElementById('loginPassword').value = '';
             }
         }
 
-        window.openCamera = async function(type) {
-            currentPhotoType = type;
-            
-            let titles = {
-                'face': 'Акси рӯй',
-                'passport': 'Акси паспорт',
-                'selfie': 'Акси худ бо паспорт'
-            };
-            document.getElementById('cameraTitle').textContent = titles[type] || 'Гирифтани акс';
-            
-            document.getElementById('cameraModal').classList.add('active');
-            
-            try {
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
-                }
-                
-                let constraints = {
-                    video: {
-                        facingMode: currentCamera,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                };
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                let video = document.getElementById('cameraVideo');
-                video.srcObject = cameraStream;
-            } catch (err) {
-                try {
-                    let fallbackConstraints = { video: true };
-                    cameraStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
-                    let video = document.getElementById('cameraVideo');
-                    video.srcObject = cameraStream;
-                } catch (fallbackErr) {
-                    alert('Хатогӣ дар кушодани камера. Лутфан иҷозат диҳед.');
-                    closeCamera();
-                }
-            }
-        }
-
-        window.closeCamera = function() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            
-            let video = document.getElementById('cameraVideo');
-            video.srcObject = null;
-            
-            document.getElementById('cameraModal').classList.remove('active');
-        }
-
-        window.switchCamera = async function() {
-            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
-            
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-            }
-            
-            try {
-                let constraints = {
-                    video: {
-                        facingMode: currentCamera,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                };
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                let video = document.getElementById('cameraVideo');
-                video.srcObject = cameraStream;
-            } catch (err) {
-                console.log('Switch camera error');
-            }
-        }
-
-        window.toggleFlash = function() {
-            alert('Flash танзимот дар браузер дастгирӣ намешавад');
-        }
-
-        window.capturePhoto = function() {
-            let video = document.getElementById('cameraVideo');
-            
-            if (!video || !video.videoWidth) {
-                alert('Камера омода нест');
-                return;
-            }
-            
-            let canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            
-            let context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            let photoData = canvas.toDataURL('image/jpeg', 0.9);
-            
-            photos[currentPhotoType] = photoData;
-            
-            let preview = document.getElementById(currentPhotoType + 'Preview');
-            let image = document.getElementById(currentPhotoType + 'Image');
-            image.src = photoData;
-            preview.style.display = 'block';
-            
-            closeCamera();
-        }
-
-        window.removePhoto = function(type) {
-            photos[type] = null;
-            document.getElementById(type + 'Preview').style.display = 'none';
-            document.getElementById(type + 'Image').src = '';
-        }
-
-        window.registerCourier = function() {
-            let fullName = document.getElementById('fullName').value.trim();
-            let phone = document.getElementById('phone').value.trim();
-            
-            if (!fullName) {
-                alert('Лутфан ном ва насаби худро ворид кунед');
-                return;
-            }
-
-            if (!phone) {
-                alert('Лутфан рақами телефони худро ворид кунед');
-                return;
-            }
-
-            if (!photos.face) {
-                alert('Лутфан акси рӯйро гиред');
-                return;
-            }
-
-            if (!photos.passport) {
-                alert('Лутфан акси паспортро гиред');
-                return;
-            }
-
-            if (!photos.selfie) {
-                alert('Лутфан акси худро бо паспорт гиред');
-                return;
-            }
-
-            let cleanPhone = phone.replace(/\D/g, '');
-            let formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
-            let fullPhone = '+992 ' + formattedPhone;
-
-            let courierId = 'C' + Date.now();
-            
-            courierData = {
-                id: courierId,
-                name: fullName,
-                phone: fullPhone,
-                status: 'pending',
-                balance: 0,
-                registeredAt: new Date().toLocaleDateString('tg-TJ'),
-                photos: {
-                    face: 'uploaded',
-                    passport: 'uploaded',
-                    selfie: 'uploaded'
-                }
-            };
-
-            localStorage.setItem('courierData', JSON.stringify(courierData));
-            localStorage.setItem('balance', '0');
-            
-            showScreen('waiting');
-            alert('Маълумоти шумо барои санҷиш фиристода шуд. Админ пас аз санҷиш шуморо тасдиқ мекунад.');
-        }
-
+        // ========== MAP FUNCTIONS ==========
         function initMap() {
             if (!map) {
                 map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 13);
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© Courier App'
+                    attribution: '© TojRason Courier'
                 }).addTo(map);
             }
         }
@@ -888,10 +1437,11 @@ und: #f44336;
                         updateCourierMarker(lat, lng);
                         
                         if (currentOrder) {
-                            updateRoute(lat, lng);
+                            updateRoute(lat, lng, currentOrder.lat, currentOrder.lng);
                         }
                     },
                     (error) => {
+                        console.log('Location error:', error);
                         updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
                     },
                     {
@@ -911,14 +1461,14 @@ und: #f44336;
             } else {
                 let courierIcon = L.divIcon({
                     className: 'custom-marker',
-                    html: '<div style="background:#ffd600; width:24px; height:24px; border-radius:50%; border:4px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3);"></div>',
+                    html: '<div style="background: var(--primary); width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow);"></div>',
                     iconSize: [24, 24]
                 });
                 
                 courierMarker = L.marker([lat, lng], {
                     icon: courierIcon,
                     zIndexOffset: 1000
-                }).addTo(map).bindPopup('Шумо дар ин ҷо');
+                }).addTo(map).bindPopup('Шумо');
             }
             
             if (!currentOrder) {
@@ -926,50 +1476,42 @@ und: #f44336;
             }
         }
 
-        function addOrderMarkers() {
-            if (pickupMarker) map.removeLayer(pickupMarker);
-            if (deliveryMarker) map.removeLayer(deliveryMarker);
+        function addCustomerMarker(lat, lng, address) {
+            if (customerMarker) {
+                map.removeLayer(customerMarker);
+            }
             
-            let pickupIcon = L.divIcon({
-                className: 'pickup-marker',
-                html: '<div style="background:#ffd600; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:#1a237e; font-weight:bold; font-size:16px;">A</div>',
+            let customerIcon = L.divIcon({
+                className: 'customer-marker',
+                html: '<div style="background: var(--danger); width: 30px; height: 30px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>',
                 iconSize: [30, 30]
             });
             
-            let deliveryIcon = L.divIcon({
-                className: 'delivery-marker',
-                html: '<div style="background:#4caf50; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:16px;">Б</div>',
-                iconSize: [30, 30]
-            });
-            
-            pickupMarker = L.marker([orderCoordinates.pickup.lat, orderCoordinates.pickup.lng], {
-                icon: pickupIcon
-            }).addTo(map).bindPopup('Нуқтаи гирифтан');
-            
-            deliveryMarker = L.marker([orderCoordinates.delivery.lat, orderCoordinates.delivery.lng], {
-                icon: deliveryIcon
-            }).addTo(map).bindPopup('Нуқтаи расонидан');
+            customerMarker = L.marker([lat, lng], {
+                icon: customerIcon
+            }).addTo(map).bindPopup(address);
         }
 
-        function updateRoute(courierLat, courierLng) {
+        function updateRoute(courierLat, courierLng, customerLat, customerLng) {
             if (routeLine) {
                 map.removeLayer(routeLine);
             }
             
             let points = [
                 [courierLat, courierLng],
-                [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
-                [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
+                [customerLat, customerLng]
             ];
             
             routeLine = L.polyline(points, {
-                color: '#ffd600',
-                weight: 5,
+                color: 'var(--primary)',
+                weight: 4,
                 opacity: 0.8,
-                dashArray: '5, 10'
+                dashArray: '8, 8'
             }).addTo(map);
             
-            showFullRoute();
+            // Fit bounds to show both markers
+            let bounds = L.latLngBounds(points);
+            map.fitBounds(bounds, { padding: [50, 50] });
         }
 
         window.centerOnCourier = function() {
@@ -979,21 +1521,19 @@ und: #f44336;
             }
         }
 
-        window.showFullRoute = function() {
+        window.fitMapBounds = function() {
             if (routeLine) {
                 map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
-            } else if (currentOrder) {
+            } else if (currentOrder && courierMarker) {
                 let bounds = L.latLngBounds([
-                    [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
-                    [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
+                    courierMarker.getLatLng(),
+                    [currentOrder.lat, currentOrder.lng]
                 ]);
-                if (courierMarker) {
-                    bounds.extend(courierMarker.getLatLng());
-                }
                 map.fitBounds(bounds, { padding: [50, 50] });
             }
         }
 
+        // ========== ONLINE/OFFLINE TOGGLE ==========
         window.toggleOnline = function() {
             isOnline = !isOnline;
             let toggle = document.getElementById('onlineToggle');
@@ -1002,117 +1542,481 @@ und: #f44336;
             if (isOnline) {
                 toggle.classList.add('active');
                 statusText.textContent = 'Онлайн';
-                if (!currentOrder) {
-                    showNewOrder();
-                }
+                showNotification('Ҳолат', 'Шумо онлайн ҳастед. Заказҳо пайдо мешаванд.', 'success');
+                // Show available orders
+                loadOrdersTab();
             } else {
                 toggle.classList.remove('active');
                 statusText.textContent = 'Офлайн';
-                document.getElementById('orderCard').style.display = 'none';
+                showNotification('Ҳолат', 'Шумо офлайн ҳастед.', 'info');
             }
         }
 
+        // ========== BALANCE UPDATE ==========
         function updateBalance() {
-            document.getElementById('balanceDisplay').textContent = balance + ' сом';
-            document.getElementById('mainBalance').textContent = balance + ' сом';
+            let balanceEl = document.getElementById('balanceDisplay');
+            let mainBalanceEl = document.getElementById('mainBalance');
+            
+            if (balanceEl) balanceEl.textContent = balance + ' сом';
+            if (mainBalanceEl) mainBalanceEl.textContent = balance + ' сом';
+            
             localStorage.setItem('balance', balance.toString());
-            updateProfileInfo();
         }
 
-        function showNewOrder() {
-            currentOrder = {
-                id: 'ORD' + Date.now(),
-                pickup: '112-й микрорайон',
-                delivery: '2-юм микрорайон',
-                distance: '4.1',
-                price: 25
-            };
-
-            document.getElementById('orderTitle').textContent = 'Закази нав #' + currentOrder.id.slice(-4);
-            document.getElementById('orderDistance').textContent = 'Масофа: ' + currentOrder.distance + ' км';
-            document.getElementById('pickupAddress').textContent = currentOrder.pickup;
-            document.getElementById('deliveryAddress').textContent = currentOrder.delivery;
+        // ========== NOTIFICATION ==========
+        function showNotification(title, message, type = 'info') {
+            let notification = document.getElementById('notification');
+            let titleEl = document.getElementById('notificationTitle');
+            let textEl = document.getElementById('notificationText');
             
-            document.getElementById('acceptBtn').style.display = 'block';
-            document.getElementById('completeBtn').style.display = 'none';
-            document.getElementById('declineBtn').style.display = 'block';
-            document.getElementById('orderCard').style.display = 'block';
-            document.getElementById('lowBalanceAlert').style.display = 'none';
+            titleEl.textContent = title;
+            textEl.textContent = message;
             
-            addOrderMarkers();
+            // Set color based on type
+            notification.style.borderLeftColor = 
+                type === 'success' ? 'var(--success)' : 
+                type === 'error' ? 'var(--danger)' : 
+                'var(--primary)';
+            
+            notification.classList.add('show');
+            
+            if (notificationTimeout) {
+                clearTimeout(notificationTimeout);
+            }
+            
+            notificationTimeout = setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
         }
 
-        window.acceptOrder = function() {
-            let commission = Math.ceil(currentOrder.price * 0.1);
-            balance += (currentOrder.price - commission);
-            totalOrders++;
-            localStorage.setItem('totalOrders', totalOrders.toString());
-            updateBalance();
-
-            document.getElementById('acceptBtn').style.display = 'none';
-            document.getElementById('completeBtn').style.display = 'block';
-            document.getElementById('declineBtn').style.display = 'none';
-            document.getElementById('orderTitle').textContent = 'Заказ қабул шуд';
+        // ========== TIMER ==========
+        function startOrderTimer() {
+            if (orderTimer) {
+                clearInterval(orderTimer);
+            }
             
+            timerSeconds = 0;
+            let timerEl = document.getElementById('orderTimer');
+            
+            if (timerEl) {
+                orderTimer = setInterval(() => {
+                    timerSeconds++;
+                    let minutes = Math.floor(timerSeconds / 60);
+                    let seconds = timerSeconds % 60;
+                    timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+        }
+
+        function stopOrderTimer() {
+            if (orderTimer) {
+                clearInterval(orderTimer);
+                orderTimer = null;
+            }
+        }
+
+        // ========== ORDER MANAGEMENT ==========
+        function loadOrdersTab() {
+            let content = document.getElementById('mainContent');
+            
+            if (!isOnline) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-power-off"></i>
+                        <h3>Шумо офлайн ҳастед</h3>
+                        <p style="color: var(--gray); margin-top: 10px;">Барои дидани заказҳо, онлайн шавед</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let ordersHtml = '<div style="margin-bottom: 20px;">';
+            
+            // Balance card
+            ordersHtml += `
+                <div class="balance-card">
+                    <div class="balance-title">Баланси шумо</div>
+                    <div class="balance-amount" id="mainBalance">${balance} сом</div>
+                </div>
+            `;
+            
+            // Available orders
+            if (availableOrders.length > 0) {
+                availableOrders.forEach(order => {
+                    ordersHtml += `
+                        <div class="order-card" id="order-${order.id}">
+                            <div class="order-header">
+                                <div class="order-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="order-info">
+                                    <h3>Закази нав</h3>
+                                    <p>Мизоҷ: ${order.customer}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="order-timer">
+                                <i class="fas fa-clock"></i>
+                                <span>Вақти интизорӣ: </span>
+                                <span class="timer-value" id="orderTimer">0:00</span>
+                            </div>
+                            
+                            <div class="route-info">
+                                <div class="route-point">
+                                    <div class="point-marker pickup"></div>
+                                    <div>
+                                        <div class="point-address">${order.pickup}</div>
+                                        <div class="point-distance">Нуқтаи гирифтан</div>
+                                    </div>
+                                </div>
+                                <div class="route-point">
+                                    <div class="point-marker delivery"></div>
+                                    <div>
+                                        <div class="point-address">${order.delivery}</div>
+                                        <div class="point-distance">Нуқтаи расонидан</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                <span><i class="fas fa-road"></i> Масофа: ${order.distance} км</span>
+                                <span><i class="fas fa-money-bill"></i> <strong>${order.price} сом</strong></span>
+                            </div>
+                            
+                            <div class="order-actions">
+                                <button class="btn-accept" onclick="acceptOrder('${order.id}')">
+                                    <i class="fas fa-check"></i>
+                                    Қабул кардан
+                                </button>
+                                <button class="btn-decline" onclick="declineOrder('${order.id}')">
+                                    <i class="fas fa-times"></i>
+                                    Рад кардан
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                ordersHtml += `
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Заказе нест</h3>
+                        <p style="color: var(--gray); margin-top: 10px;">Дар ҳоли интизори заказҳои нав...</p>
+                        <div class="loading-spinner" style="margin-top: 20px;"></div>
+                    </div>
+                `;
+            }
+            
+            ordersHtml += '</div>';
+            content.innerHTML = ordersHtml;
+            
+            // Start timer for first order if any
+            if (availableOrders.length > 0) {
+                startOrderTimer();
+            }
+        }
+
+        window.acceptOrder = function(orderId) {
+            let order = availableOrders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            currentOrder = order;
+            
+            // Remove from available orders
+            availableOrders = availableOrders.filter(o => o.id !== orderId);
+            
+            // Add customer marker
+            addCustomerMarker(order.lat, order.lng, order.delivery);
+            
+            // Update UI
+            let orderCard = document.getElementById('order-' + orderId);
+            if (orderCard) {
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-icon" style="background: var(--success);">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="order-info">
+                            <h3>Заказ қабул шуд</h3>
+                            <p>Мизоҷ: ${order.customer}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="order-timer">
+                        <i class="fas fa-clock"></i>
+                        <span>Вақти расонидан: </span>
+                        <span class="timer-value" id="orderTimer">${document.getElementById('orderTimer').textContent}</span>
+                    </div>
+                    
+                    <div class="route-info">
+                        <div class="route-point">
+                            <div class="point-marker pickup"></div>
+                            <div>
+                                <div class="point-address">${order.pickup}</div>
+                                <div class="point-distance">Нуқтаи гирифтан</div>
+                            </div>
+                        </div>
+                        <div class="route-point">
+                            <div class="point-marker delivery"></div>
+                            <div>
+                                <div class="point-address">${order.delivery}</div>
+                                <div class="point-distance">Нуқтаи расонидан</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-actions">
+                        <button class="btn-arrived" onclick="arrivedAtCustomer()" style="display: flex;">
+                            <i class="fas fa-location-dot"></i>
+                            Ман расидам
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // Update route
             if (courierMarker) {
                 let pos = courierMarker.getLatLng();
-                updateRoute(pos.lat, pos.lng);
-            } else {
-                updateRoute(defaultLocation.lat, defaultLocation.lng);
+                updateRoute(pos.lat, pos.lng, order.lat, order.lng);
             }
+            
+            showNotification('Заказ қабул шуд', 'Шумо ба сӯи мизоҷ ҳаракат кунед', 'success');
         }
 
-        window.declineOrder = function() {
-            currentOrder = null;
-            document.getElementById('orderCard').style.display = 'none';
+        window.arrivedAtCustomer = function() {
+            if (!currentOrder) return;
             
-            if (pickupMarker) {
-                map.removeLayer(pickupMarker);
-                pickupMarker = null;
+            let orderCard = document.querySelector('.order-card');
+            if (orderCard) {
+                let actionsDiv = orderCard.querySelector('.order-actions');
+                actionsDiv.innerHTML = `
+                    <button class="btn-delivered" onclick="deliverOrder()" style="display: flex;">
+                        <i class="fas fa-check-circle"></i>
+                        Заказ супорида шуд
+                    </button>
+                `;
             }
-            if (deliveryMarker) {
-                map.removeLayer(deliveryMarker);
-                deliveryMarker = null;
+            
+            showNotification('Шумо расидед', 'Лутфан заказро ба мизоҷ супоред', 'info');
+        }
+
+        window.deliverOrder = function() {
+            if (!currentOrder) return;
+            
+            // Add to history
+            let completedOrder = {
+                ...currentOrder,
+                completedAt: new Date().toLocaleString('tg-TJ'),
+                deliveryTime: timerSeconds,
+                status: 'delivered'
+            };
+            
+            orderHistory.push(completedOrder);
+            localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+            
+            // Update stats
+            balance += currentOrder.price;
+            completedOrders++;
+            totalOrders++;
+            
+            localStorage.setItem('balance', balance.toString());
+            localStorage.setItem('totalOrders', totalOrders.toString());
+            localStorage.setItem('completedOrders', completedOrders.toString());
+            
+            // Clear current order
+            currentOrder = null;
+            
+            // Remove markers
+            if (customerMarker) {
+                map.removeLayer(customerMarker);
+                customerMarker = null;
             }
             if (routeLine) {
                 map.removeLayer(routeLine);
                 routeLine = null;
             }
-        }
-
-        window.completeOrder = function() {
-            document.getElementById('successMessage').style.display = 'block';
-            document.getElementById('orderCard').style.display = 'none';
             
-            if (pickupMarker) {
-                map.removeLayer(pickupMarker);
-                pickupMarker = null;
-            }
-            if (deliveryMarker) {
-                map.removeLayer(deliveryMarker);
-                deliveryMarker = null;
-            }
-            if (routeLine) {
-                map.removeLayer(routeLine);
-                routeLine = null;
-            }
+            // Stop timer
+            stopOrderTimer();
             
-            currentOrder = null;
+            // Reload orders tab
+            loadOrdersTab();
             
-            setTimeout(() => {
-                document.getElementById('successMessage').style.display = 'none';
-            }, 3000);
-
+            showNotification('Заказ супорида шуд', 'Ташаккур! Барои заказҳои нав омода шавед', 'success');
+            
+            // Simulate new order after 5 seconds
             setTimeout(() => {
                 if (isOnline) {
-                    showNewOrder();
+                    simulateNewOrder();
                 }
             }, 5000);
         }
 
+        window.declineOrder = function(orderId) {
+            if (!confirm('Шумо мехоҳед ин заказро рад кунед?')) return;
+            
+            let order = availableOrders.find(o => o.id === orderId);
+            if (order) {
+                // Add to history as cancelled
+                let cancelledOrder = {
+                    ...order,
+                    completedAt: new Date().toLocaleString('tg-TJ'),
+                    status: 'cancelled'
+                };
+                
+                orderHistory.push(cancelledOrder);
+                localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+                
+                // Update stats
+                cancelledOrders++;
+                totalOrders++;
+                localStorage.setItem('totalOrders', totalOrders.toString());
+                localStorage.setItem('cancelledOrders', cancelledOrders.toString());
+            }
+            
+            // Remove from available orders
+            availableOrders = availableOrders.filter(o => o.id !== orderId);
+            
+            // Reload orders tab
+            loadOrdersTab();
+            
+            showNotification('Заказ рад карда шуд', 'Шумо метавонед заказҳои дигарро интизор шавед', 'info');
+        }
+
+        function simulateNewOrder() {
+            let newOrder = {
+                id: 'ORD' + Date.now(),
+                customer: 'Мизоҷи нав',
+                pickup: 'Бӯстон, ' + Math.floor(Math.random() * 100),
+                delivery: 'Сомон, ' + Math.floor(Math.random() * 100),
+                distance: (Math.random() * 5 + 1).toFixed(1),
+                price: Math.floor(Math.random() * 30 + 15),
+                lat: defaultLocation.lat + (Math.random() - 0.5) * 0.01,
+                lng: defaultLocation.lng + (Math.random() - 0.5) * 0.01,
+                status: 'pending'
+            };
+            
+            availableOrders.unshift(newOrder);
+            loadOrdersTab();
+            
+            showNotification('Закази нав!', 'Закази #' + newOrder.id.slice(-4) + ' пайдо шуд', 'success');
+        }
+
+        // ========== HISTORY TAB ==========
+        function loadHistoryTab() {
+            let content = document.getElementById('mainContent');
+            
+            let historyHtml = '<div style="margin-bottom: 20px;">';
+            
+            historyHtml += `
+                <div class="balance-card">
+                    <div class="balance-title">Ҳамаи заказҳо</div>
+                    <div class="balance-amount">${orderHistory.length}</div>
+                </div>
+            `;
+            
+            if (orderHistory.length > 0) {
+                orderHistory.reverse().forEach(order => {
+                    let statusClass = order.status === 'delivered' ? 'status-delivered' : 'status-cancelled';
+                    let statusText = order.status === 'delivered' ? 'Супорида шуд' : 'Рад карда шуд';
+                    
+                    historyHtml += `
+                        <div class="history-item">
+                            <div class="history-info">
+                                <h4>Заказ #${order.id.slice(-4)}</h4>
+                                <p><i class="fas fa-user"></i> ${order.customer}</p>
+                                <p><i class="fas fa-clock"></i> ${order.completedAt || 'Номаълум'}</p>
+                                <p><i class="fas fa-money-bill"></i> ${order.price} сом</p>
+                            </div>
+                            <div>
+                                <span class="history-status ${statusClass}">${statusText}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                historyHtml += `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>Таърихи заказҳо холӣ аст</h3>
+                        <p style="color: var(--gray); margin-top: 10px;">Заказҳои иҷрошуда дар ин ҷо нишон дода мешаванд</p>
+                    </div>
+                `;
+            }
+            
+            historyHtml += '</div>';
+            content.innerHTML = historyHtml;
+        }
+
+        // ========== STATS TAB ==========
+        function loadStatsTab() {
+            let content = document.getElementById('mainContent');
+            
+            let statsHtml = '<div style="margin-bottom: 20px;">';
+            
+            statsHtml += `
+                <div class="balance-card">
+                    <div class="balance-title">Баланси шумо</div>
+                    <div class="balance-amount">${balance} сом</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">${totalOrders}</div>
+                        <div class="stat-label">Ҳамаи заказҳо</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${completedOrders}</div>
+                        <div class="stat-label">Супорида шуд</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${cancelledOrders}</div>
+                        <div class="stat-label">Рад карда шуд</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">${currentUser?.rating || 5.0}</div>
+                        <div class="stat-label">Рейтинг</div>
+                    </div>
+                </div>
+                
+                <div class="commission-info" style="background: #fff9e6; border-left: 4px solid var(--primary); padding: 15px; border-radius: var(--radius-xs); margin-top: 20px;">
+                    <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 10px;"></i>
+                    <span>Шумо ${completedOrders} заказро бомуваффақият анҷом додед</span>
+                </div>
+            `;
+            
+            statsHtml += '</div>';
+            content.innerHTML = statsHtml;
+        }
+
+        // ========== TAB SWITCHING ==========
+        window.switchTab = function(tab) {
+            // Update active nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (tab === 'orders') {
+                document.getElementById('navOrders').classList.add('active');
+                loadOrdersTab();
+            } else if (tab === 'history') {
+                document.getElementById('navHistory').classList.add('active');
+                loadHistoryTab();
+            } else if (tab === 'stats') {
+                document.getElementById('navStats').classList.add('active');
+                loadStatsTab();
+            }
+        }
+
+        // ========== CLEAN UP ==========
         window.addEventListener('beforeunload', function() {
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
             }
-            if (cameraStream) {
-                cameraStream
+            if (orderTimer) {
+                clearInterval(orderTimer);
+            }
+        });
+    </script>
+</body>
+            </html>
