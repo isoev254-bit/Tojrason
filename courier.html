@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="tg">
 <head>
-    <meta charset="UTF-88">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ТоҷРасон - Курьер</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -223,25 +223,6 @@
         .btn-secondary:hover {
             background: #1a237e;
             color: white;
-        }
-
-        .btn-danger {
-            width: 100%;
-            padding: 15px;
-            background: #f44336;
-            border: none;
-            border-radius: 30px;
-            color: white;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn-danger:hover {
-            background: #ff6659;
-            transform: translateY(-2px);
         }
 
         .status-bar {
@@ -689,7 +670,6 @@
             backdrop-filter: blur(5px);
         }
 
-        /* Profile Modal */
         .profile-modal {
             display: none;
             position: fixed;
@@ -856,7 +836,6 @@
     </style>
 </head>
 <body>
-    <!-- SCREEN 1: Registration -->
     <div class="screen active" id="screenRegister">
         <div class="header">
             <i class="fas fa-motorcycle"></i>
@@ -920,7 +899,6 @@
         </div>
     </div>
 
-    <!-- SCREEN 2: Waiting for Approval -->
     <div class="screen" id="screenWaiting">
         <div class="header">
             <i class="fas fa-hourglass-half"></i>
@@ -940,7 +918,6 @@
         </div>
     </div>
 
-    <!-- SCREEN 3: Main App -->
     <div class="screen" id="screenMain">
         <div class="status-bar">
             <div class="profile-menu">
@@ -1022,7 +999,6 @@
         </div>
     </div>
 
-    <!-- Camera Modal -->
     <div class="camera-modal" id="cameraModal">
         <div class="camera-header">
             <h3 id="cameraTitle">Гирифтани акс</h3>
@@ -1038,7 +1014,6 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
     <div class="profile-modal" id="profileModal" onclick="closeProfileOnClickOutside(event)">
         <div class="profile-content">
             <div class="profile-header">
@@ -1091,7 +1066,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // App State
         let courierData = JSON.parse(localStorage.getItem('courierData')) || null;
         let isOnline = false;
         let balance = parseFloat(localStorage.getItem('balance')) || 0;
@@ -1104,35 +1078,28 @@
         let currentOrder = null;
         let watchId = null;
         
-        // Default coordinates for Dushanbe
         const defaultLocation = { lat: 38.5737, lng: 68.7864 };
         
-        // Order coordinates
         let orderCoordinates = {
-            pickup: { lat: 38.5737, lng: 68.7864 }, // 112-й микрорайон
-            delivery: { lat: 38.5627, lng: 68.7739 } // 2-юм микрорайон
+            pickup: { lat: 38.5737, lng: 68.7864 },
+            delivery: { lat: 38.5627, lng: 68.7739 }
         };
 
-        // Camera variables
         let currentPhotoType = null;
         let cameraStream = null;
         let currentCamera = 'environment';
 
-        // Track uploaded photos
         let photos = {
             face: null,
             passport: null,
             selfie: null
         };
 
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('App initialized');
             updateBalance();
             checkAuth();
         });
 
-        // ========== SCREEN FUNCTIONS ==========
         function checkAuth() {
             if (courierData) {
                 if (courierData.status === 'approved') {
@@ -1179,7 +1146,6 @@
             }
         }
 
-        // ========== PROFILE FUNCTIONS ==========
         window.openProfile = function() {
             updateProfileInfo();
             document.getElementById('profileModal').classList.add('active');
@@ -1203,80 +1169,71 @@
                 document.getElementById('profileBalance').textContent = balance;
                 document.getElementById('profileOrders').textContent = totalOrders;
                 
-                const date = courierData.registeredAt || new Date().toLocaleString('tg-TJ');
+                let date = courierData.registeredAt || new Date().toLocaleDateString('tg-TJ');
                 document.getElementById('profileDate').textContent = date;
                 
-                const status = courierData.status === 'approved' ? 'Тасдиқ шудааст' : 'Дар ҳоли баррасӣ';
+                let status = courierData.status === 'approved' ? 'Тасдиқ шудааст' : 'Дар ҳоли баррасӣ';
                 document.getElementById('profileStatus').textContent = status;
             }
         }
 
         window.logout = function() {
             if (confirm('Шумо мехоҳед аз акаунт бароед?')) {
-                // Stop location tracking
                 if (watchId) {
                     navigator.geolocation.clearWatch(watchId);
                     watchId = null;
                 }
                 
-                // Stop camera if open
                 if (cameraStream) {
                     cameraStream.getTracks().forEach(track => track.stop());
                     cameraStream = null;
                 }
                 
-                // Clear markers
-                if (courierMarker) {
-                    map.removeLayer(courierMarker);
-                    courierMarker = null;
-                }
-                if (pickupMarker) {
-                    map.removeLayer(pickupMarker);
-                    pickupMarker = null;
-                }
-                if (deliveryMarker) {
-                    map.removeLayer(deliveryMarker);
-                    deliveryMarker = null;
-                }
-                if (routeLine) {
-                    map.removeLayer(routeLine);
-                    routeLine = null;
+                if (map) {
+                    if (courierMarker) {
+                        map.removeLayer(courierMarker);
+                        courierMarker = null;
+                    }
+                    if (pickupMarker) {
+                        map.removeLayer(pickupMarker);
+                        pickupMarker = null;
+                    }
+                    if (deliveryMarker) {
+                        map.removeLayer(deliveryMarker);
+                        deliveryMarker = null;
+                    }
+                    if (routeLine) {
+                        map.removeLayer(routeLine);
+                        routeLine = null;
+                    }
                 }
                 
-                // Clear state
                 currentOrder = null;
                 isOnline = false;
                 
-                // Clear localStorage
                 localStorage.removeItem('courierData');
                 localStorage.removeItem('balance');
                 localStorage.removeItem('totalOrders');
                 
-                // Reset UI
                 courierData = null;
                 balance = 0;
                 totalOrders = 0;
                 updateBalance();
                 
-                // Close profile
                 closeProfile();
                 
-                // Go to register screen
                 showScreen('register');
                 
-                // Reset toggle
                 document.getElementById('onlineToggle').classList.remove('active');
                 document.getElementById('statusText').textContent = 'Офлайн';
                 document.getElementById('orderCard').style.display = 'none';
             }
         }
 
-        // ========== CAMERA FUNCTIONS ==========
         window.openCamera = async function(type) {
-            console.log('Opening camera for:', type);
             currentPhotoType = type;
             
-            const titles = {
+            let titles = {
                 'face': 'Акси рӯй',
                 'passport': 'Акси паспорт',
                 'selfie': 'Акси худ бо паспорт'
@@ -1290,7 +1247,7 @@
                     cameraStream.getTracks().forEach(track => track.stop());
                 }
                 
-                const constraints = {
+                let constraints = {
                     video: {
                         facingMode: currentCamera,
                         width: { ideal: 1280 },
@@ -1299,18 +1256,15 @@
                 };
                 
                 cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.getElementById('cameraVideo');
+                let video = document.getElementById('cameraVideo');
                 video.srcObject = cameraStream;
             } catch (err) {
-                console.error('Camera error:', err);
-                
                 try {
-                    const fallbackConstraints = { video: true };
+                    let fallbackConstraints = { video: true };
                     cameraStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
-                    const video = document.getElementById('cameraVideo');
+                    let video = document.getElementById('cameraVideo');
                     video.srcObject = cameraStream;
                 } catch (fallbackErr) {
-                    console.error('Fallback camera error:', fallbackErr);
                     alert('Хатогӣ дар кушодани камера. Лутфан иҷозат диҳед.');
                     closeCamera();
                 }
@@ -1323,7 +1277,7 @@
                 cameraStream = null;
             }
             
-            const video = document.getElementById('cameraVideo');
+            let video = document.getElementById('cameraVideo');
             video.srcObject = null;
             
             document.getElementById('cameraModal').classList.remove('active');
@@ -1337,7 +1291,7 @@
             }
             
             try {
-                const constraints = {
+                let constraints = {
                     video: {
                         facingMode: currentCamera,
                         width: { ideal: 1280 },
@@ -1346,10 +1300,10 @@
                 };
                 
                 cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.getElementById('cameraVideo');
+                let video = document.getElementById('cameraVideo');
                 video.srcObject = cameraStream;
             } catch (err) {
-                console.error('Switch camera error:', err);
+                console.log('Switch camera error');
             }
         }
 
@@ -1358,47 +1312,41 @@
         }
 
         window.capturePhoto = function() {
-            const video = document.getElementById('cameraVideo');
+            let video = document.getElementById('cameraVideo');
             
             if (!video || !video.videoWidth) {
                 alert('Камера омода нест');
                 return;
             }
             
-            const canvas = document.createElement('canvas');
+            let canvas = document.createElement('canvas');
             canvas.width = video.videoWidth || 640;
             canvas.height = video.videoHeight || 480;
             
-            const context = canvas.getContext('2d');
+            let context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            const photoData = canvas.toDataURL('image/jpeg', 0.9);
+            let photoData = canvas.toDataURL('image/jpeg', 0.9);
             
             photos[currentPhotoType] = photoData;
             
-            const preview = document.getElementById(currentPhotoType + 'Preview');
-            const image = document.getElementById(currentPhotoType + 'Image');
+            let preview = document.getElementById(currentPhotoType + 'Preview');
+            let image = document.getElementById(currentPhotoType + 'Image');
             image.src = photoData;
             preview.style.display = 'block';
-            
-            console.log('Photo captured for:', currentPhotoType);
             
             closeCamera();
         }
 
         window.removePhoto = function(type) {
-            console.log('Removing photo:', type);
             photos[type] = null;
             document.getElementById(type + 'Preview').style.display = 'none';
             document.getElementById(type + 'Image').src = '';
         }
 
-        // ========== REGISTRATION ==========
         window.registerCourier = function() {
-            const fullName = document.getElementById('fullName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            
-            console.log('Registering courier:', { fullName, phone });
+            let fullName = document.getElementById('fullName').value.trim();
+            let phone = document.getElementById('phone').value.trim();
             
             if (!fullName) {
                 alert('Лутфан ном ва насаби худро ворид кунед');
@@ -1425,12 +1373,11 @@
                 return;
             }
 
-            // Format phone number
-            const cleanPhone = phone.replace(/\D/g, '');
-            const formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
-            const fullPhone = '+992 ' + formattedPhone;
+            let cleanPhone = phone.replace(/\D/g, '');
+            let formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+            let fullPhone = '+992 ' + formattedPhone;
 
-            const courierId = 'C' + Date.now();
+            let courierId = 'C' + Date.now();
             
             courierData = {
                 id: courierId,
@@ -1438,7 +1385,7 @@
                 phone: fullPhone,
                 status: 'pending',
                 balance: 0,
-                registeredAt: new Date().toLocaleString('tg-TJ'),
+                registeredAt: new Date().toLocaleDateString('tg-TJ'),
                 photos: {
                     face: 'uploaded',
                     passport: 'uploaded',
@@ -1453,7 +1400,6 @@
             alert('Маълумоти шумо барои санҷиш фиристода шуд. Админ пас аз санҷиш шуморо тасдиқ мекунад.');
         }
 
-        // ========== MAP FUNCTIONS ==========
         function initMap() {
             if (!map) {
                 map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 13);
@@ -1468,8 +1414,8 @@
             if (navigator.geolocation) {
                 watchId = navigator.geolocation.watchPosition(
                     (position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
+                        let lat = position.coords.latitude;
+                        let lng = position.coords.longitude;
                         
                         updateCourierMarker(lat, lng);
                         
@@ -1478,7 +1424,6 @@
                         }
                     },
                     (error) => {
-                        console.error('Location error:', error);
                         updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
                     },
                     {
@@ -1496,7 +1441,7 @@
             if (courierMarker) {
                 courierMarker.setLatLng([lat, lng]);
             } else {
-                const courierIcon = L.divIcon({
+                let courierIcon = L.divIcon({
                     className: 'custom-marker',
                     html: '<div style="background:#ffd600; width:24px; height:24px; border-radius:50%; border:4px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3);"></div>',
                     iconSize: [24, 24]
@@ -1517,13 +1462,13 @@
             if (pickupMarker) map.removeLayer(pickupMarker);
             if (deliveryMarker) map.removeLayer(deliveryMarker);
             
-            const pickupIcon = L.divIcon({
+            let pickupIcon = L.divIcon({
                 className: 'pickup-marker',
                 html: '<div style="background:#ffd600; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:#1a237e; font-weight:bold; font-size:16px;">A</div>',
                 iconSize: [30, 30]
             });
             
-            const deliveryIcon = L.divIcon({
+            let deliveryIcon = L.divIcon({
                 className: 'delivery-marker',
                 html: '<div style="background:#4caf50; width:30px; height:30px; border-radius:50%; border:3px solid white; box-shadow:0 2px 10px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:16px;">Б</div>',
                 iconSize: [30, 30]
@@ -1543,7 +1488,7 @@
                 map.removeLayer(routeLine);
             }
             
-            const points = [
+            let points = [
                 [courierLat, courierLng],
                 [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
                 [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
@@ -1561,7 +1506,7 @@
 
         window.centerOnCourier = function() {
             if (courierMarker) {
-                const pos = courierMarker.getLatLng();
+                let pos = courierMarker.getLatLng();
                 map.setView([pos.lat, pos.lng], 16);
             }
         }
@@ -1570,7 +1515,7 @@
             if (routeLine) {
                 map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
             } else if (currentOrder) {
-                const bounds = L.latLngBounds([
+                let bounds = L.latLngBounds([
                     [orderCoordinates.pickup.lat, orderCoordinates.pickup.lng],
                     [orderCoordinates.delivery.lat, orderCoordinates.delivery.lng]
                 ]);
@@ -1581,11 +1526,10 @@
             }
         }
 
-        // ========== ORDER FUNCTIONS ==========
         window.toggleOnline = function() {
             isOnline = !isOnline;
-            const toggle = document.getElementById('onlineToggle');
-            const statusText = document.getElementById('statusText');
+            let toggle = document.getElementById('onlineToggle');
+            let statusText = document.getElementById('statusText');
             
             if (isOnline) {
                 toggle.classList.add('active');
@@ -1631,7 +1575,7 @@
         }
 
         window.acceptOrder = function() {
-            const commission = Math.ceil(currentOrder.price * 0.1);
+            let commission = Math.ceil(currentOrder.price * 0.1);
             balance += (currentOrder.price - commission);
             totalOrders++;
             localStorage.setItem('totalOrders', totalOrders.toString());
@@ -1643,7 +1587,7 @@
             document.getElementById('orderTitle').textContent = 'Заказ қабул шуд';
             
             if (courierMarker) {
-                const pos = courierMarker.getLatLng();
+                let pos = courierMarker.getLatLng();
                 updateRoute(pos.lat, pos.lng);
             } else {
                 updateRoute(defaultLocation.lat, defaultLocation.lng);
@@ -1698,7 +1642,6 @@
             }, 5000);
         }
 
-        // Clean up
         window.addEventListener('beforeunload', function() {
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
