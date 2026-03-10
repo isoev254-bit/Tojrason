@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        /* Все стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -1460,6 +1459,7 @@
         let currentPhotoType = null;
         let cameraStream = null;
         let currentCamera = 'environment';
+        let isCameraOpening = false;
         
         // Photos object
         let photos = {
@@ -1537,7 +1537,14 @@
 
         // ========== FIXED CAMERA FUNCTIONS ==========
         window.openCamera = function(type) {
+            // Agar kamera allaqachon kushoda shavad
+            if (isCameraOpening) {
+                alert('Камера дар ҳоли кушода шудан аст. Лутфан интизор шавед.');
+                return;
+            }
+            
             currentPhotoType = type;
+            isCameraOpening = true;
             
             let titles = {
                 'face': 'Акси рӯй',
@@ -1552,150 +1559,126 @@
             // Check browser support
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 alert('Браузери шумо камераро дастгирӣ намекунад');
+                isCameraOpening = false;
+                closeCamera();
                 return;
             }
             
-            // Check if camera is available
-            if (!navigator.mediaDevices.enumerateDevices) {
-                alert('Браузери шумо дастгоҳҳои медиаро дастгирӣ намекунад');
-                return;
-            }
-            
-            // First check if there are any cameras
-            navigator.mediaDevices.enumerateDevices()
-                .then(function(devices) {
-                    const videoDevices = devices.filter(device => device.kind === 'videoinput');
-                    if (videoDevices.length === 0) {
-                        alert('Дар дастгоҳи шумо камера ёфт нашуд');
-                        closeCamera();
-                        return;
-                    }
-                    
-                    // Small delay to ensure modal is visible
-                    setTimeout(function() {
-                        startCamera();
-                    }, 300);
-                })
-                .catch(function(err) {
-                    console.log('Error enumerating devices:', err);
-                    startCamera();
-                });
+            // Start camera after a small delay
+            setTimeout(function() {
+                startCamera();
+            }, 500);
         }
 
         function startCamera() {
             const video = document.getElementById('cameraVideo');
             
-            // Stop any existing stream
+            // Stop any existing stream properly
             if (cameraStream) {
-                cameraStream.getTracks().forEach(function(track) {
-                    track.stop();
-                });
+                try {
+                    cameraStream.getTracks().forEach(function(track) {
+                        track.stop();
+                        track.enabled = false;
+                    });
+                } catch (e) {
+                    console.log('Error stopping tracks:', e);
+                }
                 cameraStream = null;
             }
             
-            // Camera constraints with fallback
+            // Clear video source
+            video.srcObject = null;
+            video.load();
+            
+            // Simple constraints for better compatibility
             const constraints = {
-                video: {
-                    facingMode: currentCamera,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                },
+                video: true,
                 audio: false
             };
             
-            // Request camera access with timeout
-            const timeoutPromise = new Promise((resolve, reject) => {
-                setTimeout(() => reject(new Error('timeout')), 10000);
-            });
+            console.log('Attempting to start camera with constraints:', constraints);
             
-            Promise.race([
-                navigator.mediaDevices.getUserMedia(constraints),
-                timeoutPromise
-            ])
-            .then(function(stream) {
-                cameraStream = stream;
-                video.srcObject = stream;
-                
-                // Play video when ready
-                video.onloadedmetadata = function() {
-                    video.play()
-                        .then(() => {
-                            console.log('Camera started successfully');
-                        })
-                        .catch(function(e) {
-                            console.log('Play error:', e);
-                            // Try to play again
-                            setTimeout(() => {
-                                video.play().catch(err => console.log('Retry play error:', err));
-                            }, 100);
-                        });
-                };
-            })
-            .catch(function(err) {
-                console.log('Camera error:', err);
-                
-                // Try with basic constraints
-                if (err.message === 'timeout' || err.name === 'OverconstrainedError') {
-                    console.log('Trying with basic constraints...');
-                    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                        .then(function(stream) {
-                            cameraStream = stream;
-                            video.srcObject = stream;
-                            
-                            video.onloadedmetadata = function() {
-                                video.play().catch(e => console.log('Play error:', e));
-                            };
-                        })
-                        .catch(function(finalErr) {
-                            handleCameraError(finalErr);
-                        });
-                } else {
-                    handleCameraError(err);
-                }
-            });
-        }
-
-        function handleCameraError(err) {
-            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                alert('Лутфан ба камера иҷозат диҳед. Агар иҷозат надода бошед, танзимоти браузерро тафтиш кунед.');
-            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                alert('Камера ёфт нашуд. Лутфан камераро пайваст кунед.');
-            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-                alert('Камера дар истифода аст. Лутфан барномаҳои дигарро пӯшед.');
-            } else if (err.name === 'OverconstrainedError') {
-                alert('Камера параметрҳои дархостшударо дастгирӣ намекунад.');
-            } else {
-                alert('Хатогӣ дар кушодани камера: ' + (err.message || 'номаълум'));
-            }
-            
-            closeCamera();
+            // Request camera access
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    console.log('Camera stream obtained successfully');
+                    cameraStream = stream;
+                    video.srcObject = stream;
+                    
+                    // Play video when ready
+                    video.onloadedmetadata = function() {
+                        video.play()
+                            .then(() => {
+                                console.log('Camera started successfully');
+                                isCameraOpening = false;
+                            })
+                            .catch(function(e) {
+                                console.log('Play error:', e);
+                                alert('Хатогӣ дар пӯшонидани видео: ' + e.message);
+                                isCameraOpening = false;
+                            });
+                    };
+                })
+                .catch(function(err) {
+                    console.log('Camera error:', err.name, err.message);
+                    isCameraOpening = false;
+                    
+                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                        alert('Лутфан ба камера иҷозат диҳед. Агар иҷозат надода бошед, танзимоти браузерро тафтиш кунед.');
+                    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                        alert('Камера ёфт нашуд. Лутфан камераро пайваст кунед.');
+                    } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                        alert('Камера дар истифода аст. Лутфан барномаҳои дигарро пӯшед.');
+                    } else {
+                        alert('Хатогӣ дар кушодани камера: ' + (err.message || 'номаълум'));
+                    }
+                    
+                    closeCamera();
+                });
         }
 
         window.closeCamera = function() {
+            console.log('Closing camera');
+            
             if (cameraStream) {
-                cameraStream.getTracks().forEach(function(track) {
-                    track.stop();
-                });
+                try {
+                    cameraStream.getTracks().forEach(function(track) {
+                        track.stop();
+                        track.enabled = false;
+                    });
+                } catch (e) {
+                    console.log('Error stopping tracks:', e);
+                }
                 cameraStream = null;
             }
             
             const video = document.getElementById('cameraVideo');
             video.srcObject = null;
-            video.src = '';
             video.load();
             
             document.getElementById('cameraModal').classList.remove('active');
+            isCameraOpening = false;
         }
 
         window.switchCamera = function() {
+            // Simple camera switching - just close and reopen with different facing mode
             currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
             
             if (cameraStream) {
-                cameraStream.getTracks().forEach(function(track) {
-                    track.stop();
-                });
+                try {
+                    cameraStream.getTracks().forEach(function(track) {
+                        track.stop();
+                        track.enabled = false;
+                    });
+                } catch (e) {
+                    console.log('Error stopping tracks:', e);
+                }
                 cameraStream = null;
             }
+            
+            const video = document.getElementById('cameraVideo');
+            video.srcObject = null;
+            video.load();
             
             setTimeout(function() {
                 startCamera();
@@ -2039,9 +2022,12 @@
                 }
                 
                 if (cameraStream) {
-                    cameraStream.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
+                    try {
+                        cameraStream.getTracks().forEach(function(track) {
+                            track.stop();
+                        });
+                    } catch (e) {}
+                    cameraStream = null;
                 }
                 
                 if (orderTimer) {
@@ -2698,9 +2684,11 @@
                 clearInterval(orderTimer);
             }
             if (cameraStream) {
-                cameraStream.getTracks().forEach(function(track) {
-                    track.stop();
-                });
+                try {
+                    cameraStream.getTracks().forEach(function(track) {
+                        track.stop();
+                    });
+                } catch (e) {}
             }
         });
     </script>
