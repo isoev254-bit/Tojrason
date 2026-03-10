@@ -1769,6 +1769,7 @@
                         styles: [{color: '#FFD600', weight: 6}]
                     },
                     router: L.Routing.osrmv1({
+                        serviceUrl: 'https://router.project-osrm.org/route/v1',
                         profile: 'driving'
                     }),
                     createMarker: function() { return null; }
@@ -1785,7 +1786,20 @@
                     document.getElementById('duration').textContent = durationMin + ' дақ';
                     document.getElementById('distanceKm').textContent = distanceKm;
                     
-                    this.calculatePrice();
+                    this.calculatePrice(distanceKm);
+                });
+
+                this.routingControl.on('routingerror', (e) => {
+                    console.error('Routing error:', e.error);
+                    // Agar routing кор накунад, масофаи ростхаттаро ҳисоб мекунем
+                    const distance = this.calculateDistance(
+                        this.pickupCoords.lat, this.pickupCoords.lng,
+                        this.deliveryCoords.lat, this.deliveryCoords.lng
+                    );
+                    document.getElementById('distance').textContent = distance.toFixed(1) + ' км';
+                    document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
+                    document.getElementById('distanceKm').textContent = distance.toFixed(1);
+                    this.calculatePrice(distance);
                 });
             }
 
@@ -1795,13 +1809,18 @@
                 return Math.ceil(extraWeight / 2);
             }
 
-            calculatePrice() {
+            calculatePrice(routeDistance = null) {
                 if (!this.pickupCoords || !this.deliveryCoords) return;
 
-                const distance = this.calculateDistance(
-                    this.pickupCoords.lat, this.pickupCoords.lng,
-                    this.deliveryCoords.lat, this.deliveryCoords.lng
-                );
+                let distance;
+                if (routeDistance) {
+                    distance = parseFloat(routeDistance);
+                } else {
+                    distance = this.calculateDistance(
+                        this.pickupCoords.lat, this.pickupCoords.lng,
+                        this.deliveryCoords.lat, this.deliveryCoords.lng
+                    );
+                }
 
                 const weight = parseFloat(document.getElementById('weightSlider').value);
                 
@@ -1834,8 +1853,11 @@
                 document.getElementById('totalPriceDetails').textContent = totalPrice + ' сом';
                 
                 document.getElementById('totalPrice').innerHTML = finalPrice + '<span class="price-currency"> сом</span>';
-                document.getElementById('distance').textContent = distance.toFixed(1) + ' км';
-                document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
+                
+                if (!routeDistance) {
+                    document.getElementById('distance').textContent = distance.toFixed(1) + ' км';
+                    document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
+                }
 
                 this.showAvailableCourier(distance);
             }
