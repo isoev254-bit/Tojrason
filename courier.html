@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        /* ========== RESET & VARIABLES ========== */
         * {
             margin: 0;
             padding: 0;
@@ -41,7 +40,6 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* ========== SCREENS ========== */
         .screen {
             display: none;
             min-height: 100vh;
@@ -60,7 +58,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ========== HEADER ========== */
         .header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -113,12 +110,10 @@
             z-index: 1;
         }
 
-        /* ========== CONTENT ========== */
         .content {
             padding: 20px;
         }
 
-        /* ========== FORM ELEMENTS ========== */
         .form-group {
             margin-bottom: 20px;
         }
@@ -175,14 +170,6 @@
             outline: none;
         }
 
-        .phone-hint {
-            font-size: 12px;
-            color: var(--gray);
-            margin-top: 5px;
-            display: block;
-        }
-
-        /* ========== CAMERA BUTTONS ========== */
         .camera-button {
             width: 100%;
             padding: 16px;
@@ -248,7 +235,6 @@
             transform: scale(1.1);
         }
 
-        /* ========== BUTTONS ========== */
         .btn-primary {
             width: 100%;
             padding: 18px;
@@ -303,30 +289,6 @@
             color: white;
         }
 
-        .btn-danger {
-            width: 100%;
-            padding: 16px;
-            background: var(--danger);
-            border: none;
-            border-radius: var(--radius);
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        /* ========== STATUS BAR ========== */
         .status-bar {
             background: white;
             padding: 15px 20px;
@@ -395,7 +357,6 @@
             color: white;
         }
 
-        /* ========== PROFILE ICON ========== */
         .profile-icon {
             width: 45px;
             height: 45px;
@@ -416,7 +377,6 @@
             transform: scale(1.05);
         }
 
-        /* ========== MAP CONTAINER ========== */
         .map-container {
             height: 350px;
             position: relative;
@@ -463,7 +423,6 @@
             transform: scale(1.1);
         }
 
-        /* ========== ORDER CARD ========== */
         .order-card {
             background: white;
             border-radius: var(--radius);
@@ -645,7 +604,6 @@
             color: var(--danger);
         }
 
-        /* ========== WAITING CARD ========== */
         .waiting-card {
             background: white;
             border-radius: var(--radius);
@@ -691,7 +649,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ========== BALANCE CARD ========== */
         .balance-card {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -712,7 +669,6 @@
             color: var(--secondary);
         }
 
-        /* ========== STATS CARDS ========== */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -741,7 +697,6 @@
             margin-top: 5px;
         }
 
-        /* ========== BOTTOM NAVIGATION ========== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -780,7 +735,6 @@
             background: rgba(67, 97, 238, 0.1);
         }
 
-        /* ========== ORDER HISTORY ========== */
         .history-item {
             background: white;
             padding: 15px;
@@ -825,7 +779,6 @@
             color: var(--warning);
         }
 
-        /* ========== PROFILE MODAL ========== */
         .modal {
             display: none;
             position: fixed;
@@ -963,7 +916,6 @@
             background: #e2e8f0;
         }
 
-        /* ========== NOTIFICATION ========== */
         .notification {
             position: fixed;
             top: 20px;
@@ -1007,18 +959,6 @@
             color: var(--gray);
         }
 
-        /* ========== LOADER ========== */
-        .loader {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        /* ========== EMPTY STATE ========== */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -1035,7 +975,6 @@
             font-weight: 600;
         }
 
-        /* ========== LOGIN SECTION ========== */
         .login-section {
             margin-bottom: 30px;
             padding-bottom: 30px;
@@ -1073,7 +1012,6 @@
             font-size: 14px;
         }
 
-        /* ========== CAMERA MODAL ========== */
         .camera-modal {
             display: none;
             position: fixed;
@@ -1160,7 +1098,6 @@
             backdrop-filter: blur(5px);
         }
 
-        /* ========== ADMIN PANEL (FOR SIMULATION) ========== */
         .admin-section {
             margin-top: 30px;
             padding: 20px;
@@ -1202,7 +1139,6 @@
             border: 2px solid var(--border);
         }
 
-        /* ========== PROFILE CARD IN STATS ========== */
         .profile-card {
             background: white;
             border-radius: var(--radius);
@@ -1256,7 +1192,7 @@
     </style>
 </head>
 <body>
-    <!-- ========== SCREEN 1: REGISTER/LOGIN ========== -->
+    <!-- SCREEN 1: REGISTER/LOGIN -->
     <div class="screen active" id="screenAuth">
         <div class="header">
             <i class="fas fa-bolt"></i>
@@ -1265,7 +1201,6 @@
         </div>
         
         <div class="content">
-            <!-- Login Form -->
             <div class="login-section">
                 <h3 style="color: var(--dark); margin-bottom: 20px;">Ворид шудан</h3>
                 <div class="form-group">
@@ -1283,7 +1218,6 @@
                 <span>ё</span>
             </div>
 
-            <!-- Register Form -->
             <h3 style="color: var(--dark); margin-bottom: 20px;">Сабти номи нав</h3>
             <div class="form-group">
                 <label class="form-label">Ном ва насаб</label>
@@ -1303,7 +1237,6 @@
                 <input type="password" class="form-control" id="password" placeholder="Пароли худро ворид кунед">
             </div>
             
-            <!-- Photo Upload Section -->
             <div class="form-group">
                 <label class="form-label">Акси рӯй (бояд равшан бошад)</label>
                 <button class="camera-button" type="button" onclick="openCamera('face')">
@@ -1343,20 +1276,17 @@
             <button class="btn-primary" onclick="register()">Сабти ном</button>
             <button class="btn-secondary" onclick="checkDemo()">Режими демо</button>
             
-            <!-- Admin Panel (Hidden by default) - For simulation -->
             <div class="admin-section" id="adminPanel" style="display: none;">
                 <div class="admin-title">
                     <i class="fas fa-shield-alt"></i>
                     <span>Панели админ (барои санҷиш)</span>
                 </div>
-                <div id="pendingCouriersList">
-                    <!-- Pending couriers will appear here -->
-                </div>
+                <div id="pendingCouriersList"></div>
             </div>
         </div>
     </div>
 
-    <!-- ========== SCREEN 2: WAITING FOR APPROVAL ========== -->
+    <!-- SCREEN 2: WAITING FOR APPROVAL -->
     <div class="screen" id="screenWaiting">
         <div class="header">
             <i class="fas fa-hourglass-half"></i>
@@ -1368,7 +1298,7 @@
             <div class="waiting-card">
                 <i class="fas fa-clock"></i>
                 <h3>Дар ҳоли баррасӣ</h3>
-                <p>Маълумоти шумо ва аксҳои шахсият ба админ фиристода шуд. Одатан ин раванд то 24 соат давом мекунад. Баъди тасдиқ ба шумо паём мефиристем.</p>
+                <p>Маълумоти шумо ва аксҳои шахсият ба админ фиристода шуд. Одатан ин раванд то 24 соат давом мекунад.</p>
                 <div class="loading-spinner"></div>
             </div>
             
@@ -1376,9 +1306,8 @@
         </div>
     </div>
 
-    <!-- ========== SCREEN 3: MAIN DASHBOARD ========== -->
+    <!-- SCREEN 3: MAIN DASHBOARD -->
     <div class="screen" id="screenMain">
-        <!-- Status Bar -->
         <div class="status-bar">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="profile-icon" onclick="openProfile()">
@@ -1395,7 +1324,6 @@
             <div class="balance-info" id="balanceDisplay" onclick="openProfile()">0 сом</div>
         </div>
 
-        <!-- Map Container -->
         <div class="map-container">
             <div id="map"></div>
             <div class="map-controls">
@@ -1408,12 +1336,8 @@
             </div>
         </div>
 
-        <!-- Content Area (Changes based on bottom nav) -->
-        <div class="content" id="mainContent">
-            <!-- This will be dynamically updated -->
-        </div>
+        <div class="content" id="mainContent"></div>
 
-        <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item active" onclick="switchTab('orders')" id="navOrders">
                 <i class="fas fa-box"></i>
@@ -1430,7 +1354,7 @@
         </div>
     </div>
 
-    <!-- ========== PROFILE MODAL ========== -->
+    <!-- PROFILE MODAL -->
     <div class="modal" id="profileModal" onclick="closeModalOnClickOutside(event)">
         <div class="modal-content">
             <div class="modal-header">
@@ -1484,7 +1408,7 @@
         </div>
     </div>
 
-    <!-- ========== NOTIFICATION ========== -->
+    <!-- NOTIFICATION -->
     <div class="notification" id="notification">
         <i class="fas fa-bell"></i>
         <div class="notification-content">
@@ -1493,7 +1417,7 @@
         </div>
     </div>
 
-    <!-- ========== CAMERA MODAL ========== -->
+    <!-- CAMERA MODAL -->
     <div class="camera-modal" id="cameraModal">
         <div class="camera-header">
             <h3 id="cameraTitle">Гирифтани акс</h3>
@@ -1512,7 +1436,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // ========== APP STATE ==========
+        // App State
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let pendingCouriers = JSON.parse(localStorage.getItem('pendingCouriers')) || [];
@@ -1574,14 +1498,14 @@
 
         let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
 
-        // ========== INITIALIZATION ==========
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             updateBalance();
             checkAuth();
             updateAdminPanel();
         });
 
-        // ========== AUTH FUNCTIONS ==========
+        // Auth Functions
         function checkAuth() {
             if (currentUser) {
                 if (currentUser.status === 'approved') {
@@ -1610,7 +1534,7 @@
             document.getElementById(screens[screenId]).classList.add('active');
         }
 
-        // ========== CAMERA FUNCTIONS ==========
+        // Camera Functions - FIXED VERSION
         window.openCamera = function(type) {
             currentPhotoType = type;
             
@@ -1619,77 +1543,81 @@
                 'passport': 'Акси паспорт',
                 'selfie': 'Акси худ бо паспорт'
             };
-            document.getElementById('cameraTitle').textContent = titles[type];
+            document.getElementById('cameraTitle').innerText = titles[type];
             
+            // Show camera modal
             document.getElementById('cameraModal').classList.add('active');
             
+            // Check browser support
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                showNotification('Хатогӣ', 'Браузери шумо камераро дастгирӣ намекунад', 'error');
+                alert('Браузери шумо камераро дастгирӣ намекунад');
                 return;
             }
             
-            startCamera();
+            // Start camera after modal is shown
+            setTimeout(function() {
+                startCamera();
+            }, 100);
         }
 
-        async function startCamera() {
-            try {
-                if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
-                }
-                
-                let constraints = {
-                    video: {
-                        facingMode: currentCamera,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
-                    audio: false
-                };
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-                let video = document.getElementById('cameraVideo');
-                video.srcObject = cameraStream;
-                
-                video.onloadedmetadata = function() {
-                    video.play().catch(e => console.log('Play error:', e));
-                };
-                
-            } catch (err) {
-                console.log('Camera error:', err);
-                
-                if (err.name === 'NotAllowedError') {
-                    showNotification('Хатогӣ', 'Лутфан ба камера иҷозат диҳед', 'error');
-                } else if (err.name === 'NotFoundError') {
-                    showNotification('Хатогӣ', 'Камера ёфт нашуд', 'error');
-                } else if (err.name === 'NotReadableError') {
-                    showNotification('Хатогӣ', 'Камера дар истифода аст', 'error');
-                } else {
-                    try {
-                        let fallbackConstraints = { video: true, audio: false };
-                        cameraStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
-                        let video = document.getElementById('cameraVideo');
-                        video.srcObject = cameraStream;
-                        
-                        video.onloadedmetadata = function() {
-                            video.play().catch(e => console.log('Play error:', e));
-                        };
-                    } catch (fallbackErr) {
-                        showNotification('Хатогӣ', 'Хатогӣ дар кушодани камера', 'error');
-                        closeCamera();
-                    }
-                }
+        function startCamera() {
+            const video = document.getElementById('cameraVideo');
+            
+            // Stop any existing stream
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
             }
+            
+            // Camera constraints
+            const constraints = {
+                video: {
+                    facingMode: currentCamera,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            };
+            
+            // Request camera access
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+                    cameraStream = stream;
+                    video.srcObject = stream;
+                    
+                    // Play video when ready
+                    video.onloadedmetadata = function() {
+                        video.play().catch(function(e) {
+                            console.log('Play error:', e);
+                        });
+                    };
+                })
+                .catch(function(err) {
+                    console.log('Camera error:', err);
+                    
+                    if (err.name === 'NotAllowedError') {
+                        alert('Лутфан ба камера иҷозат диҳед');
+                    } else if (err.name === 'NotFoundError') {
+                        alert('Камера ёфт нашуд');
+                    } else {
+                        alert('Хатогӣ дар кушодани камера: ' + err.message);
+                    }
+                    
+                    closeCamera();
+                });
         }
 
         window.closeCamera = function() {
             if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
                 cameraStream = null;
             }
             
-            let video = document.getElementById('cameraVideo');
+            const video = document.getElementById('cameraVideo');
             video.srcObject = null;
-            video.src = '';
             
             document.getElementById('cameraModal').classList.remove('active');
         }
@@ -1698,33 +1626,37 @@
             currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
             
             if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
                 cameraStream = null;
             }
             
-            setTimeout(() => {
+            setTimeout(function() {
                 startCamera();
             }, 100);
         }
 
         window.toggleFlash = function() {
-            showNotification('Маълумот', 'Flash танзимот дар браузер дастгирӣ намешавад', 'info');
+            alert('Flash танзимот дар браузер дастгирӣ намешавад');
         }
 
         window.capturePhoto = function() {
-            let video = document.getElementById('cameraVideo');
+            const video = document.getElementById('cameraVideo');
             
             if (!video || !video.videoWidth) {
-                showNotification('Хатогӣ', 'Камера омода нест', 'error');
+                alert('Камера омода нест');
                 return;
             }
             
-            let canvas = document.createElement('canvas');
+            // Create canvas
+            const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             
-            let context = canvas.getContext('2d');
+            const context = canvas.getContext('2d');
             
+            // Mirror for front camera
             if (currentCamera === 'user') {
                 context.translate(canvas.width, 0);
                 context.scale(-1, 1);
@@ -1732,16 +1664,21 @@
             
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             
-            let photoData = canvas.toDataURL('image/jpeg', 0.9);
+            // Get photo data
+            const photoData = canvas.toDataURL('image/jpeg', 0.9);
             
+            // Save photo
             photos[currentPhotoType] = photoData;
             
-            let preview = document.getElementById(currentPhotoType + 'Preview');
-            let image = document.getElementById(currentPhotoType + 'Image');
+            // Show preview
+            const preview = document.getElementById(currentPhotoType + 'Preview');
+            const image = document.getElementById(currentPhotoType + 'Image');
             image.src = photoData;
             preview.style.display = 'block';
             
+            // Close camera
             closeCamera();
+            
             showNotification('Муваффақият', 'Акс гирифта шуд', 'success');
         }
 
@@ -1751,18 +1688,17 @@
             document.getElementById(type + 'Image').src = '';
         }
 
-        // ========== REGISTER ==========
+        // Register
         window.register = function() {
-            let fullName = document.getElementById('fullName').value.trim();
-            let phone = document.getElementById('phone').value.trim();
-            let password = document.getElementById('password').value.trim();
+            const fullName = document.getElementById('fullName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value.trim();
             
             if (!fullName || !phone || !password) {
                 showNotification('Хатогӣ', 'Лутфан ҳамаи майдонҳоро пур кунед', 'error');
                 return;
             }
 
-            // Check photos
             if (!photos.face) {
                 showNotification('Хатогӣ', 'Лутфан акси рӯйро гиред', 'error');
                 return;
@@ -1778,14 +1714,13 @@
                 return;
             }
 
-            // Format phone
-            let cleanPhone = phone.replace(/\D/g, '');
-            let formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
-            let fullPhone = '+992 ' + formattedPhone;
+            const cleanPhone = phone.replace(/\D/g, '');
+            const formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+            const fullPhone = '+992 ' + formattedPhone;
 
-            let userId = 'C' + Math.floor(10000 + Math.random() * 90000);
+            const userId = 'C' + Math.floor(10000 + Math.random() * 90000);
             
-            let newUser = {
+            const newUser = {
                 id: userId,
                 name: fullName,
                 phone: fullPhone,
@@ -1804,7 +1739,6 @@
                 }
             };
 
-            // Add to pending couriers
             pendingCouriers.push(newUser);
             localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
             
@@ -1816,20 +1750,20 @@
             
             showScreen('waiting');
             updateAdminPanel();
-            showNotification('Муваффақият', 'ID шумо: ' + userId + '. Аксҳо ба админ фиристода шуд. Интизори тасдиқ.', 'success');
+            showNotification('Муваффақият', 'ID шумо: ' + userId + '. Аксҳо ба админ фиристода шуд.', 'success');
         }
 
-        // ========== LOGIN ==========
+        // Login
         window.login = function() {
-            let loginId = document.getElementById('loginId').value.trim();
-            let password = document.getElementById('loginPassword').value.trim();
+            const loginId = document.getElementById('loginId').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
             
             if (!loginId || !password) {
                 showNotification('Хатогӣ', 'Лутфан ID ва паролро ворид кунед', 'error');
                 return;
             }
             
-            let user = users.find(u => u.id === loginId && u.password === password);
+            const user = users.find(u => u.id === loginId && u.password === password);
             
             if (user) {
                 currentUser = user;
@@ -1853,18 +1787,15 @@
                     showNotification('Хуш омадед', 'Шумо ба система ворид шудед', 'success');
                 } else if (currentUser.status === 'pending') {
                     showScreen('waiting');
-                } else {
-                    showNotification('Хатогӣ', 'Ҳисоби шумо банд аст', 'error');
                 }
             } else {
                 showNotification('Хатогӣ', 'ID ё парол нодуруст аст', 'error');
             }
         }
 
-        // ========== DEMO MODE ==========
+        // Demo Mode
         window.checkDemo = function() {
-            // Create demo user
-            let demoUser = {
+            const demoUser = {
                 id: 'C12345',
                 name: 'Алишер Каримов',
                 phone: '+992 90 123 45 67',
@@ -1903,11 +1834,10 @@
             showNotification('Режими демо', 'Шумо дар режими демо ҳастед', 'info');
         }
 
-        // ========== CHECK APPROVAL ==========
+        // Check Approval
         window.checkApproval = function() {
             if (currentUser && currentUser.status === 'pending') {
-                // Check if admin approved
-                let updatedUser = users.find(u => u.id === currentUser.id);
+                const updatedUser = users.find(u => u.id === currentUser.id);
                 if (updatedUser && updatedUser.status === 'approved') {
                     currentUser = updatedUser;
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
@@ -1922,16 +1852,16 @@
             }
         }
 
-        // ========== ADMIN PANEL FUNCTIONS ==========
+        // Admin Panel Functions
         function updateAdminPanel() {
-            let adminPanel = document.getElementById('adminPanel');
-            let pendingList = document.getElementById('pendingCouriersList');
+            const adminPanel = document.getElementById('adminPanel');
+            const pendingList = document.getElementById('pendingCouriersList');
             
             if (pendingCouriers.length > 0) {
                 adminPanel.style.display = 'block';
                 
                 let html = '';
-                pendingCouriers.forEach((courier, index) => {
+                pendingCouriers.forEach(function(courier) {
                     html += `
                         <div class="pending-courier">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1960,21 +1890,17 @@
         }
 
         window.approveCourier = function(courierId) {
-            let courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
+            const courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
             if (courierIndex !== -1) {
-                // Update status
                 pendingCouriers[courierIndex].status = 'approved';
                 
-                // Update in users array
-                let userIndex = users.findIndex(u => u.id === courierId);
+                const userIndex = users.findIndex(u => u.id === courierId);
                 if (userIndex !== -1) {
                     users[userIndex].status = 'approved';
                 }
                 
-                // Remove from pending
                 pendingCouriers.splice(courierIndex, 1);
                 
-                // Save to localStorage
                 localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
                 localStorage.setItem('users', JSON.stringify(users));
                 
@@ -1985,21 +1911,17 @@
 
         window.rejectCourier = function(courierId) {
             if (confirm('Шумо боварӣ доред, ки ин курьерро рад мекунед?')) {
-                let courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
+                const courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
                 if (courierIndex !== -1) {
-                    // Update status
                     pendingCouriers[courierIndex].status = 'rejected';
                     
-                    // Update in users array
-                    let userIndex = users.findIndex(u => u.id === courierId);
+                    const userIndex = users.findIndex(u => u.id === courierId);
                     if (userIndex !== -1) {
                         users[userIndex].status = 'rejected';
                     }
                     
-                    // Remove from pending
                     pendingCouriers.splice(courierIndex, 1);
                     
-                    // Save to localStorage
                     localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
                     localStorage.setItem('users', JSON.stringify(users));
                     
@@ -2009,7 +1931,7 @@
             }
         }
 
-        // ========== PROFILE FUNCTIONS ==========
+        // Profile Functions
         window.openProfile = function() {
             updateProfileInfo();
             document.getElementById('profileModal').classList.add('active');
@@ -2027,37 +1949,35 @@
 
         function updateProfileInfo() {
             if (currentUser) {
-                document.getElementById('profileName').textContent = currentUser.name;
-                document.getElementById('profilePhone').textContent = currentUser.phone;
-                document.getElementById('profileId').textContent = currentUser.id;
-                document.getElementById('profileDate').textContent = currentUser.registeredAt;
-                document.getElementById('profileRating').textContent = currentUser.rating + ' ⭐';
-                document.getElementById('profileOrders').textContent = totalOrders;
-                document.getElementById('profileBalance').textContent = balance + ' сом';
+                document.getElementById('profileName').innerText = currentUser.name;
+                document.getElementById('profilePhone').innerText = currentUser.phone;
+                document.getElementById('profileId').innerText = currentUser.id;
+                document.getElementById('profileDate').innerText = currentUser.registeredAt;
+                document.getElementById('profileRating').innerText = currentUser.rating + ' ⭐';
+                document.getElementById('profileOrders').innerText = totalOrders;
+                document.getElementById('profileBalance').innerText = balance + ' сом';
                 
-                let photoStatus = currentUser.photos ? 'Тасдиқ шудааст' : 'Мавҷуд нест';
-                document.getElementById('profilePhotosStatus').textContent = photoStatus;
+                const photoStatus = currentUser.photos ? 'Тасдиқ шудааст' : 'Мавҷуд нест';
+                document.getElementById('profilePhotosStatus').innerText = photoStatus;
             }
         }
 
         window.logout = function() {
             if (confirm('Шумо мехоҳед аз акаунт бароед?')) {
-                // Stop tracking
                 if (watchId) {
                     navigator.geolocation.clearWatch(watchId);
                 }
                 
-                // Stop camera if open
                 if (cameraStream) {
-                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream.getTracks().forEach(function(track) {
+                        track.stop();
+                    });
                 }
                 
-                // Stop timer
                 if (orderTimer) {
                     clearInterval(orderTimer);
                 }
                 
-                // Clear localStorage
                 localStorage.removeItem('currentUser');
                 localStorage.removeItem('balance');
                 localStorage.removeItem('totalOrders');
@@ -2073,22 +1993,19 @@
                 closeProfile();
                 showScreen('auth');
                 
-                // Reset form
                 document.getElementById('loginId').value = '';
                 document.getElementById('loginPassword').value = '';
                 document.getElementById('fullName').value = '';
                 document.getElementById('phone').value = '';
                 document.getElementById('password').value = '';
                 
-                // Reset photos
                 photos = {
                     face: null,
                     passport: null,
                     selfie: null
                 };
                 
-                // Hide previews
-                document.querySelectorAll('.photo-preview-container').forEach(el => {
+                document.querySelectorAll('.photo-preview-container').forEach(function(el) {
                     el.style.display = 'none';
                 });
                 
@@ -2096,7 +2013,7 @@
             }
         }
 
-        // ========== MAP FUNCTIONS ==========
+        // Map Functions
         function initMap() {
             if (!map) {
                 map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 13);
@@ -2110,9 +2027,9 @@
         function startLocationTracking() {
             if (navigator.geolocation) {
                 watchId = navigator.geolocation.watchPosition(
-                    (position) => {
-                        let lat = position.coords.latitude;
-                        let lng = position.coords.longitude;
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
                         
                         updateCourierMarker(lat, lng);
                         
@@ -2120,7 +2037,7 @@
                             updateRoute(lat, lng, currentOrder.lat, currentOrder.lng);
                         }
                     },
-                    (error) => {
+                    function(error) {
                         console.log('Location error:', error);
                         updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
                     },
@@ -2139,7 +2056,7 @@
             if (courierMarker) {
                 courierMarker.setLatLng([lat, lng]);
             } else {
-                let courierIcon = L.divIcon({
+                const courierIcon = L.divIcon({
                     className: 'custom-marker',
                     html: '<div style="background: var(--primary); width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow);"></div>',
                     iconSize: [24, 24]
@@ -2161,7 +2078,7 @@
                 map.removeLayer(customerMarker);
             }
             
-            let customerIcon = L.divIcon({
+            const customerIcon = L.divIcon({
                 className: 'customer-marker',
                 html: '<div style="background: var(--danger); width: 30px; height: 30px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>',
                 iconSize: [30, 30]
@@ -2177,7 +2094,7 @@
                 map.removeLayer(routeLine);
             }
             
-            let points = [
+            const points = [
                 [courierLat, courierLng],
                 [customerLat, customerLng]
             ];
@@ -2189,13 +2106,13 @@
                 dashArray: '8, 8'
             }).addTo(map);
             
-            let bounds = L.latLngBounds(points);
+            const bounds = L.latLngBounds(points);
             map.fitBounds(bounds, { padding: [50, 50] });
         }
 
         window.centerOnCourier = function() {
             if (courierMarker) {
-                let pos = courierMarker.getLatLng();
+                const pos = courierMarker.getLatLng();
                 map.setView([pos.lat, pos.lng], 16);
             }
         }
@@ -2204,7 +2121,7 @@
             if (routeLine) {
                 map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
             } else if (currentOrder && courierMarker) {
-                let bounds = L.latLngBounds([
+                const bounds = L.latLngBounds([
                     courierMarker.getLatLng(),
                     [currentOrder.lat, currentOrder.lng]
                 ]);
@@ -2212,43 +2129,43 @@
             }
         }
 
-        // ========== ONLINE/OFFLINE TOGGLE ==========
+        // Online/Offline Toggle
         window.toggleOnline = function() {
             isOnline = !isOnline;
-            let toggle = document.getElementById('onlineToggle');
-            let statusText = document.getElementById('statusText');
+            const toggle = document.getElementById('onlineToggle');
+            const statusText = document.getElementById('statusText');
             
             if (isOnline) {
                 toggle.classList.add('active');
-                statusText.textContent = 'Онлайн';
+                statusText.innerText = 'Онлайн';
                 showNotification('Ҳолат', 'Шумо онлайн ҳастед. Заказҳо пайдо мешаванд.', 'success');
                 loadOrdersTab();
             } else {
                 toggle.classList.remove('active');
-                statusText.textContent = 'Офлайн';
+                statusText.innerText = 'Офлайн';
                 showNotification('Ҳолат', 'Шумо офлайн ҳастед.', 'info');
             }
         }
 
-        // ========== BALANCE UPDATE ==========
+        // Balance Update
         function updateBalance() {
-            let balanceEl = document.getElementById('balanceDisplay');
-            let mainBalanceEl = document.getElementById('mainBalance');
+            const balanceEl = document.getElementById('balanceDisplay');
+            const mainBalanceEl = document.getElementById('mainBalance');
             
-            if (balanceEl) balanceEl.textContent = balance + ' сом';
-            if (mainBalanceEl) mainBalanceEl.textContent = balance + ' сом';
+            if (balanceEl) balanceEl.innerText = balance + ' сом';
+            if (mainBalanceEl) mainBalanceEl.innerText = balance + ' сом';
             
             localStorage.setItem('balance', balance.toString());
         }
 
-        // ========== NOTIFICATION ==========
+        // Notification
         function showNotification(title, message, type = 'info') {
-            let notification = document.getElementById('notification');
-            let titleEl = document.getElementById('notificationTitle');
-            let textEl = document.getElementById('notificationText');
+            const notification = document.getElementById('notification');
+            const titleEl = document.getElementById('notificationTitle');
+            const textEl = document.getElementById('notificationText');
             
-            titleEl.textContent = title;
-            textEl.textContent = message;
+            titleEl.innerText = title;
+            textEl.innerText = message;
             
             notification.style.borderLeftColor = 
                 type === 'success' ? 'var(--success)' : 
@@ -2261,26 +2178,26 @@
                 clearTimeout(notificationTimeout);
             }
             
-            notificationTimeout = setTimeout(() => {
+            notificationTimeout = setTimeout(function() {
                 notification.classList.remove('show');
             }, 4000);
         }
 
-        // ========== TIMER ==========
+        // Timer
         function startOrderTimer() {
             if (orderTimer) {
                 clearInterval(orderTimer);
             }
             
             timerSeconds = 0;
-            let timerEl = document.getElementById('orderTimer');
+            const timerEl = document.getElementById('orderTimer');
             
             if (timerEl) {
-                orderTimer = setInterval(() => {
+                orderTimer = setInterval(function() {
                     timerSeconds++;
-                    let minutes = Math.floor(timerSeconds / 60);
-                    let seconds = timerSeconds % 60;
-                    if (timerEl) timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    const minutes = Math.floor(timerSeconds / 60);
+                    const seconds = timerSeconds % 60;
+                    if (timerEl) timerEl.innerText = minutes + ':' + (seconds < 10 ? '0' + seconds : seconds);
                 }, 1000);
             }
         }
@@ -2292,9 +2209,9 @@
             }
         }
 
-        // ========== ORDER MANAGEMENT ==========
+        // Order Management
         function loadOrdersTab() {
-            let content = document.getElementById('mainContent');
+            const content = document.getElementById('mainContent');
             
             if (!isOnline) {
                 content.innerHTML = `
@@ -2317,7 +2234,7 @@
             `;
             
             if (availableOrders.length > 0) {
-                availableOrders.forEach(order => {
+                availableOrders.forEach(function(order) {
                     ordersHtml += `
                         <div class="order-card" id="order-${order.id}">
                             <div class="order-header">
@@ -2391,7 +2308,7 @@
         }
 
         window.acceptOrder = function(orderId) {
-            let order = availableOrders.find(o => o.id === orderId);
+            const order = availableOrders.find(o => o.id === orderId);
             if (!order) return;
             
             currentOrder = order;
@@ -2400,9 +2317,11 @@
             
             addCustomerMarker(order.lat, order.lng, order.delivery);
             
-            let orderCard = document.getElementById('order-' + orderId);
+            const orderCard = document.getElementById('order-' + orderId);
             if (orderCard) {
-                let timerValue = document.getElementById('orderTimer') ? document.getElementById('orderTimer').textContent : '0:00';
+                const timerEl = document.getElementById('orderTimer');
+                const timerValue = timerEl ? timerEl.innerText : '0:00';
+                
                 orderCard.innerHTML = `
                     <div class="order-header">
                         <div class="order-icon" style="background: var(--success);">
@@ -2447,7 +2366,7 @@
             }
             
             if (courierMarker) {
-                let pos = courierMarker.getLatLng();
+                const pos = courierMarker.getLatLng();
                 updateRoute(pos.lat, pos.lng, order.lat, order.lng);
             }
             
@@ -2457,9 +2376,9 @@
         window.arrivedAtCustomer = function() {
             if (!currentOrder) return;
             
-            let orderCard = document.querySelector('.order-card');
+            const orderCard = document.querySelector('.order-card');
             if (orderCard) {
-                let actionsDiv = orderCard.querySelector('.order-actions');
+                const actionsDiv = orderCard.querySelector('.order-actions');
                 actionsDiv.innerHTML = `
                     <button class="btn-delivered" onclick="deliverOrder()" style="display: flex;">
                         <i class="fas fa-check-circle"></i>
@@ -2474,7 +2393,7 @@
         window.deliverOrder = function() {
             if (!currentOrder) return;
             
-            let completedOrder = {
+            const completedOrder = {
                 ...currentOrder,
                 completedAt: new Date().toLocaleString('tg-TJ'),
                 deliveryTime: timerSeconds,
@@ -2515,7 +2434,7 @@
             
             showNotification('Заказ супорида шуд', 'Ташаккур! Барои заказҳои нав омода шавед', 'success');
             
-            setTimeout(() => {
+            setTimeout(function() {
                 if (isOnline) {
                     simulateNewOrder();
                 }
@@ -2525,9 +2444,9 @@
         window.declineOrder = function(orderId) {
             if (!confirm('Шумо мехоҳед ин заказро рад кунед?')) return;
             
-            let order = availableOrders.find(o => o.id === orderId);
+            const order = availableOrders.find(o => o.id === orderId);
             if (order) {
-                let cancelledOrder = {
+                const cancelledOrder = {
                     ...order,
                     completedAt: new Date().toLocaleString('tg-TJ'),
                     status: 'cancelled'
@@ -2555,7 +2474,7 @@
         }
 
         function simulateNewOrder() {
-            let newOrder = {
+            const newOrder = {
                 id: 'ORD' + Date.now(),
                 customer: 'Мизоҷи нав',
                 pickup: 'Бӯстон, ' + Math.floor(Math.random() * 100),
@@ -2573,9 +2492,9 @@
             showNotification('Закази нав!', 'Закази #' + newOrder.id.slice(-4) + ' пайдо шуд', 'success');
         }
 
-        // ========== HISTORY TAB ==========
+        // History Tab
         function loadHistoryTab() {
-            let content = document.getElementById('mainContent');
+            const content = document.getElementById('mainContent');
             
             let historyHtml = '<div style="margin-bottom: 20px;">';
             
@@ -2587,10 +2506,10 @@
             `;
             
             if (orderHistory.length > 0) {
-                orderHistory.reverse().forEach(order => {
-                    let statusClass = order.status === 'delivered' ? 'status-delivered' : 
+                orderHistory.slice().reverse().forEach(function(order) {
+                    const statusClass = order.status === 'delivered' ? 'status-delivered' : 
                                      order.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
-                    let statusText = order.status === 'delivered' ? 'Супорида шуд' : 
+                    const statusText = order.status === 'delivered' ? 'Супорида шуд' : 
                                     order.status === 'cancelled' ? 'Рад карда шуд' : 'Дар ҳол';
                     
                     historyHtml += `
@@ -2621,27 +2540,31 @@
             content.innerHTML = historyHtml;
         }
 
-        // ========== STATS TAB ==========
+        // Stats Tab
         function loadStatsTab() {
-            let content = document.getElementById('mainContent');
+            const content = document.getElementById('mainContent');
+            const name = currentUser ? currentUser.name : 'Курьер';
+            const id = currentUser ? currentUser.id : 'C00000';
+            const rating = currentUser ? currentUser.rating : 5.0;
             
             let statsHtml = '<div style="margin-bottom: 20px;">';
             
-            // Profile Card
             statsHtml += `
                 <div class="profile-card" onclick="openProfile()">
                     <div class="profile-card-avatar">
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="profile-card-info">
-                        <h3>${currentUser?.name || 'Курьер'}</h3>
-                        <p>ID: ${currentUser?.id || 'C00000'}</p>
+                        <h3>${name}</h3>
+                        <p>ID: ${id}</p>
                         <span class="profile-card-badge">
-                            <i class="fas fa-star"></i> ${currentUser?.rating || 5.0}
+                            <i class="fas fa-star"></i> ${rating}
                         </span>
                     </div>
                 </div>
             `;
+            
+            const successRate = totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : '0.0';
             
             statsHtml += `
                 <div class="balance-card">
@@ -2663,7 +2586,7 @@
                         <div class="stat-label">Рад карда шуд</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">${((completedOrders / (totalOrders || 1)) * 100).toFixed(1)}%</div>
+                        <div class="stat-value">${successRate}%</div>
                         <div class="stat-label">Муваффақият</div>
                     </div>
                 </div>
@@ -2678,9 +2601,9 @@
             content.innerHTML = statsHtml;
         }
 
-        // ========== TAB SWITCHING ==========
+        // Tab Switching
         window.switchTab = function(tab) {
-            document.querySelectorAll('.nav-item').forEach(item => {
+            document.querySelectorAll('.nav-item').forEach(function(item) {
                 item.classList.remove('active');
             });
             
@@ -2696,7 +2619,7 @@
             }
         }
 
-        // ========== CLEAN UP ==========
+        // Clean up
         window.addEventListener('beforeunload', function() {
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
@@ -2705,7 +2628,9 @@
                 clearInterval(orderTimer);
             }
             if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream.getTracks().forEach(function(track) {
+                    track.stop();
+                });
             }
         });
     </script>
