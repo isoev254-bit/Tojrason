@@ -1189,6 +1189,24 @@
             margin-top: 5px;
             display: inline-block;
         }
+
+        /* Camera loading indicator */
+        .camera-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .camera-loading i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -1424,6 +1442,10 @@
             <button onclick="closeCamera()"><i class="fas fa-times"></i></button>
         </div>
         <div class="camera-view">
+            <div class="camera-loading" id="cameraLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Кушодани камера...</p>
+            </div>
             <video id="cameraVideo" autoplay playsinline></video>
         </div>
         <div class="camera-controls">
@@ -1504,6 +1526,12 @@
             updateBalance();
             checkAuth();
             updateAdminPanel();
+            
+            // Camera video event listeners
+            const video = document.getElementById('cameraVideo');
+            video.addEventListener('loadeddata', function() {
+                document.getElementById('cameraLoading').style.display = 'none';
+            });
         });
 
         // Auth Functions
@@ -1537,7 +1565,6 @@
 
         // ========== FIXED CAMERA FUNCTIONS ==========
         window.openCamera = function(type) {
-            // Agar kamera allaqachon kushoda shavad
             if (isCameraOpening) {
                 alert('Камера дар ҳоли кушода шудан аст. Лутфан интизор шавед.');
                 return;
@@ -1553,6 +1580,9 @@
             };
             document.getElementById('cameraTitle').innerText = titles[type];
             
+            // Show loading
+            document.getElementById('cameraLoading').style.display = 'block';
+            
             // Show camera modal
             document.getElementById('cameraModal').classList.add('active');
             
@@ -1560,6 +1590,7 @@
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 alert('Браузери шумо камераро дастгирӣ намекунад');
                 isCameraOpening = false;
+                document.getElementById('cameraLoading').style.display = 'none';
                 closeCamera();
                 return;
             }
@@ -1573,12 +1604,11 @@
         function startCamera() {
             const video = document.getElementById('cameraVideo');
             
-            // Stop any existing stream properly
+            // Stop any existing stream
             if (cameraStream) {
                 try {
                     cameraStream.getTracks().forEach(function(track) {
                         track.stop();
-                        track.enabled = false;
                     });
                 } catch (e) {
                     console.log('Error stopping tracks:', e);
@@ -1588,11 +1618,14 @@
             
             // Clear video source
             video.srcObject = null;
-            video.load();
             
             // Simple constraints for better compatibility
             const constraints = {
-                video: true,
+                video: {
+                    facingMode: currentCamera,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
                 audio: false
             };
             
@@ -1605,35 +1638,42 @@
                     cameraStream = stream;
                     video.srcObject = stream;
                     
-                    // Play video when ready
-                    video.onloadedmetadata = function() {
-                        video.play()
-                            .then(() => {
-                                console.log('Camera started successfully');
-                                isCameraOpening = false;
-                            })
-                            .catch(function(e) {
-                                console.log('Play error:', e);
-                                alert('Хатогӣ дар пӯшонидани видео: ' + e.message);
-                                isCameraOpening = false;
-                            });
+                    // Hide loading when video starts playing
+                    video.onplaying = function() {
+                        document.getElementById('cameraLoading').style.display = 'none';
+                        isCameraOpening = false;
                     };
+                    
+                    // Play video
+                    video.play().catch(function(e) {
+                        console.log('Play error:', e);
+                        document.getElementById('cameraLoading').style.display = 'none';
+                        alert('Хатогӣ дар пӯшонидани видео');
+                        isCameraOpening = false;
+                    });
                 })
                 .catch(function(err) {
                     console.log('Camera error:', err.name, err.message);
+                    document.getElementById('cameraLoading').style.display = 'none';
                     isCameraOpening = false;
                     
                     if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                        alert('Лутфан ба камера иҷозат диҳед. Агар иҷозат надода бошед, танзимоти браузерро тафтиш кунед.');
+                        if (confirm('Барои гирифтани акс, ба камера иҷозат додан лозим аст. Оё мехоҳед иҷозат диҳед?')) {
+                            // Try again with user interaction
+                            setTimeout(startCamera, 100);
+                        } else {
+                            closeCamera();
+                        }
                     } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
                         alert('Камера ёфт нашуд. Лутфан камераро пайваст кунед.');
+                        closeCamera();
                     } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
                         alert('Камера дар истифода аст. Лутфан барномаҳои дигарро пӯшед.');
+                        closeCamera();
                     } else {
                         alert('Хатогӣ дар кушодани камера: ' + (err.message || 'номаълум'));
+                        closeCamera();
                     }
-                    
-                    closeCamera();
                 });
         }
 
@@ -1644,7 +1684,6 @@
                 try {
                     cameraStream.getTracks().forEach(function(track) {
                         track.stop();
-                        track.enabled = false;
                     });
                 } catch (e) {
                     console.log('Error stopping tracks:', e);
@@ -1657,18 +1696,17 @@
             video.load();
             
             document.getElementById('cameraModal').classList.remove('active');
+            document.getElementById('cameraLoading').style.display = 'block';
             isCameraOpening = false;
         }
 
         window.switchCamera = function() {
-            // Simple camera switching - just close and reopen with different facing mode
             currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
             
             if (cameraStream) {
                 try {
                     cameraStream.getTracks().forEach(function(track) {
                         track.stop();
-                        track.enabled = false;
                     });
                 } catch (e) {
                     console.log('Error stopping tracks:', e);
@@ -1678,7 +1716,8 @@
             
             const video = document.getElementById('cameraVideo');
             video.srcObject = null;
-            video.load();
+            
+            document.getElementById('cameraLoading').style.display = 'block';
             
             setTimeout(function() {
                 startCamera();
