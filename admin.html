@@ -250,12 +250,46 @@ select.fii{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
       <h1>Toj<b>Rason</b></h1>
       <p>Системаи идоракунии таҳвил</p>
     </div>
-    <div class="ln-card">
-      <div class="ln-tabs">
-        <button class="ln-tab on" id="lt1" onclick="lnTab(0)">Даромад</button>
-        <button class="ln-tab" id="lt2" onclick="lnTab(1)">Сабти ном</button>
+
+    <!-- STEP 1: Role chooser -->
+    <div id="lnChoose">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.6)">Нақши худро интихоб кунед</div>
       </div>
-      <div id="lf1">
+      <div onclick="goLnRole('admin')"
+        style="background:rgba(59,130,246,.15);border:1.5px solid rgba(59,130,246,.3);border-radius:18px;padding:22px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;margin-bottom:12px;transition:all .2s"
+        onmouseover="this.style.borderColor='rgba(59,130,246,.7)'" onmouseout="this.style.borderColor='rgba(59,130,246,.3)'"
+        ontouchstart="this.style.borderColor='rgba(59,130,246,.7)'" ontouchend="this.style.borderColor='rgba(59,130,246,.3)'">
+        <div style="width:52px;height:52px;background:rgba(59,130,246,.2);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">⚙️</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:#fff">Админ / Модератор</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:3px">Идоракунии фармоишҳо ва курьерҳо</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;color:rgba(255,255,255,.3)">›</div>
+      </div>
+      <div onclick="goLnRole('super')"
+        style="background:rgba(245,197,24,.1);border:1.5px solid rgba(245,197,24,.3);border-radius:18px;padding:22px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s"
+        onmouseover="this.style.borderColor='rgba(245,197,24,.7)'" onmouseout="this.style.borderColor='rgba(245,197,24,.3)'"
+        ontouchstart="this.style.borderColor='rgba(245,197,24,.7)'" ontouchend="this.style.borderColor='rgba(245,197,24,.3)'">
+        <div style="width:52px;height:52px;background:rgba(245,197,24,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">👑</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:#F5C518">Супер Админ</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:3px">Идоракунии пурраи система</div>
+        </div>
+        <div style="margin-left:auto;font-size:20px;color:rgba(255,255,255,.3)">›</div>
+      </div>
+    </div>
+
+    <!-- STEP 2a: Admin login -->
+    <div id="lnAdmin" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <button onclick="goLnRole(null)" style="width:36px;height:36px;background:rgba(255,255,255,.1);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:#fff">⚙️ Даромади Админ</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4)">Логин ва паролро ворид кунед</div>
+        </div>
+      </div>
+      <div class="ln-card">
         <div class="ln-err" id="lerr"></div>
         <div class="fg"><label class="fl">Логин</label>
           <input class="fi" id="liU" placeholder="логин" autocomplete="username"></div>
@@ -263,16 +297,51 @@ select.fii{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns
           <input class="fi" type="password" id="liP" placeholder="••••••" autocomplete="current-password"></div>
         <button class="btn-ln btn-ln-p" onclick="doLogin()">→ Даромад</button>
       </div>
-      <div id="lf2" style="display:none">
-        <div class="ln-info">ℹ️ Супер Админи аввалро созед — танҳо якбор</div>
-        <div class="ln-err" id="rerr"></div>
-        <div class="fg"><label class="fl">Номи пурра</label><input class="fi" id="rnN" placeholder="Исм насаб"></div>
-        <div class="fg"><label class="fl">Логин</label><input class="fi" id="rnU" placeholder="логин"></div>
-        <div class="fg"><label class="fl">Парол</label><input class="fi" type="password" id="rnP" placeholder="камаш 6 символ"></div>
-        <div class="fg"><label class="fl">Такрори парол</label><input class="fi" type="password" id="rnC" placeholder="такрор"></div>
-        <button class="btn-ln btn-ln-g" onclick="doRegister()">✓ Сабти ном</button>
+    </div>
+
+    <!-- STEP 2b: Super Admin login + register -->
+    <div id="lnSuper" style="display:none">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <button onclick="goLnRole(null)" style="width:36px;height:36px;background:rgba(255,255,255,.1);border:none;border-radius:10px;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">‹</button>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:#F5C518">👑 Даромади Супер Админ</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4)">Идоракунии пурраи система</div>
+        </div>
+      </div>
+      <!-- Super tabs -->
+      <div class="ln-tabs" style="background:rgba(245,197,24,.1);margin-bottom:0">
+        <button class="ln-tab on" id="slt1" onclick="sLnTab(0)" style="color:rgba(255,255,255,.5)">Даромад</button>
+        <button class="ln-tab" id="slt2" onclick="sLnTab(1)" style="color:rgba(255,255,255,.5)">Сабти ном</button>
+      </div>
+      <div class="ln-card" style="border-radius:0 0 20px 20px;border-top:none;border-color:rgba(245,197,24,.2);background:rgba(245,197,24,.05)">
+        <!-- Super login -->
+        <div id="slf1">
+          <div class="ln-err" id="slerr"></div>
+          <div class="fg"><label class="fl" style="color:rgba(245,197,24,.6)">Логин</label>
+            <input class="fi" id="sliU" placeholder="логин" style="border-color:rgba(245,197,24,.2)" autocomplete="username"></div>
+          <div class="fg"><label class="fl" style="color:rgba(245,197,24,.6)">Парол</label>
+            <input class="fi" type="password" id="sliP" placeholder="••••••" style="border-color:rgba(245,197,24,.2)" autocomplete="current-password"></div>
+          <button class="btn-ln" onclick="doSuperLogin()" style="background:linear-gradient(135deg,#F5C518,#D4A017);color:#1B2B4B">→ Даромад</button>
+        </div>
+        <!-- Super register -->
+        <div id="slf2" style="display:none">
+          <div class="ln-info" style="background:rgba(245,197,24,.1);border-color:rgba(245,197,24,.2);color:#F5C518">
+            👑 Супер Админи аввалро созед — танҳо якбор
+          </div>
+          <div class="ln-err" id="srerr"></div>
+          <div class="fg"><label class="fl" style="color:rgba(245,197,24,.6)">Номи пурра</label>
+            <input class="fi" id="srnN" placeholder="Исм насаб" style="border-color:rgba(245,197,24,.2)"></div>
+          <div class="fg"><label class="fl" style="color:rgba(245,197,24,.6)">Логин</label>
+            <input class="fi" id="srnU" placeholder="логин" style="border-color:rgba(245,197,24,.2)"></div>
+          <div class="fg"><label class="fl" style="color:rgba(245,197,24,.6)">Парол</label>
+            <input class="fi" type="password" id="srnP" placeholder="камаш 6 символ" style="border-color:rgba(245,197,24,.2)"></div>
+          <div class="fg"><label class="fl" style="color:rgba(245,197,24,.6)">Такрори парол</label>
+            <input class="fi" type="password" id="srnC" placeholder="такрор" style="border-color:rgba(245,197,24,.2)"></div>
+          <button class="btn-ln" onclick="doRegister()" style="background:linear-gradient(135deg,#F5C518,#D4A017);color:#1B2B4B">✓ Сабти ном</button>
+        </div>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -588,23 +657,37 @@ window.onload=async()=>{
   },350);
 };
 
-// ══════ LOGIN ══════
-window.lnTab=function(i){
-  document.getElementById('lf1').style.display=i===0?'block':'none';
-  document.getElementById('lf2').style.display=i===1?'block':'none';
-  document.getElementById('lt1').classList.toggle('on',i===0);
-  document.getElementById('lt2').classList.toggle('on',i===1);
+// ══════ LOGIN NAVIGATION ══════
+window.goLnRole=function(role){
+  document.getElementById('lnChoose').style.display = role===null ? 'block' : 'none';
+  document.getElementById('lnAdmin').style.display  = role==='admin' ? 'block' : 'none';
+  document.getElementById('lnSuper').style.display  = role==='super' ? 'block' : 'none';
 };
 
+window.lnTab=function(i){
+  // kept for compat but not used now
+};
+
+window.sLnTab=function(i){
+  document.getElementById('slf1').style.display = i===0 ? 'block' : 'none';
+  document.getElementById('slf2').style.display = i===1 ? 'block' : 'none';
+  document.getElementById('slt1').classList.toggle('on', i===0);
+  document.getElementById('slt2').classList.toggle('on', i===1);
+};
+
+// ══════ ADMIN LOGIN (all roles) ══════
 window.doLogin=async function(){
-  const u=gv('liU'),p=gv('liP');
-  if(!u||!p)return se('lerr','Логин ва паролро ворид кунед');
+  const u=gv('liU'), p=gv('liP');
+  if(!u||!p) return se('lerr','Логин ва паролро ворид кунед');
   try{
     const snap=await db.ref('admins').once('value');
     const d=snap.val()||{};
     const f=Object.entries(d).find(([k,v])=>v.username===u&&v.password===p);
-    if(!f)return se('lerr','Логин ё парол нодуруст аст');
-    me={id:f[0],...f[1]};
+    if(!f) return se('lerr','Логин ё парол нодуруст аст');
+    const admin={id:f[0],...f[1]};
+    // Only non-super roles can login here
+    if(admin.role==='super_admin') return se('lerr','Супер Админ — дари дигарро истифода баред 👑');
+    me=admin;
     localStorage.setItem('trAdminV2',JSON.stringify(me));
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='block';
@@ -612,14 +695,32 @@ window.doLogin=async function(){
   }catch(e){se('lerr','Хато: '+e.message);}
 };
 
-window.doRegister=async function(){
-  const n=gv('rnN'),u=gv('rnU'),p=gv('rnP'),c=gv('rnC');
-  if(!n||!u||!p||!c)return se('rerr','Ҳамаи майдонҳоро пур кунед');
-  if(p.length<6)return se('rerr','Парол камаш 6 символ');
-  if(p!==c)return se('rerr','Паролҳо мувофиқ нестанд');
+// ══════ SUPER ADMIN LOGIN ══════
+window.doSuperLogin=async function(){
+  const u=gv('sliU'), p=gv('sliP');
+  if(!u||!p) return se('slerr','Логин ва паролро ворид кунед');
   try{
     const snap=await db.ref('admins').once('value');
-    if(snap.exists())return se('rerr','Супер Админ аллакай вуҷуд дорад');
+    const d=snap.val()||{};
+    const f=Object.entries(d).find(([k,v])=>v.username===u&&v.password===p&&v.role==='super_admin');
+    if(!f) return se('slerr','Супер Админ ёфт нашуд');
+    me={id:f[0],...f[1]};
+    localStorage.setItem('trAdminV2',JSON.stringify(me));
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('app').style.display='block';
+    initApp();
+  }catch(e){se('slerr','Хато: '+e.message);}
+};
+
+// ══════ SUPER ADMIN REGISTER ══════
+window.doRegister=async function(){
+  const n=gv('srnN'), u=gv('srnU'), p=gv('srnP'), c=gv('srnC');
+  if(!n||!u||!p||!c) return se('srerr','Ҳамаи майдонҳоро пур кунед');
+  if(p.length<6) return se('srerr','Парол камаш 6 символ');
+  if(p!==c) return se('srerr','Паролҳо мувофиқ нестанд');
+  try{
+    const snap=await db.ref('admins').once('value');
+    if(snap.exists()) return se('srerr','Супер Админ аллакай вуҷуд дорад');
     const id=db.ref('admins').push().key;
     const obj={id,name:n,username:u,password:p,role:'super_admin',createdAt:Date.now()};
     await db.ref('admins/'+id).set(obj);
@@ -627,7 +728,7 @@ window.doRegister=async function(){
     document.getElementById('loginScreen').style.display='none';
     document.getElementById('app').style.display='block';
     initApp(); toast('✅ Сабти ном муваффақ!','ok');
-  }catch(e){se('rerr','Хато: '+e.message);}
+  }catch(e){se('srerr','Хато: '+e.message);}
 };
 
 window.doLogout=function(){
@@ -635,7 +736,11 @@ window.doLogout=function(){
   me=null; localStorage.removeItem('trAdminV2');
   document.getElementById('app').style.display='none';
   document.getElementById('loginScreen').style.display='block';
-  lnTab(0); toast('Баромад карда шуд','if');
+  // Reset to chooser
+  document.getElementById('lnChoose').style.display='block';
+  document.getElementById('lnAdmin').style.display='none';
+  document.getElementById('lnSuper').style.display='none';
+  toast('Баромад карда шуд','if');
 };
 
 function se(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
