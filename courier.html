@@ -1,2735 +1,933 @@
 <!DOCTYPE html>
 <html lang="tg">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ТоҷРасон - Курьер</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        }
-
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #ffd600;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
-            --radius: 24px;
-            --radius-sm: 16px;
-            --radius-xs: 12px;
-        }
-
-        body {
-            background: var(--light);
-            color: var(--dark);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .screen {
-            display: none;
-            min-height: 100vh;
-            background: var(--light);
-            position: relative;
-            padding-bottom: 80px;
-        }
-
-        .screen.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 40px 20px;
-            border-radius: 0 0 40px 40px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .header i {
-            font-size: 70px;
-            color: var(--secondary);
-            margin-bottom: 15px;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 1;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            letter-spacing: -0.5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header p {
-            font-size: 16px;
-            opacity: 0.9;
-            position: relative;
-            z-index: 1;
-        }
-
-        .content {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 16px;
-            transition: all 0.3s;
-            background: white;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-        }
-
-        .phone-input-container {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-        }
-
-        .phone-prefix {
-            padding: 16px;
-            background: #f8fafc;
-            font-weight: 600;
-            color: var(--primary);
-            border-right: 2px solid var(--border);
-        }
-
-        .phone-input {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            font-size: 16px;
-        }
-
-        .phone-input:focus {
-            outline: none;
-        }
-
-        .camera-button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none;
-            border-radius: var(--radius-sm);
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .camera-button i {
-            font-size: 20px;
-        }
-
-        .camera-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
-        }
-
-        .photo-preview-container {
-            position: relative;
-            margin-top: 15px;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            display: none;
-        }
-
-        .photo-preview-container img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .remove-photo {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .remove-photo:hover {
-            background: var(--danger);
-            transform: scale(1.1);
-        }
-
-        .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border: none;
-            border-radius: var(--radius);
-            color: white;
-            font-weight: 700;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn-primary:active::after {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-secondary {
-            width: 100%;
-            padding: 16px;
-            background: white;
-            border: 2px solid var(--primary);
-            border-radius: var(--radius);
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .status-bar {
-            background: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .online-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-        }
-
-        .toggle-switch {
-            width: 60px;
-            height: 30px;
-            background: #e2e8f0;
-            border-radius: 30px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .toggle-switch.active {
-            background: var(--success);
-        }
-
-        .toggle-circle {
-            width: 26px;
-            height: 26px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .toggle-switch.active .toggle-circle {
-            left: 32px;
-        }
-
-        .balance-info {
-            font-weight: 800;
-            font-size: 20px;
-            color: var(--primary);
-            background: #f1f5f9;
-            padding: 8px 15px;
-            border-radius: 30px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .balance-info:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .profile-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s;
-        }
-
-        .profile-icon:hover {
-            transform: scale(1.05);
-        }
-
-        .map-container {
-            height: 350px;
-            position: relative;
-            margin: 0 0 20px 0;
-            border-radius: 0;
-            overflow: hidden;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .map-controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .map-button {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            font-size: 20px;
-            color: var(--primary);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .map-button:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .order-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            animation: slideUp 0.5s ease;
-            border: 1px solid var(--border);
-            transition: all 0.3s;
-        }
-
-        .order-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .order-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .order-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-        }
-
-        .order-info h3 {
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--dark);
-            font-size: 18px;
-        }
-
-        .order-info p {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .order-timer {
-            background: #f1f5f9;
-            padding: 10px 15px;
-            border-radius: var(--radius-xs);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-        }
-
-        .order-timer i {
-            color: var(--primary);
-        }
-
-        .timer-value {
-            font-size: 20px;
-            color: var(--primary);
-        }
-
-        .route-info {
-            background: #f8fafc;
-            border-radius: var(--radius-sm);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .route-point {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .route-point:last-child {
-            margin-bottom: 0;
-        }
-
-        .route-point:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 7px;
-            top: 20px;
-            width: 2px;
-            height: 30px;
-            background: var(--border);
-        }
-
-        .point-marker {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .point-marker.pickup {
-            background: var(--primary);
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
-        }
-
-        .point-marker.delivery {
-            background: var(--success);
-            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-        }
-
-        .point-address {
-            flex: 1;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .point-distance {
-            font-size: 12px;
-            color: var(--gray);
-        }
-
-        .order-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .order-actions button {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-accept {
-            background: linear-gradient(135deg, var(--success), #0d9488);
-            color: white;
-        }
-
-        .btn-arrived {
-            background: linear-gradient(135deg, var(--warning), #d97706);
-            color: white;
-            display: none;
-        }
-
-        .btn-delivered {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            display: none;
-        }
-
-        .btn-decline {
-            background: white;
-            border: 2px solid var(--danger) !important;
-            color: var(--danger);
-        }
-
-        .waiting-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 40px 20px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            margin: 20px 0;
-        }
-
-        .waiting-card i {
-            font-size: 70px;
-            color: var(--primary);
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .waiting-card h3 {
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .waiting-card p {
-            color: var(--gray);
-            margin-bottom: 25px;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 20px;
-            border-radius: var(--radius);
-            margin-bottom: 20px;
-        }
-
-        .balance-title {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-
-        .balance-amount {
-            font-size: 36px;
-            font-weight: 800;
-            color: var(--secondary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-sm);
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 20px 20px;
-            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.05);
-            border-top: 1px solid var(--border);
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: var(--gray);
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            padding: 5px 15px;
-            border-radius: 30px;
-        }
-
-        .nav-item i {
-            font-size: 22px;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            background: rgba(67, 97, 238, 0.1);
-        }
-
-        .history-item {
-            background: white;
-            padding: 15px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .history-info h4 {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .history-info p {
-            font-size: 12px;
-            color: var(--gray);
-        }
-
-        .history-status {
-            padding: 5px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .status-delivered {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .status-cancelled {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: var(--radius);
-            width: 100%;
-            max-width: 400px;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            position: relative;
-        }
-
-        .modal-avatar {
-            width: 100px;
-            height: 100px;
-            background: var(--secondary);
-            border-radius: 50%;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            color: var(--primary);
-            border: 4px solid white;
-            box-shadow: var(--shadow);
-        }
-
-        .modal-name {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .modal-phone {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .modal-info {
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .modal-info i {
-            width: 30px;
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        .modal-info .label {
-            flex: 1;
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .modal-info .value {
-            color: var(--dark);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .modal-footer {
-            padding: 20px;
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-        }
-
-        .btn-logout {
-            padding: 15px;
-            background: var(--danger);
-            border: none;
-            border-radius: var(--radius-sm);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-close {
-            padding: 12px;
-            background: #f1f5f9;
-            border: none;
-            border-radius: var(--radius-sm);
-            color: var(--gray);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-close:hover {
-            background: #e2e8f0;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            left: 20px;
-            background: white;
-            padding: 15px 20px;
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            z-index: 2000;
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            max-width: 400px;
-            margin: 0 auto;
-            border-left: 4px solid var(--primary);
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification i {
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        .notification-content {
-            flex: 1;
-        }
-
-        .notification-title {
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .notification-text {
-            font-size: 14px;
-            color: var(--gray);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .empty-state i {
-            font-size: 60px;
-            color: var(--border);
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            color: var(--gray);
-            font-weight: 600;
-        }
-
-        .login-section {
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .divider {
-            text-align: center;
-            position: relative;
-            margin: 30px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            width: calc(50% - 30px);
-            height: 2px;
-            background: var(--border);
-        }
-
-        .divider::before {
-            left: 0;
-        }
-
-        .divider::after {
-            right: 0;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 15px;
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .camera-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: black;
-            z-index: 2000;
-            flex-direction: column;
-        }
-
-        .camera-modal.active {
-            display: flex;
-        }
-
-        .camera-header {
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .camera-header button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .camera-view {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #cameraVideo {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .camera-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
-        }
-
-        .capture-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: white;
-            border: 4px solid var(--primary);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .capture-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .flash-btn, .switch-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-        }
-
-        .admin-section {
-            margin-top: 30px;
-            padding: 20px;
-            background: #fff3e6;
-            border-radius: var(--radius);
-            border-left: 4px solid var(--warning);
-        }
-
-        .admin-title {
-            font-weight: 700;
-            color: var(--warning);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .pending-courier {
-            background: white;
-            padding: 15px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .courier-photos {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            overflow-x: auto;
-            padding: 5px 0;
-        }
-
-        .courier-photo {
-            width: 80px;
-            height: 80px;
-            border-radius: var(--radius-xs);
-            object-fit: cover;
-            border: 2px solid var(--border);
-        }
-
-        .profile-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .profile-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .profile-card-avatar {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 30px;
-        }
-
-        .profile-card-info h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .profile-card-info p {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .profile-card-badge {
-            background: var(--success);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 30px;
-            font-size: 12px;
-            margin-top: 5px;
-            display: inline-block;
-        }
-
-        /* Camera loading indicator */
-        .camera-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 18px;
-            text-align: center;
-            z-index: 10;
-        }
-
-        .camera-loading i {
-            font-size: 40px;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ТоҷРасон - Курьер</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+:root{
+  --primary:#4361ee;--primary-dark:#3a56d4;--secondary:#ffd600;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --dark:#1e293b;--light:#f8fafc;--gray:#64748b;--border:#e2e8f0;
+  --shadow:0 10px 30px rgba(0,0,0,.08);--r:20px;--rs:14px;
+}
+body{background:var(--light);color:var(--dark);-webkit-font-smoothing:antialiased}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;padding-bottom:90px}
+.screen.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
+  padding:40px 20px;border-radius:0 0 36px 36px;text-align:center;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);
+  animation:rot 20s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.hdr i{font-size:64px;color:var(--secondary);position:relative;z-index:1;display:block;margin-bottom:12px}
+.hdr h1{font-size:26px;font-weight:800;position:relative;z-index:1}
+.hdr p{font-size:15px;opacity:.9;position:relative;z-index:1;margin-top:6px}
+
+.content{padding:20px}
+
+/* FORM */
+.fg{margin-bottom:20px}
+.flabel{display:block;font-size:14px;font-weight:600;color:var(--dark);margin-bottom:8px}
+.finput{width:100%;padding:15px;border:2px solid var(--border);border-radius:var(--rs);
+  font-size:16px;background:#fff;transition:.3s}
+.finput:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.1)}
+.phone-wrap{display:flex;align-items:center;background:#fff;border:2px solid var(--border);border-radius:var(--rs);overflow:hidden}
+.phone-pre{padding:15px;background:#f8fafc;font-weight:700;color:var(--primary);border-right:2px solid var(--border)}
+.phone-inp{flex:1;padding:15px;border:none;font-size:16px}
+.phone-inp:focus{outline:none}
+
+/* BUTTONS */
+.btn{width:100%;padding:17px;border:none;border-radius:var(--r);font-weight:700;
+  font-size:17px;cursor:pointer;transition:.25s;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;box-shadow:0 8px 20px rgba(67,97,238,.3)}
+.btn-primary:active{transform:scale(.98)}
+.btn-outline{background:#fff;border:2px solid var(--primary)!important;color:var(--primary)}
+.btn-outline:active{background:var(--primary);color:#fff}
+
+/* PHOTO SECTION */
+.photo-section{background:#f8fafc;border-radius:var(--rs);padding:16px;margin-top:10px}
+.photo-btns{display:flex;flex-direction:column;gap:10px}
+
+/* Камера тугмаси */
+.btn-cam{width:100%;padding:15px 20px;border:none;border-radius:var(--rs);
+  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;font-size:15px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:.25s;-webkit-tap-highlight-color:transparent}
+.btn-cam:active{opacity:.85;transform:scale(.98)}
+.btn-cam i{font-size:18px}
+
+/* Галерея тугмаси */
+.btn-gallery{width:100%;padding:13px 20px;border:2px solid var(--border);border-radius:var(--rs);
+  background:#fff;color:var(--gray);font-size:14px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:.25s;-webkit-tap-highlight-color:transparent}
+.btn-gallery:active{border-color:var(--primary);color:var(--primary)}
+
+/* Hidden file inputs */
+.file-inp{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}
+
+/* Preview */
+.preview-wrap{display:none;position:relative;margin-top:12px;border-radius:var(--rs);overflow:hidden;border:2px solid var(--success)}
+.preview-wrap img{width:100%;height:180px;object-fit:cover;display:block}
+.preview-ok{position:absolute;top:8px;left:8px;background:var(--success);color:#fff;
+  padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.btn-remove{position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;
+  border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center}
+
+/* STATUS BAR */
+.status-bar{background:rgba(255,255,255,.95);padding:14px 18px;display:flex;
+  justify-content:space-between;align-items:center;
+  box-shadow:var(--shadow);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.toggle-wrap{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.toggle{width:56px;height:28px;background:#e2e8f0;border-radius:28px;position:relative;cursor:pointer;transition:.3s}
+.toggle.on{background:var(--success)}
+.toggle-dot{width:24px;height:24px;background:#fff;border-radius:50%;position:absolute;
+  top:2px;left:2px;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.toggle.on .toggle-dot{left:30px}
+.balance-btn{font-weight:800;font-size:18px;color:var(--primary);background:#f1f5f9;
+  padding:7px 14px;border-radius:28px;cursor:pointer;border:none;transition:.25s}
+.profile-btn{width:42px;height:42px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:18px;cursor:pointer;border:2px solid #fff;box-shadow:var(--shadow)}
+
+/* MAP */
+.map-wrap{height:320px;position:relative}
+#map{width:100%;height:100%}
+.map-btns{position:absolute;bottom:16px;right:16px;z-index:10;display:flex;flex-direction:column;gap:8px}
+.map-btn{width:44px;height:44px;background:#fff;border:none;border-radius:50%;
+  box-shadow:var(--shadow);cursor:pointer;font-size:18px;color:var(--primary);
+  display:flex;align-items:center;justify-content:center}
+
+/* ORDER CARD */
+.order-card{background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);
+  margin-bottom:18px;border:1px solid var(--border);animation:slideUp .4s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.order-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;
+  padding-bottom:14px;border-bottom:2px solid var(--border)}
+.order-icon{width:54px;height:54px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+.order-info h3{font-weight:700;font-size:17px;margin-bottom:4px}
+.order-info p{color:var(--gray);font-size:13px}
+.timer-box{background:#f1f5f9;padding:10px 14px;border-radius:10px;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.timer-box i{color:var(--primary)}
+.timer-val{font-size:19px;color:var(--primary);font-weight:800}
+.route-box{background:#f8fafc;border-radius:var(--rs);padding:14px;margin-bottom:16px}
+.route-pt{display:flex;align-items:center;gap:14px;margin-bottom:12px;position:relative}
+.route-pt:last-child{margin-bottom:0}
+.route-pt:not(:last-child)::after{content:'';position:absolute;left:7px;top:18px;
+  width:2px;height:26px;background:var(--border)}
+.pt-dot{width:16px;height:16px;border-radius:50%;z-index:1;flex-shrink:0}
+.pt-dot.pick{background:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.15)}
+.pt-dot.drop{background:var(--success);box-shadow:0 0 0 4px rgba(16,185,129,.15)}
+.pt-addr{font-size:14px;font-weight:500}
+.pt-sub{font-size:12px;color:var(--gray)}
+.order-meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:14px}
+.order-actions{display:flex;gap:10px}
+.order-actions button{flex:1;padding:15px;border:none;border-radius:var(--rs);
+  font-weight:700;font-size:15px;cursor:pointer;transition:.25s;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-accept{background:linear-gradient(135deg,var(--success),#0d9488);color:#fff}
+.btn-decline{background:#fff;border:2px solid var(--danger)!important;color:var(--danger)}
+.btn-arrived{background:linear-gradient(135deg,var(--warning),#d97706);color:#fff}
+.btn-deliver{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+
+/* WAITING */
+.wait-card{background:#fff;border-radius:var(--r);padding:40px 20px;text-align:center;box-shadow:var(--shadow);margin:20px 0}
+.wait-card i{font-size:64px;color:var(--primary);margin-bottom:18px;animation:pulse 2s infinite;display:block}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.wait-card h3{font-weight:700;margin-bottom:8px;font-size:20px}
+.wait-card p{color:var(--gray);font-size:14px;margin-bottom:24px}
+.spinner{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--primary);
+  border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);
+  display:flex;justify-content:space-around;padding:10px 16px 20px;
+  box-shadow:0 -4px 24px rgba(0,0,0,.06);border-top:1px solid var(--border);
+  z-index:100;backdrop-filter:blur(8px)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;
+  color:var(--gray);font-size:11px;cursor:pointer;padding:6px 18px;border-radius:28px;transition:.25s}
+.nav-item i{font-size:20px}
+.nav-item.active{color:var(--primary);background:rgba(67,97,238,.1)}
+
+/* BALANCE CARD */
+.bal-card{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
+  padding:20px;border-radius:var(--r);margin-bottom:18px}
+.bal-title{font-size:13px;opacity:.9;margin-bottom:4px}
+.bal-amt{font-size:34px;font-weight:800;color:var(--secondary)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.stat-card{background:#fff;padding:18px;border-radius:var(--rs);box-shadow:var(--shadow);
+  text-align:center;border:1px solid var(--border)}
+.stat-val{font-size:26px;font-weight:800;color:var(--primary)}
+.stat-lbl{font-size:12px;color:var(--gray);margin-top:4px}
+
+/* HISTORY */
+.hist-item{background:#fff;padding:14px;border-radius:var(--rs);margin-bottom:10px;
+  border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.hist-info h4{font-weight:600;margin-bottom:4px;font-size:15px}
+.hist-info p{font-size:12px;color:var(--gray);margin-bottom:2px}
+.badge{padding:5px 12px;border-radius:28px;font-size:12px;font-weight:600}
+.badge-ok{background:rgba(16,185,129,.12);color:var(--success)}
+.badge-no{background:rgba(239,68,68,.1);color:var(--danger)}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;
+  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal.active{display:flex;animation:fadeIn .3s ease}
+.modal-box{background:#fff;border-radius:var(--r);width:100%;max-width:400px;
+  max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
+.modal-head{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+  color:#fff;padding:28px 20px;text-align:center}
+.modal-ava{width:90px;height:90px;background:var(--secondary);border-radius:50%;
+  margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
+  font-size:36px;color:var(--primary);border:4px solid #fff;box-shadow:var(--shadow)}
+.modal-name{font-size:22px;font-weight:700;margin-bottom:4px}
+.modal-phone{font-size:14px;opacity:.9}
+.modal-body{padding:18px}
+.modal-row{padding:14px 0;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;font-size:14px}
+.modal-row i{width:26px;color:var(--primary);font-size:16px}
+.modal-row .lbl{flex:1;color:var(--gray)}
+.modal-row .val{font-weight:600;color:var(--dark)}
+.modal-foot{padding:18px;display:flex;flex-direction:column;gap:10px}
+.btn-logout{padding:14px;background:var(--danger);border:none;border-radius:var(--rs);
+  color:#fff;font-weight:600;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:10px;font-size:15px;transition:.25s}
+.btn-close{padding:12px;background:#f1f5f9;border:none;border-radius:var(--rs);
+  color:var(--gray);font-weight:600;cursor:pointer;font-size:15px}
+
+/* NOTIFICATION */
+.notif{position:fixed;top:16px;left:16px;right:16px;background:#fff;
+  padding:14px 18px;border-radius:var(--rs);box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:14px;z-index:2000;
+  transform:translateY(-120%);transition:transform .35s ease;
+  max-width:420px;margin:0 auto;border-left:4px solid var(--primary)}
+.notif.show{transform:translateY(0)}
+.notif i{font-size:22px;color:var(--primary)}
+.notif-title{font-weight:700;font-size:14px;margin-bottom:3px}
+.notif-text{font-size:13px;color:var(--gray)}
+
+/* DIVIDER */
+.divider{text-align:center;position:relative;margin:28px 0}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;
+  width:calc(50% - 28px);height:2px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.divider span{background:#f8fafc;padding:0 14px;color:var(--gray);font-size:13px}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px}
+.empty i{font-size:56px;color:var(--border);margin-bottom:16px;display:block}
+.empty h3{color:var(--gray);font-weight:600}
+
+/* ADMIN */
+.admin-box{margin-top:28px;padding:18px;background:#fff8ed;border-radius:var(--r);border-left:4px solid var(--warning)}
+.admin-title{font-weight:700;color:var(--warning);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.p-courier{background:#fff;padding:14px;border-radius:var(--rs);margin-bottom:10px;border:1px solid var(--border)}
+.p-photos{display:flex;gap:10px;margin-top:10px;overflow-x:auto}
+.p-photo{width:76px;height:76px;border-radius:10px;object-fit:cover;border:2px solid var(--border)}
+</style>
 </head>
 <body>
-    <!-- SCREEN 1: REGISTER/LOGIN -->
-    <div class="screen active" id="screenAuth">
-        <div class="header">
-            <i class="fas fa-bolt"></i>
-            <h1>ТоҷРасон</h1>
-            <p>Барои курьерҳо - ба мисли Glovo, Bolt</p>
-        </div>
-        
-        <div class="content">
-            <div class="login-section">
-                <h3 style="color: var(--dark); margin-bottom: 20px;">Ворид шудан</h3>
-                <div class="form-group">
-                    <label class="form-label">ID курьер</label>
-                    <input type="text" class="form-control" id="loginId" placeholder="Масалан: C12345">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Пароль</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Пароли худро ворид кунед">
-                </div>
-                <button class="btn-primary" onclick="login()">Ворид шудан</button>
-            </div>
 
-            <div class="divider">
-                <span>ё</span>
-            </div>
+<!-- =================== SCREEN: AUTH =================== -->
+<div class="screen active" id="screenAuth">
+  <div class="hdr">
+    <i class="fas fa-bolt"></i>
+    <h1>ТоҷРасон</h1>
+    <p>Барои курьерҳо</p>
+  </div>
 
-            <h3 style="color: var(--dark); margin-bottom: 20px;">Сабти номи нав</h3>
-            <div class="form-group">
-                <label class="form-label">Ном ва насаб</label>
-                <input type="text" class="form-control" id="fullName" placeholder="Масалан: Алишер Каримов">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Рақами телефон</label>
-                <div class="phone-input-container">
-                    <span class="phone-prefix">+992</span>
-                    <input type="tel" class="phone-input" id="phone" placeholder="90 000 00 00">
-                </div>
-            </div>
+  <div class="content">
 
-            <div class="form-group">
-                <label class="form-label">Пароль</label>
-                <input type="password" class="form-control" id="password" placeholder="Пароли худро ворид кунед">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Акси рӯй (бояд равшан бошад)</label>
-                <button class="camera-button" type="button" onclick="openCamera('face')">
-                    <i class="fas fa-camera"></i>
-                    Гирифтани акси рӯй
-                </button>
-                <div class="photo-preview-container" id="facePreview">
-                    <img src="" alt="Face" id="faceImage">
-                    <button class="remove-photo" type="button" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Акси паспорт (саҳифаи асосӣ)</label>
-                <button class="camera-button" type="button" onclick="openCamera('passport')">
-                    <i class="fas fa-camera"></i>
-                    Гирифтани акси паспорт
-                </button>
-                <div class="photo-preview-container" id="passportPreview">
-                    <img src="" alt="Passport" id="passportImage">
-                    <button class="remove-photo" type="button" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Акси худ бо паспорт дар даст</label>
-                <button class="camera-button" type="button" onclick="openCamera('selfie')">
-                    <i class="fas fa-camera"></i>
-                    Гирифтани акси худ бо паспорт
-                </button>
-                <div class="photo-preview-container" id="selfiePreview">
-                    <img src="" alt="Selfie" id="selfieImage">
-                    <button class="remove-photo" type="button" onclick="removePhoto('selfie')"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-            
-            <button class="btn-primary" onclick="register()">Сабти ном</button>
-            <button class="btn-secondary" onclick="checkDemo()">Режими демо</button>
-            
-            <div class="admin-section" id="adminPanel" style="display: none;">
-                <div class="admin-title">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Панели админ (барои санҷиш)</span>
-                </div>
-                <div id="pendingCouriersList"></div>
-            </div>
-        </div>
+    <!-- LOGIN -->
+    <div class="login-section" style="margin-bottom:28px;padding-bottom:28px;border-bottom:2px solid var(--border)">
+      <h3 style="margin-bottom:18px;font-size:18px">Ворид шудан</h3>
+      <div class="fg">
+        <label class="flabel">ID курьер</label>
+        <input type="text" class="finput" id="loginId" placeholder="Масалан: C12345">
+      </div>
+      <div class="fg">
+        <label class="flabel">Пароль</label>
+        <input type="password" class="finput" id="loginPwd" placeholder="Пароли худро ворид кунед">
+      </div>
+      <button class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Ворид шудан</button>
     </div>
 
-    <!-- SCREEN 2: WAITING FOR APPROVAL -->
-    <div class="screen" id="screenWaiting">
-        <div class="header">
-            <i class="fas fa-hourglass-half"></i>
-            <h1>Интизори тасдиқ</h1>
-            <p>Маълумоти шумо дар ҳоли санҷиш аст</p>
-        </div>
-        
-        <div class="content">
-            <div class="waiting-card">
-                <i class="fas fa-clock"></i>
-                <h3>Дар ҳоли баррасӣ</h3>
-                <p>Маълумоти шумо ва аксҳои шахсият ба админ фиристода шуд. Одатан ин раванд то 24 соат давом мекунад.</p>
-                <div class="loading-spinner"></div>
-            </div>
-            
-            <button class="btn-secondary" onclick="checkApproval()">Санҷидани ҳолат</button>
-        </div>
+    <div class="divider"><span>ё</span></div>
+
+    <!-- REGISTER -->
+    <h3 style="margin-bottom:18px;font-size:18px">Сабти номи нав</h3>
+
+    <div class="fg">
+      <label class="flabel">Ном ва насаб</label>
+      <input type="text" class="finput" id="regName" placeholder="Масалан: Алишер Каримов">
+    </div>
+    <div class="fg">
+      <label class="flabel">Рақами телефон</label>
+      <div class="phone-wrap">
+        <span class="phone-pre">+992</span>
+        <input type="tel" class="phone-inp" id="regPhone" placeholder="90 000 00 00">
+      </div>
+    </div>
+    <div class="fg">
+      <label class="flabel">Пароль</label>
+      <input type="password" class="finput" id="regPwd" placeholder="Пароли худро ворид кунед">
     </div>
 
-    <!-- SCREEN 3: MAIN DASHBOARD -->
-    <div class="screen" id="screenMain">
-        <div class="status-bar">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div class="profile-icon" onclick="openProfile()">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="online-toggle">
-                    <span>Ҳолат:</span>
-                    <div class="toggle-switch" id="onlineToggle" onclick="toggleOnline()">
-                        <div class="toggle-circle"></div>
-                    </div>
-                    <span id="statusText">Офлайн</span>
-                </div>
-            </div>
-            <div class="balance-info" id="balanceDisplay" onclick="openProfile()">0 сом</div>
+    <!-- PHOTO 1: FACE -->
+    <div class="fg">
+      <label class="flabel"><i class="fas fa-user" style="color:var(--primary)"></i> Акси рӯй (selfie равшан)</label>
+      <div class="photo-section">
+        <div class="photo-btns">
+          <button class="btn-cam" onclick="pickPhoto('face','cam')">
+            <i class="fas fa-camera"></i> Аз камера гирифтан
+          </button>
+          <button class="btn-gallery" onclick="pickPhoto('face','gallery')">
+            <i class="fas fa-images"></i> Аз галерея интихоб кардан
+          </button>
         </div>
-
-        <div class="map-container">
-            <div id="map"></div>
-            <div class="map-controls">
-                <button class="map-button" onclick="centerOnCourier()" title="Ҷойгиршавии ман">
-                    <i class="fas fa-location-dot"></i>
-                </button>
-                <button class="map-button" onclick="fitMapBounds()" title="Тамоми маршрут">
-                    <i class="fas fa-route"></i>
-                </button>
-            </div>
+        <div class="preview-wrap" id="prevFace">
+          <img id="imgFace" src="" alt="">
+          <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
+          <button class="btn-remove" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
         </div>
-
-        <div class="content" id="mainContent"></div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('orders')" id="navOrders">
-                <i class="fas fa-box"></i>
-                <span>Заказҳо</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('history')" id="navHistory">
-                <i class="fas fa-clock"></i>
-                <span>Таърих</span>
-            </div>
-            <div class="nav-item" onclick="switchTab('stats')" id="navStats">
-                <i class="fas fa-chart-line"></i>
-                <span>Статистика</span>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- PROFILE MODAL -->
-    <div class="modal" id="profileModal" onclick="closeModalOnClickOutside(event)">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-avatar">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="modal-name" id="profileName">Алишер Каримов</div>
-                <div class="modal-phone" id="profilePhone">+992 90 123 45 67</div>
-            </div>
-            
-            <div class="modal-body">
-                <div class="modal-info">
-                    <i class="fas fa-id-card"></i>
-                    <span class="label">ID курьер:</span>
-                    <span class="value" id="profileId">C12345</span>
-                </div>
-                <div class="modal-info">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span class="label">Санаи сабти ном:</span>
-                    <span class="value" id="profileDate">01.01.2024</span>
-                </div>
-                <div class="modal-info">
-                    <i class="fas fa-star"></i>
-                    <span class="label">Рейтинг:</span>
-                    <span class="value" id="profileRating">4.8 ⭐</span>
-                </div>
-                <div class="modal-info">
-                    <i class="fas fa-box"></i>
-                    <span class="label">Заказҳои иҷрошуда:</span>
-                    <span class="value" id="profileOrders">124</span>
-                </div>
-                <div class="modal-info">
-                    <i class="fas fa-wallet"></i>
-                    <span class="label">Баланс:</span>
-                    <span class="value" id="profileBalance">1250 сом</span>
-                </div>
-                <div class="modal-info">
-                    <i class="fas fa-image"></i>
-                    <span class="label">Ҳолати аксҳо:</span>
-                    <span class="value" id="profilePhotosStatus">Тасдиқ шудааст</span>
-                </div>
-            </div>
-            
-            <div class="modal-footer">
-                <button class="btn-logout" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Берун шудан
-                </button>
-                <button class="btn-close" onclick="closeProfile()">Пӯшидан</button>
-            </div>
+    <!-- PHOTO 2: PASSPORT -->
+    <div class="fg">
+      <label class="flabel"><i class="fas fa-id-card" style="color:var(--primary)"></i> Акси паспорт (саҳифаи аввал)</label>
+      <div class="photo-section">
+        <div class="photo-btns">
+          <button class="btn-cam" onclick="pickPhoto('passport','cam')">
+            <i class="fas fa-camera"></i> Аз камера гирифтан
+          </button>
+          <button class="btn-gallery" onclick="pickPhoto('passport','gallery')">
+            <i class="fas fa-images"></i> Аз галерея интихоб кардан
+          </button>
         </div>
+        <div class="preview-wrap" id="prevPassport">
+          <img id="imgPassport" src="" alt="">
+          <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
+          <button class="btn-remove" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
     </div>
 
-    <!-- NOTIFICATION -->
-    <div class="notification" id="notification">
-        <i class="fas fa-bell"></i>
-        <div class="notification-content">
-            <div class="notification-title" id="notificationTitle">Закази нав</div>
-            <div class="notification-text" id="notificationText">Закази #1234 пайдо шуд</div>
+    <!-- PHOTO 3: SELFIE WITH PASSPORT -->
+    <div class="fg">
+      <label class="flabel"><i class="fas fa-camera-retro" style="color:var(--primary)"></i> Акси худ бо паспорт дар даст</label>
+      <div class="photo-section">
+        <div class="photo-btns">
+          <button class="btn-cam" onclick="pickPhoto('selfie','cam')">
+            <i class="fas fa-camera"></i> Аз камера гирифтан
+          </button>
+          <button class="btn-gallery" onclick="pickPhoto('selfie','gallery')">
+            <i class="fas fa-images"></i> Аз галерея интихоб кардан
+          </button>
         </div>
+        <div class="preview-wrap" id="prevSelfie">
+          <img id="imgSelfie" src="" alt="">
+          <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
+          <button class="btn-remove" onclick="removePhoto('selfie')"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
     </div>
 
-    <!-- CAMERA MODAL -->
-    <div class="camera-modal" id="cameraModal">
-        <div class="camera-header">
-            <h3 id="cameraTitle">Гирифтани акс</h3>
-            <button onclick="closeCamera()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="camera-view">
-            <div class="camera-loading" id="cameraLoading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Кушодани камера...</p>
-            </div>
-            <video id="cameraVideo" autoplay playsinline></video>
-        </div>
-        <div class="camera-controls">
-            <button class="flash-btn" onclick="toggleFlash()"><i class="fas fa-bolt"></i></button>
-            <button class="capture-btn" onclick="capturePhoto()"></button>
-            <button class="switch-btn" onclick="switchCamera()"><i class="fas fa-sync-alt"></i></button>
-        </div>
+    <!-- Hidden file inputs — яке барои камера, яке барои галерея -->
+    <input type="file" id="inputCamFace"      class="file-inp" accept="image/*" capture="user">
+    <input type="file" id="inputGalFace"      class="file-inp" accept="image/*">
+    <input type="file" id="inputCamPassport"  class="file-inp" accept="image/*" capture="environment">
+    <input type="file" id="inputGalPassport"  class="file-inp" accept="image/*">
+    <input type="file" id="inputCamSelfie"    class="file-inp" accept="image/*" capture="user">
+    <input type="file" id="inputGalSelfie"    class="file-inp" accept="image/*">
+
+    <button class="btn btn-primary" onclick="register()" style="margin-top:8px">
+      <i class="fas fa-user-plus"></i> Сабти ном
+    </button>
+    <button class="btn btn-outline" onclick="demoMode()">
+      <i class="fas fa-play"></i> Режими демо
+    </button>
+
+    <div class="admin-box" id="adminBox" style="display:none">
+      <div class="admin-title"><i class="fas fa-shield-alt"></i> Панели админ</div>
+      <div id="adminList"></div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <script>
-        // App State
-        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let pendingCouriers = JSON.parse(localStorage.getItem('pendingCouriers')) || [];
-        let isOnline = false;
-        let balance = parseFloat(localStorage.getItem('balance')) || 0;
-        let totalOrders = parseInt(localStorage.getItem('totalOrders')) || 0;
-        let completedOrders = parseInt(localStorage.getItem('completedOrders')) || 0;
-        let cancelledOrders = parseInt(localStorage.getItem('cancelledOrders')) || 0;
-        let map = null;
-        let courierMarker = null;
-        let customerMarker = null;
-        let routeLine = null;
-        let currentOrder = null;
-        let watchId = null;
-        let orderTimer = null;
-        let timerSeconds = 0;
-        let notificationTimeout = null;
-        
-        // Camera variables
-        let currentPhotoType = null;
-        let cameraStream = null;
-        let currentCamera = 'environment';
-        let isCameraOpening = false;
-        
-        // Photos object
-        let photos = {
-            face: null,
-            passport: null,
-            selfie: null
-        };
-        
-        // Default location (Dushanbe)
-        const defaultLocation = { lat: 38.5737, lng: 68.7864 };
-        
-        // Demo orders
-        let availableOrders = [
-            {
-                id: 'ORD' + Date.now(),
-                customer: 'Фаррух Раҳимов',
-                pickup: '112-й микрорайон',
-                delivery: '2-юм микрорайон',
-                distance: '4.1',
-                price: 25,
-                lat: 38.5737,
-                lng: 68.7864,
-                status: 'pending'
-            },
-            {
-                id: 'ORD' + (Date.now() + 1),
-                customer: 'Дилшод Каримов',
-                pickup: 'Зарафшон',
-                delivery: 'Сомон',
-                distance: '3.2',
-                price: 20,
-                lat: 38.5627,
-                lng: 68.7739,
-                status: 'pending'
-            }
-        ];
+  </div>
+</div>
 
-        let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+<!-- =================== SCREEN: WAITING =================== -->
+<div class="screen" id="screenWait">
+  <div class="hdr">
+    <i class="fas fa-hourglass-half"></i>
+    <h1>Интизори тасдиқ</h1>
+    <p>Аксҳои шумо дар ҳоли санҷиш</p>
+  </div>
+  <div class="content">
+    <div class="wait-card">
+      <i class="fas fa-clock"></i>
+      <h3>Дар ҳоли баррасӣ</h3>
+      <p>Маълумот ба админ фиристода шуд. Одатан то 24 соат давом мекунад.</p>
+      <div class="spinner"></div>
+    </div>
+    <button class="btn btn-outline" onclick="checkApproval()">
+      <i class="fas fa-sync"></i> Санҷидани ҳолат
+    </button>
+  </div>
+</div>
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            updateBalance();
-            checkAuth();
-            updateAdminPanel();
-            
-            // Camera video event listeners
-            const video = document.getElementById('cameraVideo');
-            video.addEventListener('loadeddata', function() {
-                document.getElementById('cameraLoading').style.display = 'none';
-            });
-        });
+<!-- =================== SCREEN: MAIN =================== -->
+<div class="screen" id="screenMain">
+  <div class="status-bar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="profile-btn" onclick="openProfile()"><i class="fas fa-user"></i></div>
+      <div class="toggle-wrap">
+        <span>Ҳолат:</span>
+        <div class="toggle" id="toggle" onclick="toggleOnline()"><div class="toggle-dot"></div></div>
+        <span id="statusTxt">Офлайн</span>
+      </div>
+    </div>
+    <button class="balance-btn" id="balDisp" onclick="openProfile()">0 сом</button>
+  </div>
 
-        // Auth Functions
-        function checkAuth() {
-            if (currentUser) {
-                if (currentUser.status === 'approved') {
-                    showScreen('main');
-                    updateProfileInfo();
-                    initMap();
-                    startLocationTracking();
-                    loadOrdersTab();
-                } else if (currentUser.status === 'pending') {
-                    showScreen('waiting');
-                }
-            }
-        }
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="map-btns">
+      <button class="map-btn" onclick="centerMe()"><i class="fas fa-location-dot"></i></button>
+      <button class="map-btn" onclick="fitRoute()"><i class="fas fa-route"></i></button>
+    </div>
+  </div>
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            
-            const screens = {
-                'auth': 'screenAuth',
-                'waiting': 'screenWaiting',
-                'main': 'screenMain'
-            };
-            
-            document.getElementById(screens[screenId]).classList.add('active');
-        }
+  <div class="content" id="mainContent"></div>
 
-        // ========== FIXED CAMERA FUNCTIONS ==========
-        window.openCamera = function(type) {
-            if (isCameraOpening) {
-                alert('Камера дар ҳоли кушода шудан аст. Лутфан интизор шавед.');
-                return;
-            }
-            
-            currentPhotoType = type;
-            isCameraOpening = true;
-            
-            let titles = {
-                'face': 'Акси рӯй',
-                'passport': 'Акси паспорт',
-                'selfie': 'Акси худ бо паспорт'
-            };
-            document.getElementById('cameraTitle').innerText = titles[type];
-            
-            // Show loading
-            document.getElementById('cameraLoading').style.display = 'block';
-            
-            // Show camera modal
-            document.getElementById('cameraModal').classList.add('active');
-            
-            // Check browser support
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('Браузери шумо камераро дастгирӣ намекунад');
-                isCameraOpening = false;
-                document.getElementById('cameraLoading').style.display = 'none';
-                closeCamera();
-                return;
-            }
-            
-            // Start camera after a small delay
-            setTimeout(function() {
-                startCamera();
-            }, 500);
-        }
+  <div class="bottom-nav">
+    <div class="nav-item active" id="navOrders"  onclick="switchTab('orders')"><i class="fas fa-box"></i><span>Заказҳо</span></div>
+    <div class="nav-item"        id="navHistory" onclick="switchTab('history')"><i class="fas fa-clock"></i><span>Таърих</span></div>
+    <div class="nav-item"        id="navStats"   onclick="switchTab('stats')"><i class="fas fa-chart-line"></i><span>Статистика</span></div>
+  </div>
+</div>
 
-        function startCamera() {
-            const video = document.getElementById('cameraVideo');
-            
-            // Stop any existing stream
-            if (cameraStream) {
-                try {
-                    cameraStream.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
-                } catch (e) {
-                    console.log('Error stopping tracks:', e);
-                }
-                cameraStream = null;
-            }
-            
-            // Clear video source
-            video.srcObject = null;
-            
-            // Simple constraints for better compatibility
-            const constraints = {
-                video: {
-                    facingMode: currentCamera,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                },
-                audio: false
-            };
-            
-            console.log('Attempting to start camera with constraints:', constraints);
-            
-            // Request camera access
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(function(stream) {
-                    console.log('Camera stream obtained successfully');
-                    cameraStream = stream;
-                    video.srcObject = stream;
-                    
-                    // Hide loading when video starts playing
-                    video.onplaying = function() {
-                        document.getElementById('cameraLoading').style.display = 'none';
-                        isCameraOpening = false;
-                    };
-                    
-                    // Play video
-                    video.play().catch(function(e) {
-                        console.log('Play error:', e);
-                        document.getElementById('cameraLoading').style.display = 'none';
-                        alert('Хатогӣ дар пӯшонидани видео');
-                        isCameraOpening = false;
-                    });
-                })
-                .catch(function(err) {
-                    console.log('Camera error:', err.name, err.message);
-                    document.getElementById('cameraLoading').style.display = 'none';
-                    isCameraOpening = false;
-                    
-                    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                        if (confirm('Барои гирифтани акс, ба камера иҷозат додан лозим аст. Оё мехоҳед иҷозат диҳед?')) {
-                            // Try again with user interaction
-                            setTimeout(startCamera, 100);
-                        } else {
-                            closeCamera();
-                        }
-                    } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                        alert('Камера ёфт нашуд. Лутфан камераро пайваст кунед.');
-                        closeCamera();
-                    } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-                        alert('Камера дар истифода аст. Лутфан барномаҳои дигарро пӯшед.');
-                        closeCamera();
-                    } else {
-                        alert('Хатогӣ дар кушодани камера: ' + (err.message || 'номаълум'));
-                        closeCamera();
-                    }
-                });
-        }
+<!-- =================== PROFILE MODAL =================== -->
+<div class="modal" id="profileModal" onclick="modalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-ava"><i class="fas fa-user"></i></div>
+      <div class="modal-name" id="pName">-</div>
+      <div class="modal-phone" id="pPhone">-</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row"><i class="fas fa-id-card"></i><span class="lbl">ID:</span><span class="val" id="pId">-</span></div>
+      <div class="modal-row"><i class="fas fa-calendar"></i><span class="lbl">Санаи сабт:</span><span class="val" id="pDate">-</span></div>
+      <div class="modal-row"><i class="fas fa-star"></i><span class="lbl">Рейтинг:</span><span class="val" id="pRating">5.0 ⭐</span></div>
+      <div class="modal-row"><i class="fas fa-box"></i><span class="lbl">Заказҳо:</span><span class="val" id="pOrders">0</span></div>
+      <div class="modal-row"><i class="fas fa-wallet"></i><span class="lbl">Баланс:</span><span class="val" id="pBal">0 сом</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Берун шудан</button>
+      <button class="btn-close" onclick="closeProfile()">Пӯшидан</button>
+    </div>
+  </div>
+</div>
 
-        window.closeCamera = function() {
-            console.log('Closing camera');
-            
-            if (cameraStream) {
-                try {
-                    cameraStream.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
-                } catch (e) {
-                    console.log('Error stopping tracks:', e);
-                }
-                cameraStream = null;
-            }
-            
-            const video = document.getElementById('cameraVideo');
-            video.srcObject = null;
-            video.load();
-            
-            document.getElementById('cameraModal').classList.remove('active');
-            document.getElementById('cameraLoading').style.display = 'block';
-            isCameraOpening = false;
-        }
+<!-- =================== NOTIFICATION =================== -->
+<div class="notif" id="notif">
+  <i class="fas fa-bell" id="notifIcon"></i>
+  <div><div class="notif-title" id="notifTitle"></div><div class="notif-text" id="notifText"></div></div>
+</div>
 
-        window.switchCamera = function() {
-            currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
-            
-            if (cameraStream) {
-                try {
-                    cameraStream.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
-                } catch (e) {
-                    console.log('Error stopping tracks:', e);
-                }
-                cameraStream = null;
-            }
-            
-            const video = document.getElementById('cameraVideo');
-            video.srcObject = null;
-            
-            document.getElementById('cameraLoading').style.display = 'block';
-            
-            setTimeout(function() {
-                startCamera();
-            }, 300);
-        }
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let cu = null; // currentUser
+try { cu = JSON.parse(localStorage.getItem('cu')); } catch(e){}
+let users = [];
+try { users = JSON.parse(localStorage.getItem('users')) || []; } catch(e){}
+let pending = [];
+try { pending = JSON.parse(localStorage.getItem('pending')) || []; } catch(e){}
+let history = [];
+try { history = JSON.parse(localStorage.getItem('history')) || []; } catch(e){}
 
-        window.toggleFlash = function() {
-            alert('Flash танзимот дар браузер дастгирӣ намешавад. Барои равшанӣ, чароғаки атрофро истифода баред.');
-        }
+let bal=+(localStorage.getItem('bal')||0),
+    tot=+(localStorage.getItem('tot')||0),
+    comp=+(localStorage.getItem('comp')||0),
+    canc=+(localStorage.getItem('canc')||0);
 
-        window.capturePhoto = function() {
-            const video = document.getElementById('cameraVideo');
-            
-            if (!video || !video.videoWidth || video.videoWidth === 0) {
-                alert('Камера омода нест. Лутфан камераро дубора кушоед.');
-                return;
-            }
-            
-            try {
-                // Create canvas
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                
-                const context = canvas.getContext('2d');
-                
-                // Mirror for front camera
-                if (currentCamera === 'user') {
-                    context.translate(canvas.width, 0);
-                    context.scale(-1, 1);
-                }
-                
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // Get photo data
-                const photoData = canvas.toDataURL('image/jpeg', 0.9);
-                
-                // Save photo
-                photos[currentPhotoType] = photoData;
-                
-                // Show preview
-                const preview = document.getElementById(currentPhotoType + 'Preview');
-                const image = document.getElementById(currentPhotoType + 'Image');
-                image.src = photoData;
-                preview.style.display = 'block';
-                
-                // Close camera
-                closeCamera();
-                
-                showNotification('Муваффақият', 'Акс гирифта шуд', 'success');
-            } catch (err) {
-                console.error('Capture error:', err);
-                alert('Хатогӣ дар гирифтани акс: ' + err.message);
-            }
-        }
+let isOnline=false, map=null, cMark=null, oMark=null, rLine=null;
+let curOrder=null, wId=null, oTimer=null, tSec=0, notifTO=null;
+let photos={face:null,passport:null,selfie:null};
+const DEF={lat:38.5737,lng:68.7864};
 
-        window.removePhoto = function(type) {
-            photos[type] = null;
-            document.getElementById(type + 'Preview').style.display = 'none';
-            document.getElementById(type + 'Image').src = '';
-        }
+let orders=[
+  {id:'O1',customer:'Фаррух Раҳимов',pickup:'112-й микрорайон',delivery:'2-юм микрорайон',dist:'4.1',price:25,lat:38.5737,lng:68.7864},
+  {id:'O2',customer:'Дилшод Каримов',pickup:'Зарафшон',delivery:'Сомон',dist:'3.2',price:20,lat:38.5627,lng:68.7739}
+];
 
-        // Register
-        window.register = function() {
-            const fullName = document.getElementById('fullName').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (!fullName || !phone || !password) {
-                showNotification('Хатогӣ', 'Лутфан ҳамаи майдонҳоро пур кунед', 'error');
-                return;
-            }
+// ============================================================
+// FILE INPUT SETUP  ← ИСЛОҲИ АСОСӢ
+// Ҳар input event-ро дар JS мегирем — label нест
+// ============================================================
+function setupFileInputs(){
+  const pairs = [
+    ['inputCamFace',     'face'],
+    ['inputGalFace',     'face'],
+    ['inputCamPassport', 'passport'],
+    ['inputGalPassport', 'passport'],
+    ['inputCamSelfie',   'selfie'],
+    ['inputGalSelfie',   'selfie'],
+  ];
+  pairs.forEach(([id, type]) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('change', function(e){
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        setPhoto(type, ev.target.result);
+        notify('Муваффақият', 'Акс илова шуд ✓', 'success');
+      };
+      reader.readAsDataURL(file);
+      e.target.value = ''; // reset барои дубора клик
+    });
+  });
+}
 
-            if (!photos.face) {
-                showNotification('Хатогӣ', 'Лутфан акси рӯйро гиред', 'error');
-                return;
-            }
+// pickPhoto — бевосита input-ро .click() мекунем
+window.pickPhoto = function(type, mode){
+  const map = {
+    face:     { cam: 'inputCamFace',     gal: 'inputGalFace'     },
+    passport: { cam: 'inputCamPassport', gal: 'inputGalPassport' },
+    selfie:   { cam: 'inputCamSelfie',   gal: 'inputGalSelfie'   },
+  };
+  const id = mode === 'cam' ? map[type].cam : map[type].gal;
+  const el = document.getElementById(id);
+  if(el){
+    el.click(); // мустақиман Click — Android дар он кор мекунад
+  }
+};
 
-            if (!photos.passport) {
-                showNotification('Хатогӣ', 'Лутфан акси паспортро гиред', 'error');
-                return;
-            }
+function setPhoto(type, data){
+  photos[type] = data;
+  document.getElementById('img'+ type.charAt(0).toUpperCase()+type.slice(1)).src = data;
+  document.getElementById('prev'+ type.charAt(0).toUpperCase()+type.slice(1)).style.display = 'block';
+}
 
-            if (!photos.selfie) {
-                showNotification('Хатогӣ', 'Лутфан акси худро бо паспорт гиред', 'error');
-                return;
-            }
+window.removePhoto = function(type){
+  photos[type] = null;
+  const k = type.charAt(0).toUpperCase()+type.slice(1);
+  document.getElementById('prev'+k).style.display='none';
+  document.getElementById('img'+k).src='';
+};
 
-            const cleanPhone = phone.replace(/\D/g, '');
-            const formattedPhone = cleanPhone.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
-            const fullPhone = '+992 ' + formattedPhone;
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', function(){
+  setupFileInputs();
+  updateBalDisp();
+  checkAuth();
+  renderAdmin();
+});
 
-            const userId = 'C' + Math.floor(10000 + Math.random() * 90000);
-            
-            const newUser = {
-                id: userId,
-                name: fullName,
-                phone: fullPhone,
-                password: password,
-                status: 'pending',
-                balance: 0,
-                totalOrders: 0,
-                completedOrders: 0,
-                cancelledOrders: 0,
-                rating: 5.0,
-                registeredAt: new Date().toLocaleDateString('tg-TJ'),
-                photos: {
-                    face: photos.face,
-                    passport: photos.passport,
-                    selfie: photos.selfie
-                }
-            };
+// ============================================================
+// AUTH
+// ============================================================
+function checkAuth(){
+  if(!cu) return;
+  if(cu.status==='approved'){ goMain(); }
+  else if(cu.status==='pending'){ showScreen('wait'); }
+}
 
-            pendingCouriers.push(newUser);
-            localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
-            
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            currentUser = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            showScreen('waiting');
-            updateAdminPanel();
-            showNotification('Муваффақият', 'ID шумо: ' + userId + '. Аксҳо ба админ фиристода шуд.', 'success');
-        }
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('active');
+}
 
-        // Login
-        window.login = function() {
-            const loginId = document.getElementById('loginId').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            
-            if (!loginId || !password) {
-                showNotification('Хатогӣ', 'Лутфан ID ва паролро ворид кунед', 'error');
-                return;
-            }
-            
-            const user = users.find(u => u.id === loginId && u.password === password);
-            
-            if (user) {
-                currentUser = user;
-                balance = user.balance || 0;
-                totalOrders = user.totalOrders || 0;
-                completedOrders = user.completedOrders || 0;
-                cancelledOrders = user.cancelledOrders || 0;
-                
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                localStorage.setItem('balance', balance.toString());
-                localStorage.setItem('totalOrders', totalOrders.toString());
-                localStorage.setItem('completedOrders', completedOrders.toString());
-                localStorage.setItem('cancelledOrders', cancelledOrders.toString());
-                
-                if (currentUser.status === 'approved') {
-                    showScreen('main');
-                    updateProfileInfo();
-                    initMap();
-                    startLocationTracking();
-                    loadOrdersTab();
-                    showNotification('Хуш омадед', 'Шумо ба система ворид шудед', 'success');
-                } else if (currentUser.status === 'pending') {
-                    showScreen('waiting');
-                }
-            } else {
-                showNotification('Хатогӣ', 'ID ё парол нодуруст аст', 'error');
-            }
-        }
+function goMain(){
+  showScreen('main');
+  fillProfile();
+  initMap();
+  trackLoc();
+  loadOrders();
+}
 
-        // Demo Mode
-        window.checkDemo = function() {
-            const demoUser = {
-                id: 'C12345',
-                name: 'Алишер Каримов',
-                phone: '+992 90 123 45 67',
-                password: 'demo123',
-                status: 'approved',
-                balance: 1250,
-                totalOrders: 124,
-                completedOrders: 120,
-                cancelledOrders: 4,
-                rating: 4.8,
-                registeredAt: '15.01.2024',
-                photos: {
-                    face: 'demo_face.jpg',
-                    passport: 'demo_passport.jpg',
-                    selfie: 'demo_selfie.jpg'
-                }
-            };
+window.login = function(){
+  const id=v('loginId'), pw=v('loginPwd');
+  if(!id||!pw){notify('Хатогӣ','ID ва паролро ворид кунед','err');return;}
+  const u=users.find(x=>x.id===id&&x.pw===pw);
+  if(!u){notify('Хатогӣ','ID ё парол нодуруст','err');return;}
+  cu=u; bal=u.bal||0; tot=u.tot||0; comp=u.comp||0; canc=u.canc||0;
+  saveState(); updateBalDisp();
+  if(u.status==='approved'){goMain();notify('Хуш омадед',u.name,'success');}
+  else showScreen('wait');
+};
 
-            currentUser = demoUser;
-            balance = demoUser.balance;
-            totalOrders = demoUser.totalOrders;
-            completedOrders = demoUser.completedOrders;
-            cancelledOrders = demoUser.cancelledOrders;
-            
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            localStorage.setItem('balance', balance.toString());
-            localStorage.setItem('totalOrders', totalOrders.toString());
-            localStorage.setItem('completedOrders', completedOrders.toString());
-            localStorage.setItem('cancelledOrders', cancelledOrders.toString());
-            
-            showScreen('main');
-            updateProfileInfo();
-            initMap();
-            startLocationTracking();
-            loadOrdersTab();
-            showNotification('Режими демо', 'Шумо дар режими демо ҳастед', 'info');
-        }
+window.register = function(){
+  const name=v('regName'), phone=v('regPhone'), pw=v('regPwd');
+  if(!name||!phone||!pw){notify('Хатогӣ','Ҳамаи майдонҳоро пур кунед','err');return;}
+  if(!photos.face){notify('Хатогӣ','Акси рӯйро илова кунед','err');return;}
+  if(!photos.passport){notify('Хатогӣ','Акси паспортро илова кунед','err');return;}
+  if(!photos.selfie){notify('Хатогӣ','Акси худро бо паспорт илова кунед','err');return;}
 
-        // Check Approval
-        window.checkApproval = function() {
-            if (currentUser && currentUser.status === 'pending') {
-                const updatedUser = users.find(u => u.id === currentUser.id);
-                if (updatedUser && updatedUser.status === 'approved') {
-                    currentUser = updatedUser;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    showScreen('main');
-                    initMap();
-                    startLocationTracking();
-                    loadOrdersTab();
-                    showNotification('Табрик!', 'Шумо тасдиқ карда шудед', 'success');
-                } else {
-                    showNotification('Маълумот', 'Ҳолати шумо то ҳол ' + currentUser.status + ' аст', 'info');
-                }
-            }
-        }
+  const uid='C'+Math.floor(10000+Math.random()*90000);
+  const fmt=phone.replace(/\D/g,'').replace(/(\d{2})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4');
+  const u={id:uid,name,phone:'+992 '+fmt,pw,status:'pending',
+    bal:0,tot:0,comp:0,canc:0,rating:5.0,
+    reg:new Date().toLocaleDateString('ru-RU'),
+    photos:{face:photos.face,passport:photos.passport,selfie:photos.selfie}};
 
-        // Admin Panel Functions
-        function updateAdminPanel() {
-            const adminPanel = document.getElementById('adminPanel');
-            const pendingList = document.getElementById('pendingCouriersList');
-            
-            if (pendingCouriers.length > 0) {
-                adminPanel.style.display = 'block';
-                
-                let html = '';
-                pendingCouriers.forEach(function(courier) {
-                    html += `
-                        <div class="pending-courier">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <strong>${courier.name}</strong>
-                                    <p style="font-size: 12px; color: var(--gray);">ID: ${courier.id}</p>
-                                    <p style="font-size: 12px; color: var(--gray);">${courier.phone}</p>
-                                </div>
-                                <div style="display: flex; gap: 10px;">
-                                    <button class="btn-secondary" style="padding: 8px 15px; font-size: 12px;" onclick="approveCourier('${courier.id}')">Тасдиқ</button>
-                                    <button style="padding: 8px 15px; font-size: 12px; background: var(--danger); color: white; border: none; border-radius: var(--radius-xs); cursor: pointer;" onclick="rejectCourier('${courier.id}')">Рад</button>
-                                </div>
-                            </div>
-                            <div class="courier-photos">
-                                ${courier.photos.face ? `<img src="${courier.photos.face}" class="courier-photo" alt="Face">` : ''}
-                                ${courier.photos.passport ? `<img src="${courier.photos.passport}" class="courier-photo" alt="Passport">` : ''}
-                                ${courier.photos.selfie ? `<img src="${courier.photos.selfie}" class="courier-photo" alt="Selfie">` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                pendingList.innerHTML = html;
-            } else {
-                adminPanel.style.display = 'none';
-            }
-        }
+  users.push(u); pending.push(u); cu=u;
+  ls('users',users); ls('pending',pending); ls('cu',cu);
+  showScreen('wait'); renderAdmin();
+  notify('Муваффақият','ID шумо: '+uid+'. Ба интизорӣ бошед.','success');
+};
 
-        window.approveCourier = function(courierId) {
-            const courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
-            if (courierIndex !== -1) {
-                pendingCouriers[courierIndex].status = 'approved';
-                
-                const userIndex = users.findIndex(u => u.id === courierId);
-                if (userIndex !== -1) {
-                    users[userIndex].status = 'approved';
-                }
-                
-                pendingCouriers.splice(courierIndex, 1);
-                
-                localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
-                localStorage.setItem('users', JSON.stringify(users));
-                
-                updateAdminPanel();
-                showNotification('Тасдиқ шуд', 'Курьер ба кор қабул карда шуд', 'success');
-            }
-        }
+window.demoMode = function(){
+  cu={id:'C12345',name:'Алишер Каримов',phone:'+992 90 123 45 67',
+    pw:'demo',status:'approved',bal:1250,tot:124,comp:120,canc:4,
+    rating:4.8,reg:'15.01.2024',photos:{}};
+  bal=1250;tot=124;comp=120;canc=4;
+  saveState(); ls('cu',cu);
+  goMain(); notify('Демо режим','Хуш омадед!','info');
+};
 
-        window.rejectCourier = function(courierId) {
-            if (confirm('Шумо боварӣ доред, ки ин курьерро рад мекунед?')) {
-                const courierIndex = pendingCouriers.findIndex(c => c.id === courierId);
-                if (courierIndex !== -1) {
-                    pendingCouriers[courierIndex].status = 'rejected';
-                    
-                    const userIndex = users.findIndex(u => u.id === courierId);
-                    if (userIndex !== -1) {
-                        users[userIndex].status = 'rejected';
-                    }
-                    
-                    pendingCouriers.splice(courierIndex, 1);
-                    
-                    localStorage.setItem('pendingCouriers', JSON.stringify(pendingCouriers));
-                    localStorage.setItem('users', JSON.stringify(users));
-                    
-                    updateAdminPanel();
-                    showNotification('Рад карда шуд', 'Курьер рад карда шуд', 'info');
-                }
-            }
-        }
+window.checkApproval = function(){
+  if(!cu) return;
+  const u=users.find(x=>x.id===cu.id);
+  if(u&&u.status==='approved'){
+    cu=u; ls('cu',cu); goMain(); notify('Табрик!','Тасдиқ шудед','success');
+  } else {
+    notify('Маълумот','Ҳолат: дар интизор...','info');
+  }
+};
 
-        // Profile Functions
-        window.openProfile = function() {
-            updateProfileInfo();
-            document.getElementById('profileModal').classList.add('active');
-        }
+// ============================================================
+// ADMIN
+// ============================================================
+function renderAdmin(){
+  const box=document.getElementById('adminBox');
+  const lst=document.getElementById('adminList');
+  if(!pending.length){box.style.display='none';return;}
+  box.style.display='block';
+  lst.innerHTML=pending.map(c=>`
+    <div class="p-courier">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>${c.name}</strong>
+          <p style="font-size:12px;color:var(--gray)">ID:${c.id} | ${c.phone}</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-cam" style="width:auto;padding:8px 14px;font-size:12px" onclick="approveCourier('${c.id}')">Тасдиқ</button>
+          <button style="padding:8px 14px;font-size:12px;background:var(--danger);color:#fff;border:none;border-radius:10px;cursor:pointer" onclick="rejectCourier('${c.id}')">Рад</button>
+        </div>
+      </div>
+      <div class="p-photos">
+        ${c.photos.face?`<img src="${c.photos.face}" class="p-photo">`:''}
+        ${c.photos.passport?`<img src="${c.photos.passport}" class="p-photo">`:''}
+        ${c.photos.selfie?`<img src="${c.photos.selfie}" class="p-photo">`:''}
+      </div>
+    </div>`).join('');
+}
 
-        window.closeProfile = function() {
-            document.getElementById('profileModal').classList.remove('active');
-        }
+window.approveCourier=function(id){
+  const pi=pending.findIndex(x=>x.id===id);
+  const ui=users.findIndex(x=>x.id===id);
+  if(pi>-1){pending[pi].status='approved';pending.splice(pi,1);}
+  if(ui>-1)users[ui].status='approved';
+  ls('pending',pending);ls('users',users);
+  renderAdmin();notify('Тасдиқ','Курьер қабул шуд','success');
+};
+window.rejectCourier=function(id){
+  if(!confirm('Рад кунед?'))return;
+  pending=pending.filter(x=>x.id!==id);
+  const ui=users.findIndex(x=>x.id===id);
+  if(ui>-1)users[ui].status='rejected';
+  ls('pending',pending);ls('users',users);
+  renderAdmin();notify('Рад','Курьер рад шуд','info');
+};
 
-        window.closeModalOnClickOutside = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeProfile();
-            }
-        }
+// ============================================================
+// PROFILE MODAL
+// ============================================================
+window.openProfile=function(){fillProfile();document.getElementById('profileModal').classList.add('active');};
+window.closeProfile=function(){document.getElementById('profileModal').classList.remove('active');};
+window.modalOutside=function(e){if(e.target.id==='profileModal')closeProfile();};
 
-        function updateProfileInfo() {
-            if (currentUser) {
-                document.getElementById('profileName').innerText = currentUser.name;
-                document.getElementById('profilePhone').innerText = currentUser.phone;
-                document.getElementById('profileId').innerText = currentUser.id;
-                document.getElementById('profileDate').innerText = currentUser.registeredAt;
-                document.getElementById('profileRating').innerText = currentUser.rating + ' ⭐';
-                document.getElementById('profileOrders').innerText = totalOrders;
-                document.getElementById('profileBalance').innerText = balance + ' сом';
-                
-                const photoStatus = currentUser.photos ? 'Тасдиқ шудааст' : 'Мавҷуд нест';
-                document.getElementById('profilePhotosStatus').innerText = photoStatus;
-            }
-        }
+function fillProfile(){
+  if(!cu)return;
+  s('pName',cu.name);s('pPhone',cu.phone);s('pId',cu.id);
+  s('pDate',cu.reg||'-');s('pRating',cu.rating+' ⭐');
+  s('pOrders',tot);s('pBal',bal+' сом');
+}
 
-        window.logout = function() {
-            if (confirm('Шумо мехоҳед аз акаунт бароед?')) {
-                if (watchId) {
-                    navigator.geolocation.clearWatch(watchId);
-                }
-                
-                if (cameraStream) {
-                    try {
-                        cameraStream.getTracks().forEach(function(track) {
-                            track.stop();
-                        });
-                    } catch (e) {}
-                    cameraStream = null;
-                }
-                
-                if (orderTimer) {
-                    clearInterval(orderTimer);
-                }
-                
-                localStorage.removeItem('currentUser');
-                localStorage.removeItem('balance');
-                localStorage.removeItem('totalOrders');
-                localStorage.removeItem('completedOrders');
-                localStorage.removeItem('cancelledOrders');
-                
-                currentUser = null;
-                balance = 0;
-                totalOrders = 0;
-                completedOrders = 0;
-                cancelledOrders = 0;
-                
-                closeProfile();
-                showScreen('auth');
-                
-                document.getElementById('loginId').value = '';
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('fullName').value = '';
-                document.getElementById('phone').value = '';
-                document.getElementById('password').value = '';
-                
-                photos = {
-                    face: null,
-                    passport: null,
-                    selfie: null
-                };
-                
-                document.querySelectorAll('.photo-preview-container').forEach(function(el) {
-                    el.style.display = 'none';
-                });
-                
-                showNotification('Муваффақият', 'Шумо аз акаунт баромадед', 'success');
-            }
-        }
+window.logout=function(){
+  if(!confirm('Берун шавед?'))return;
+  if(wId)navigator.geolocation.clearWatch(wId);
+  if(oTimer)clearInterval(oTimer);
+  ['cu','bal','tot','comp','canc'].forEach(k=>localStorage.removeItem(k));
+  cu=null;bal=tot=comp=canc=0;
+  photos={face:null,passport:null,selfie:null};
+  document.querySelectorAll('.preview-wrap').forEach(x=>x.style.display='none');
+  closeProfile();showScreen('auth');
+};
 
-        // Map Functions
-        function initMap() {
-            if (!map) {
-                map = L.map('map').setView([defaultLocation.lat, defaultLocation.lng], 13);
-                
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© TojRason Courier'
-                }).addTo(map);
-            }
-        }
+// ============================================================
+// MAP
+// ============================================================
+function initMap(){
+  if(map)return;
+  map=L.map('map').setView([DEF.lat,DEF.lng],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© TojRason'}).addTo(map);
+}
 
-        function startLocationTracking() {
-            if (navigator.geolocation) {
-                watchId = navigator.geolocation.watchPosition(
-                    function(position) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        
-                        updateCourierMarker(lat, lng);
-                        
-                        if (currentOrder) {
-                            updateRoute(lat, lng, currentOrder.lat, currentOrder.lng);
-                        }
-                    },
-                    function(error) {
-                        console.log('Location error:', error);
-                        updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        maximumAge: 0,
-                        timeout: 5000
-                    }
-                );
-            } else {
-                updateCourierMarker(defaultLocation.lat, defaultLocation.lng);
-            }
-        }
+function trackLoc(){
+  if(!navigator.geolocation){moveMark(DEF.lat,DEF.lng);return;}
+  wId=navigator.geolocation.watchPosition(
+    p=>{moveMark(p.coords.latitude,p.coords.longitude);
+      if(curOrder)drawRoute(p.coords.latitude,p.coords.longitude,curOrder.lat,curOrder.lng);},
+    ()=>moveMark(DEF.lat,DEF.lng),
+    {enableHighAccuracy:true,maximumAge:0,timeout:5000}
+  );
+}
 
-        function updateCourierMarker(lat, lng) {
-            if (courierMarker) {
-                courierMarker.setLatLng([lat, lng]);
-            } else {
-                const courierIcon = L.divIcon({
-                    className: 'custom-marker',
-                    html: '<div style="background: var(--primary); width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow);"></div>',
-                    iconSize: [24, 24]
-                });
-                
-                courierMarker = L.marker([lat, lng], {
-                    icon: courierIcon,
-                    zIndexOffset: 1000
-                }).addTo(map).bindPopup('Шумо');
-            }
-            
-            if (!currentOrder) {
-                map.setView([lat, lng], 15);
-            }
-        }
+function moveMark(la,ln){
+  const ico=L.divIcon({className:'',
+    html:'<div style="background:#4361ee;width:22px;height:22px;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
+    iconSize:[22,22]});
+  if(cMark)cMark.setLatLng([la,ln]);
+  else{cMark=L.marker([la,ln],{icon:ico,zIndexOffset:1000}).addTo(map).bindPopup('Шумо');}
+  if(!curOrder)map.setView([la,ln],15);
+}
 
-        function addCustomerMarker(lat, lng, address) {
-            if (customerMarker) {
-                map.removeLayer(customerMarker);
-            }
-            
-            const customerIcon = L.divIcon({
-                className: 'customer-marker',
-                html: '<div style="background: var(--danger); width: 30px; height: 30px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">C</div>',
-                iconSize: [30, 30]
-            });
-            
-            customerMarker = L.marker([lat, lng], {
-                icon: customerIcon
-            }).addTo(map).bindPopup(address);
-        }
+function drawRoute(la,ln,ola,oln){
+  if(rLine)map.removeLayer(rLine);
+  const pts=[[la,ln],[ola,oln]];
+  rLine=L.polyline(pts,{color:'#4361ee',weight:4,opacity:.8,dashArray:'8,8'}).addTo(map);
+  map.fitBounds(L.latLngBounds(pts),{padding:[48,48]});
+}
 
-        function updateRoute(courierLat, courierLng, customerLat, customerLng) {
-            if (routeLine) {
-                map.removeLayer(routeLine);
-            }
-            
-            const points = [
-                [courierLat, courierLng],
-                [customerLat, customerLng]
-            ];
-            
-            routeLine = L.polyline(points, {
-                color: 'var(--primary)',
-                weight: 4,
-                opacity: 0.8,
-                dashArray: '8, 8'
-            }).addTo(map);
-            
-            const bounds = L.latLngBounds(points);
-            map.fitBounds(bounds, { padding: [50, 50] });
-        }
+window.centerMe=function(){if(cMark){const p=cMark.getLatLng();map.setView([p.lat,p.lng],16);}};
+window.fitRoute=function(){if(rLine)map.fitBounds(rLine.getBounds(),{padding:[48,48]});};
 
-        window.centerOnCourier = function() {
-            if (courierMarker) {
-                const pos = courierMarker.getLatLng();
-                map.setView([pos.lat, pos.lng], 16);
-            }
-        }
+// ============================================================
+// ONLINE TOGGLE
+// ============================================================
+window.toggleOnline=function(){
+  isOnline=!isOnline;
+  document.getElementById('toggle').classList.toggle('on',isOnline);
+  document.getElementById('statusTxt').textContent=isOnline?'Онлайн':'Офлайн';
+  notify('Ҳолат',isOnline?'Шумо онлайн ҳастед':'Шумо офлайн ҳастед',isOnline?'success':'info');
+  loadOrders();
+};
 
-        window.fitMapBounds = function() {
-            if (routeLine) {
-                map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
-            } else if (currentOrder && courierMarker) {
-                const bounds = L.latLngBounds([
-                    courierMarker.getLatLng(),
-                    [currentOrder.lat, currentOrder.lng]
-                ]);
-                map.fitBounds(bounds, { padding: [50, 50] });
-            }
-        }
+// ============================================================
+// ORDERS
+// ============================================================
+function loadOrders(){
+  const c=document.getElementById('mainContent');
+  if(!isOnline){
+    c.innerHTML=`<div class="empty"><i class="fas fa-power-off"></i><h3>Шумо офлайн ҳастед</h3><p style="color:var(--gray);margin-top:8px">Барои заказҳо онлайн шавед</p></div>`;
+    return;
+  }
+  let h=`<div class="bal-card"><div class="bal-title">Баланси шумо</div><div class="bal-amt">${bal} сом</div></div>`;
+  if(orders.length){
+    orders.forEach(o=>{
+      h+=`<div class="order-card" id="oc-${o.id}">
+        <div class="order-head">
+          <div class="order-icon"><i class="fas fa-box"></i></div>
+          <div class="order-info"><h3>Закази нав</h3><p>Мизоҷ: ${o.customer}</p></div>
+        </div>
+        <div class="timer-box"><i class="fas fa-clock"></i><span>Вақт: </span><span class="timer-val" id="ot-${o.id}">0:00</span></div>
+        <div class="route-box">
+          <div class="route-pt"><div class="pt-dot pick"></div><div><div class="pt-addr">${o.pickup}</div><div class="pt-sub">Нуқтаи гирифтан</div></div></div>
+          <div class="route-pt"><div class="pt-dot drop"></div><div><div class="pt-addr">${o.delivery}</div><div class="pt-sub">Нуқтаи расонидан</div></div></div>
+        </div>
+        <div class="order-meta"><span><i class="fas fa-road"></i> ${o.dist} км</span><strong><i class="fas fa-money-bill"></i> ${o.price} сом</strong></div>
+        <div class="order-actions">
+          <button class="btn-accept" onclick="acceptOrder('${o.id}')"><i class="fas fa-check"></i> Қабул</button>
+          <button class="btn-decline" onclick="declineOrder('${o.id}')"><i class="fas fa-times"></i> Рад</button>
+        </div>
+      </div>`;
+    });
+    setTimeout(startTimer,50);
+  } else {
+    h+=`<div class="empty"><i class="fas fa-box-open"></i><h3>Заказе нест</h3><p style="color:var(--gray);margin-top:8px">Дар интизор...</p><div class="spinner" style="margin-top:16px"></div></div>`;
+  }
+  c.innerHTML=h;
+}
 
-        // Online/Offline Toggle
-        window.toggleOnline = function() {
-            isOnline = !isOnline;
-            const toggle = document.getElementById('onlineToggle');
-            const statusText = document.getElementById('statusText');
-            
-            if (isOnline) {
-                toggle.classList.add('active');
-                statusText.innerText = 'Онлайн';
-                showNotification('Ҳолат', 'Шумо онлайн ҳастед. Заказҳо пайдо мешаванд.', 'success');
-                loadOrdersTab();
-            } else {
-                toggle.classList.remove('active');
-                statusText.innerText = 'Офлайн';
-                showNotification('Ҳолат', 'Шумо офлайн ҳастед.', 'info');
-            }
-        }
+window.acceptOrder=function(id){
+  const o=orders.find(x=>x.id===id);
+  if(!o)return;
+  curOrder=o;
+  orders=orders.filter(x=>x.id!==id);
+  const ico=L.divIcon({className:'',html:'<div style="background:#ef4444;width:28px;height:28px;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:11px">C</div>',iconSize:[28,28]});
+  if(oMark)map.removeLayer(oMark);
+  oMark=L.marker([o.lat,o.lng],{icon:ico}).addTo(map).bindPopup(o.delivery);
+  if(cMark){const p=cMark.getLatLng();drawRoute(p.lat,p.lng,o.lat,o.lng);}
+  const card=document.getElementById('oc-'+id);
+  if(card){
+    card.querySelector('.order-head .order-icon').style.background='linear-gradient(135deg,var(--success),#0d9488)';
+    card.querySelector('.order-actions').innerHTML=`<button class="btn-arrived" onclick="arrived()" style="flex:1;padding:15px;border:none;border-radius:var(--rs);font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-location-dot"></i> Ман расидам</button>`;
+  }
+  notify('Қабул шуд','Ба сӯи мизоҷ ҳаракат кунед','success');
+};
 
-        // Balance Update
-        function updateBalance() {
-            const balanceEl = document.getElementById('balanceDisplay');
-            const mainBalanceEl = document.getElementById('mainBalance');
-            
-            if (balanceEl) balanceEl.innerText = balance + ' сом';
-            if (mainBalanceEl) mainBalanceEl.innerText = balance + ' сом';
-            
-            localStorage.setItem('balance', balance.toString());
-        }
+window.arrived=function(){
+  const card=document.querySelector('.order-card');
+  if(!card)return;
+  card.querySelector('.order-actions').innerHTML=`<button class="btn-deliver" onclick="deliver()" style="flex:1;padding:15px;border:none;border-radius:var(--rs);font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-check-circle"></i> Заказ супорида шуд</button>`;
+  notify('Расидед!','Заказро ба мизоҷ супоред','info');
+};
 
-        // Notification
-        function showNotification(title, message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const titleEl = document.getElementById('notificationTitle');
-            const textEl = document.getElementById('notificationText');
-            
-            titleEl.innerText = title;
-            textEl.innerText = message;
-            
-            notification.style.borderLeftColor = 
-                type === 'success' ? 'var(--success)' : 
-                type === 'error' ? 'var(--danger)' : 
-                'var(--primary)';
-            
-            notification.classList.add('show');
-            
-            if (notificationTimeout) {
-                clearTimeout(notificationTimeout);
-            }
-            
-            notificationTimeout = setTimeout(function() {
-                notification.classList.remove('show');
-            }, 4000);
-        }
+window.deliver=function(){
+  if(!curOrder)return;
+  history.push({...curOrder,at:new Date().toLocaleString('ru-RU'),status:'delivered'});
+  ls('history',history);
+  bal+=curOrder.price;comp++;tot++;
+  if(cu){cu.bal=bal;cu.tot=tot;cu.comp=comp;ls('cu',cu);}
+  saveState();updateBalDisp();
+  curOrder=null;
+  if(oMark){map.removeLayer(oMark);oMark=null;}
+  if(rLine){map.removeLayer(rLine);rLine=null;}
+  stopTimer();loadOrders();
+  notify('Супорида шуд ✓','Барои заказҳои нав омода шавед','success');
+  setTimeout(()=>{if(isOnline)simOrder();},7000);
+};
 
-        // Timer
-        function startOrderTimer() {
-            if (orderTimer) {
-                clearInterval(orderTimer);
-            }
-            
-            timerSeconds = 0;
-            const timerEl = document.getElementById('orderTimer');
-            
-            if (timerEl) {
-                orderTimer = setInterval(function() {
-                    timerSeconds++;
-                    const minutes = Math.floor(timerSeconds / 60);
-                    const seconds = timerSeconds % 60;
-                    if (timerEl) timerEl.innerText = minutes + ':' + (seconds < 10 ? '0' + seconds : seconds);
-                }, 1000);
-            }
-        }
+window.declineOrder=function(id){
+  if(!confirm('Рад кунед?'))return;
+  const o=orders.find(x=>x.id===id);
+  if(o){history.push({...o,at:new Date().toLocaleString('ru-RU'),status:'cancelled'});ls('history',history);}
+  canc++;tot++;
+  if(cu){cu.tot=tot;cu.canc=canc;ls('cu',cu);}
+  saveState();
+  orders=orders.filter(x=>x.id!==id);loadOrders();
+  notify('Рад шуд','Закази дигарро интизор шавед','info');
+};
 
-        function stopOrderTimer() {
-            if (orderTimer) {
-                clearInterval(orderTimer);
-                orderTimer = null;
-            }
-        }
+function simOrder(){
+  const names=['Навруз','Саломат','Баҳром','Гулнора','Рустам'];
+  const pts=['Бӯстон','Зарафшон','82-й','Сино','Айнӣ','Сомон'];
+  const o={
+    id:'O'+Date.now(),
+    customer:names[Math.floor(Math.random()*names.length)],
+    pickup:pts[Math.floor(Math.random()*pts.length)],
+    delivery:pts[Math.floor(Math.random()*pts.length)],
+    dist:(Math.random()*5+1).toFixed(1),
+    price:Math.floor(Math.random()*30+15),
+    lat:DEF.lat+(Math.random()-.5)*.02,
+    lng:DEF.lng+(Math.random()-.5)*.02
+  };
+  orders.unshift(o);loadOrders();
+  notify('Закази нав! 🚀',o.customer+' | '+o.price+' сом','success');
+}
 
-        // Order Management
-        function loadOrdersTab() {
-            const content = document.getElementById('mainContent');
-            
-            if (!isOnline) {
-                content.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-power-off"></i>
-                        <h3>Шумо офлайн ҳастед</h3>
-                        <p style="color: var(--gray); margin-top: 10px;">Барои дидани заказҳо, онлайн шавед</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            let ordersHtml = '<div style="margin-bottom: 20px;">';
-            
-            ordersHtml += `
-                <div class="balance-card">
-                    <div class="balance-title">Баланси шумо</div>
-                    <div class="balance-amount" id="mainBalance">${balance} сом</div>
-                </div>
-            `;
-            
-            if (availableOrders.length > 0) {
-                availableOrders.forEach(function(order) {
-                    ordersHtml += `
-                        <div class="order-card" id="order-${order.id}">
-                            <div class="order-header">
-                                <div class="order-icon">
-                                    <i class="fas fa-box"></i>
-                                </div>
-                                <div class="order-info">
-                                    <h3>Закази нав</h3>
-                                    <p>Мизоҷ: ${order.customer}</p>
-                                </div>
-                            </div>
-                            
-                            <div class="order-timer">
-                                <i class="fas fa-clock"></i>
-                                <span>Вақти интизорӣ: </span>
-                                <span class="timer-value" id="orderTimer">0:00</span>
-                            </div>
-                            
-                            <div class="route-info">
-                                <div class="route-point">
-                                    <div class="point-marker pickup"></div>
-                                    <div>
-                                        <div class="point-address">${order.pickup}</div>
-                                        <div class="point-distance">Нуқтаи гирифтан</div>
-                                    </div>
-                                </div>
-                                <div class="route-point">
-                                    <div class="point-marker delivery"></div>
-                                    <div>
-                                        <div class="point-address">${order.delivery}</div>
-                                        <div class="point-distance">Нуқтаи расонидан</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                                <span><i class="fas fa-road"></i> Масофа: ${order.distance} км</span>
-                                <span><i class="fas fa-money-bill"></i> <strong>${order.price} сом</strong></span>
-                            </div>
-                            
-                            <div class="order-actions">
-                                <button class="btn-accept" onclick="acceptOrder('${order.id}')">
-                                    <i class="fas fa-check"></i>
-                                    Қабул кардан
-                                </button>
-                                <button class="btn-decline" onclick="declineOrder('${order.id}')">
-                                    <i class="fas fa-times"></i>
-                                    Рад кардан
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                ordersHtml += `
-                    <div class="empty-state">
-                        <i class="fas fa-box-open"></i>
-                        <h3>Заказе нест</h3>
-                        <p style="color: var(--gray); margin-top: 10px;">Дар ҳоли интизори заказҳои нав...</p>
-                        <div class="loading-spinner" style="margin-top: 20px;"></div>
-                    </div>
-                `;
-            }
-            
-            ordersHtml += '</div>';
-            content.innerHTML = ordersHtml;
-            
-            if (availableOrders.length > 0) {
-                startOrderTimer();
-            }
-        }
+// ============================================================
+// TABS
+// ============================================================
+window.switchTab=function(tab){
+  ['orders','history','stats'].forEach(t=>{
+    document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab);
+  });
+  if(tab==='orders')loadOrders();
+  else if(tab==='history')loadHist();
+  else loadStats();
+};
 
-        window.acceptOrder = function(orderId) {
-            const order = availableOrders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            currentOrder = order;
-            
-            availableOrders = availableOrders.filter(o => o.id !== orderId);
-            
-            addCustomerMarker(order.lat, order.lng, order.delivery);
-            
-            const orderCard = document.getElementById('order-' + orderId);
-            if (orderCard) {
-                const timerEl = document.getElementById('orderTimer');
-                const timerValue = timerEl ? timerEl.innerText : '0:00';
-                
-                orderCard.innerHTML = `
-                    <div class="order-header">
-                        <div class="order-icon" style="background: var(--success);">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="order-info">
-                            <h3>Заказ қабул шуд</h3>
-                            <p>Мизоҷ: ${order.customer}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="order-timer">
-                        <i class="fas fa-clock"></i>
-                        <span>Вақти расонидан: </span>
-                        <span class="timer-value" id="orderTimer">${timerValue}</span>
-                    </div>
-                    
-                    <div class="route-info">
-                        <div class="route-point">
-                            <div class="point-marker pickup"></div>
-                            <div>
-                                <div class="point-address">${order.pickup}</div>
-                                <div class="point-distance">Нуқтаи гирифтан</div>
-                            </div>
-                        </div>
-                        <div class="route-point">
-                            <div class="point-marker delivery"></div>
-                            <div>
-                                <div class="point-address">${order.delivery}</div>
-                                <div class="point-distance">Нуқтаи расонидан</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="order-actions">
-                        <button class="btn-arrived" onclick="arrivedAtCustomer()" style="display: flex;">
-                            <i class="fas fa-location-dot"></i>
-                            Ман расидам
-                        </button>
-                    </div>
-                `;
-            }
-            
-            if (courierMarker) {
-                const pos = courierMarker.getLatLng();
-                updateRoute(pos.lat, pos.lng, order.lat, order.lng);
-            }
-            
-            showNotification('Заказ қабул шуд', 'Шумо ба сӯи мизоҷ ҳаракат кунед', 'success');
-        }
+function loadHist(){
+  const c=document.getElementById('mainContent');
+  let h=`<div class="bal-card"><div class="bal-title">Ҳамаи заказҳо</div><div class="bal-amt">${history.length}</div></div>`;
+  if(history.length){
+    [...history].reverse().forEach(o=>{
+      const ok=o.status==='delivered';
+      h+=`<div class="hist-item">
+        <div class="hist-info">
+          <h4>Заказ #${o.id.toString().slice(-4)}</h4>
+          <p><i class="fas fa-user"></i> ${o.customer}</p>
+          <p><i class="fas fa-clock"></i> ${o.at}</p>
+          <p style="color:var(--success);font-weight:600">${o.price} сом</p>
+        </div>
+        <span class="badge ${ok?'badge-ok':'badge-no'}">${ok?'Супорида шуд':'Рад шуд'}</span>
+      </div>`;
+    });
+  } else {
+    h+=`<div class="empty"><i class="fas fa-history"></i><h3>Таърих холӣ аст</h3></div>`;
+  }
+  c.innerHTML=h;
+}
 
-        window.arrivedAtCustomer = function() {
-            if (!currentOrder) return;
-            
-            const orderCard = document.querySelector('.order-card');
-            if (orderCard) {
-                const actionsDiv = orderCard.querySelector('.order-actions');
-                actionsDiv.innerHTML = `
-                    <button class="btn-delivered" onclick="deliverOrder()" style="display: flex;">
-                        <i class="fas fa-check-circle"></i>
-                        Заказ супорида шуд
-                    </button>
-                `;
-            }
-            
-            showNotification('Шумо расидед', 'Лутфан заказро ба мизоҷ супоред', 'info');
-        }
+function loadStats(){
+  const rate=tot?((comp/tot)*100).toFixed(1):'0.0';
+  document.getElementById('mainContent').innerHTML=`
+    <div class="bal-card"><div class="bal-title">Баланси шумо</div><div class="bal-amt">${bal} сом</div></div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val">${tot}</div><div class="stat-lbl">Ҳамаи заказҳо</div></div>
+      <div class="stat-card"><div class="stat-val">${comp}</div><div class="stat-lbl">Супорида шуд</div></div>
+      <div class="stat-card"><div class="stat-val">${canc}</div><div class="stat-lbl">Рад карда шуд</div></div>
+      <div class="stat-card"><div class="stat-val">${rate}%</div><div class="stat-lbl">Муваффақият</div></div>
+    </div>`;
+}
 
-        window.deliverOrder = function() {
-            if (!currentOrder) return;
-            
-            const completedOrder = {
-                ...currentOrder,
-                completedAt: new Date().toLocaleString('tg-TJ'),
-                deliveryTime: timerSeconds,
-                status: 'delivered'
-            };
-            
-            orderHistory.push(completedOrder);
-            localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
-            
-            balance += currentOrder.price;
-            completedOrders++;
-            totalOrders++;
-            
-            localStorage.setItem('balance', balance.toString());
-            localStorage.setItem('totalOrders', totalOrders.toString());
-            localStorage.setItem('completedOrders', completedOrders.toString());
-            
-            if (currentUser) {
-                currentUser.balance = balance;
-                currentUser.totalOrders = totalOrders;
-                currentUser.completedOrders = completedOrders;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            }
-            
-            currentOrder = null;
-            
-            if (customerMarker) {
-                map.removeLayer(customerMarker);
-                customerMarker = null;
-            }
-            if (routeLine) {
-                map.removeLayer(routeLine);
-                routeLine = null;
-            }
-            
-            stopOrderTimer();
-            loadOrdersTab();
-            
-            showNotification('Заказ супорида шуд', 'Ташаккур! Барои заказҳои нав омода шавед', 'success');
-            
-            setTimeout(function() {
-                if (isOnline) {
-                    simulateNewOrder();
-                }
-            }, 5000);
-        }
+// ============================================================
+// TIMER
+// ============================================================
+function startTimer(){
+  stopTimer(); tSec=0;
+  oTimer=setInterval(()=>{
+    tSec++;
+    const el=document.querySelector('.timer-val');
+    if(el){const m=Math.floor(tSec/60),s=tSec%60;el.textContent=m+':'+(s<10?'0':'')+s;}
+  },1000);
+}
+function stopTimer(){if(oTimer){clearInterval(oTimer);oTimer=null;}}
 
-        window.declineOrder = function(orderId) {
-            if (!confirm('Шумо мехоҳед ин заказро рад кунед?')) return;
-            
-            const order = availableOrders.find(o => o.id === orderId);
-            if (order) {
-                const cancelledOrder = {
-                    ...order,
-                    completedAt: new Date().toLocaleString('tg-TJ'),
-                    status: 'cancelled'
-                };
-                
-                orderHistory.push(cancelledOrder);
-                localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
-                
-                cancelledOrders++;
-                totalOrders++;
-                localStorage.setItem('totalOrders', totalOrders.toString());
-                localStorage.setItem('cancelledOrders', cancelledOrders.toString());
-                
-                if (currentUser) {
-                    currentUser.totalOrders = totalOrders;
-                    currentUser.cancelledOrders = cancelledOrders;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                }
-            }
-            
-            availableOrders = availableOrders.filter(o => o.id !== orderId);
-            loadOrdersTab();
-            
-            showNotification('Заказ рад карда шуд', 'Шумо метавонед заказҳои дигарро интизор шавед', 'info');
-        }
+// ============================================================
+// NOTIFICATION
+// ============================================================
+function notify(title,msg,type){
+  const el=document.getElementById('notif');
+  const colors={success:'var(--success)',err:'var(--danger)',info:'var(--primary)'};
+  el.style.borderLeftColor=colors[type]||colors.info;
+  s('notifTitle',title); s('notifText',msg);
+  el.classList.add('show');
+  clearTimeout(notifTO);
+  notifTO=setTimeout(()=>el.classList.remove('show'),4000);
+}
 
-        function simulateNewOrder() {
-            const newOrder = {
-                id: 'ORD' + Date.now(),
-                customer: 'Мизоҷи нав',
-                pickup: 'Бӯстон, ' + Math.floor(Math.random() * 100),
-                delivery: 'Сомон, ' + Math.floor(Math.random() * 100),
-                distance: (Math.random() * 5 + 1).toFixed(1),
-                price: Math.floor(Math.random() * 30 + 15),
-                lat: defaultLocation.lat + (Math.random() - 0.5) * 0.01,
-                lng: defaultLocation.lng + (Math.random() - 0.5) * 0.01,
-                status: 'pending'
-            };
-            
-            availableOrders.unshift(newOrder);
-            loadOrdersTab();
-            
-            showNotification('Закази нав!', 'Закази #' + newOrder.id.slice(-4) + ' пайдо шуд', 'success');
-        }
+// ============================================================
+// HELPERS
+// ============================================================
+function v(id){return document.getElementById(id)?.value.trim()||'';}
+function s(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
+function ls(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function saveState(){ls('bal',bal);ls('tot',tot);ls('comp',comp);ls('canc',canc);}
+function updateBalDisp(){s('balDisp',bal+' сом');}
 
-        // History Tab
-        function loadHistoryTab() {
-            const content = document.getElementById('mainContent');
-            
-            let historyHtml = '<div style="margin-bottom: 20px;">';
-            
-            historyHtml += `
-                <div class="balance-card">
-                    <div class="balance-title">Ҳамаи заказҳо</div>
-                    <div class="balance-amount">${orderHistory.length}</div>
-                </div>
-            `;
-            
-            if (orderHistory.length > 0) {
-                orderHistory.slice().reverse().forEach(function(order) {
-                    const statusClass = order.status === 'delivered' ? 'status-delivered' : 
-                                     order.status === 'cancelled' ? 'status-cancelled' : 'status-pending';
-                    const statusText = order.status === 'delivered' ? 'Супорида шуд' : 
-                                    order.status === 'cancelled' ? 'Рад карда шуд' : 'Дар ҳол';
-                    
-                    historyHtml += `
-                        <div class="history-item">
-                            <div class="history-info">
-                                <h4>Заказ #${order.id.slice(-4)}</h4>
-                                <p><i class="fas fa-user"></i> ${order.customer}</p>
-                                <p><i class="fas fa-clock"></i> ${order.completedAt || 'Номаълум'}</p>
-                                <p><i class="fas fa-money-bill"></i> ${order.price} сом</p>
-                            </div>
-                            <div>
-                                <span class="history-status ${statusClass}">${statusText}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                historyHtml += `
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <h3>Таърихи заказҳо холӣ аст</h3>
-                        <p style="color: var(--gray); margin-top: 10px;">Заказҳои иҷрошуда дар ин ҷо нишон дода мешаванд</p>
-                    </div>
-                `;
-            }
-            
-            historyHtml += '</div>';
-            content.innerHTML = historyHtml;
-        }
-
-        // Stats Tab
-        function loadStatsTab() {
-            const content = document.getElementById('mainContent');
-            const name = currentUser ? currentUser.name : 'Курьер';
-            const id = currentUser ? currentUser.id : 'C00000';
-            const rating = currentUser ? currentUser.rating : 5.0;
-            
-            let statsHtml = '<div style="margin-bottom: 20px;">';
-            
-            statsHtml += `
-                <div class="profile-card" onclick="openProfile()">
-                    <div class="profile-card-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="profile-card-info">
-                        <h3>${name}</h3>
-                        <p>ID: ${id}</p>
-                        <span class="profile-card-badge">
-                            <i class="fas fa-star"></i> ${rating}
-                        </span>
-                    </div>
-                </div>
-            `;
-            
-            const successRate = totalOrders > 0 ? ((completedOrders / totalOrders) * 100).toFixed(1) : '0.0';
-            
-            statsHtml += `
-                <div class="balance-card">
-                    <div class="balance-title">Баланси шумо</div>
-                    <div class="balance-amount">${balance} сом</div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value">${totalOrders}</div>
-                        <div class="stat-label">Ҳамаи заказҳо</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${completedOrders}</div>
-                        <div class="stat-label">Супорида шуд</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${cancelledOrders}</div>
-                        <div class="stat-label">Рад карда шуд</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value">${successRate}%</div>
-                        <div class="stat-label">Муваффақият</div>
-                    </div>
-                </div>
-                
-                <div style="background: #fff9e6; border-left: 4px solid var(--primary); padding: 15px; border-radius: var(--radius-xs); margin-top: 20px;">
-                    <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 10px;"></i>
-                    <span>Шумо ${completedOrders} заказро бомуваффақият анҷом додед</span>
-                </div>
-            `;
-            
-            statsHtml += '</div>';
-            content.innerHTML = statsHtml;
-        }
-
-        // Tab Switching
-        window.switchTab = function(tab) {
-            document.querySelectorAll('.nav-item').forEach(function(item) {
-                item.classList.remove('active');
-            });
-            
-            if (tab === 'orders') {
-                document.getElementById('navOrders').classList.add('active');
-                loadOrdersTab();
-            } else if (tab === 'history') {
-                document.getElementById('navHistory').classList.add('active');
-                loadHistoryTab();
-            } else if (tab === 'stats') {
-                document.getElementById('navStats').classList.add('active');
-                loadStatsTab();
-            }
-        }
-
-        // Clean up
-        window.addEventListener('beforeunload', function() {
-            if (watchId) {
-                navigator.geolocation.clearWatch(watchId);
-            }
-            if (orderTimer) {
-                clearInterval(orderTimer);
-            }
-            if (cameraStream) {
-                try {
-                    cameraStream.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
-                } catch (e) {}
-            }
-        });
-    </script>
+window.addEventListener('beforeunload',()=>{
+  if(wId)navigator.geolocation.clearWatch(wId);
+  if(oTimer)clearInterval(oTimer);
+});
+</script>
 </body>
 </html>
