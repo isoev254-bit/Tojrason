@@ -1,1636 +1,1396 @@
 <!DOCTYPE html>
 <html lang="tg">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Админ Панел - Системаи доставка</title>
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f5f7fa;
-            min-height: 100vh;
-        }
-
-        /* Login Screen */
-        .login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .login-container {
-            width: 90%;
-            max-width: 400px;
-            background: white;
-            border-radius: 30px;
-            padding: 40px 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .login-header i {
-            font-size: 60px;
-            color: #ffd600;
-            margin-bottom: 15px;
-        }
-
-        .login-header h2 {
-            font-size: 28px;
-            color: #1a237e;
-            margin-bottom: 5px;
-        }
-
-        .login-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 16px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: #ffd600;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.2);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 18px;
-            background: #ffd600;
-            border: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a1a1a;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .login-btn:hover {
-            background: #ffe44d;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 214, 0, 0.3);
-        }
-
-        .register-btn {
-            background: #4caf50;
-            color: white;
-        }
-
-        .register-btn:hover {
-            background: #66bb6a;
-        }
-
-        .error-message {
-            background: #ffebee;
-            color: #f44336;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .success-message {
-            background: #e8f5e9;
-            color: #4caf50;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .info-box {
-            background: #e3f2fd;
-            color: #1976d2;
-            padding: 15px;
-            border-radius: 16px;
-            font-size: 14px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        /* Main App */
-        .mobile-app {
-            max-width: 480px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1);
-            display: none;
-        }
-
-        /* Header */
-        .app-header {
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            color: white;
-            padding: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-radius: 0 0 25px 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-
-        .header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .header-top h1 {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .admin-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .admin-name {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 15px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .menu-btn {
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .date-badge {
-            background: rgba(255,255,255,0.15);
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-size: 14px;
-            display: inline-block;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: transform 0.2s;
-            border: 1px solid #f0f0f0;
-            cursor: pointer;
-        }
-
-        .stat-card:active {
-            transform: scale(0.98);
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: #fff9e6;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-
-        .stat-icon i {
-            font-size: 24px;
-            color: #ffd600;
-        }
-
-        .stat-value {
-            font-size: 26px;
-            font-weight: 800;
-            color: #1a237e;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #666;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 480px;
-            margin: 0 auto;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 10px;
-            border-top: 1px solid #f0f0f0;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-            z-index: 100;
-        }
-
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            color: #999;
-            font-size: 12px;
-            padding: 8px 0;
-            border-radius: 30px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .nav-item i {
-            font-size: 22px;
-        }
-
-        .nav-item.active {
-            color: #ffd600;
-            background: #fff9e6;
-        }
-
-        .nav-item span {
-            font-weight: 500;
-        }
-
-        /* Content Area */
-        .content-area {
-            padding: 20px;
-            padding-bottom: 90px;
-        }
-
-        /* Section Header */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .section-header h2 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1a237e;
-        }
-
-        .view-all {
-            color: #ffd600;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Admin Card */
-        .admin-card {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: white;
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #f0f0f0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .admin-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .admin-info {
-            flex: 1;
-        }
-
-        .admin-info h3 {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            color: #1a237e;
-        }
-
-        .admin-info p {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 2px;
-        }
-
-        .admin-role-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .role-super {
-            background: #ffd600;
-            color: #1a1a1a;
-        }
-
-        .role-admin {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-
-        .role-moderator {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-icon.edit {
-            background: #fff9e6;
-            color: #ffd600;
-        }
-
-        .action-icon.edit:hover {
-            background: #ffd600;
-            color: white;
-        }
-
-        .action-icon.delete {
-            background: #ffebee;
-            color: #f44336;
-        }
-
-        .action-icon.delete:hover {
-            background: #f44336;
-            color: white;
-        }
-
-        .action-icon.password {
-            background: #e8f5e9;
-            color: #4caf50;
-        }
-
-        .action-icon.password:hover {
-            background: #4caf50;
-            color: white;
-        }
-
-        /* Add Admin Button */
-        .add-admin-btn {
-            background: linear-gradient(135deg, #ffd600, #ffe44d);
-            color: #1a1a1a;
-            padding: 18px;
-            border-radius: 20px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 16px;
-            margin-bottom: 25px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(255, 214, 0, 0.3);
-        }
-
-        .add-admin-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Admin Stats */
-        .admin-stats {
-            background: #f8f9fa;
-            border-radius: 16px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .admin-stat-item {
-            text-align: center;
-        }
-
-        .admin-stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a237e;
-        }
-
-        .admin-stat-label {
-            font-size: 12px;
-            color: #666;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 30px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-        }
-
-        .modal-header h3 {
-            font-size: 22px;
-            color: #1a237e;
-        }
-
-        .close-btn {
-            width: 40px;
-            height: 40px;
-            background: #f5f5f5;
-            border: none;
-            border-radius: 12px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        /* Generated Password */
-        .password-field {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 15px 0;
-            font-family: monospace;
-            font-size: 18px;
-        }
-
-        .copy-btn {
-            background: #ffd600;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Menu Drawer */
-        .menu-drawer {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 80%;
-            max-width: 350px;
-            height: 100vh;
-            background: white;
-            z-index: 1001;
-            transition: left 0.3s;
-            box-shadow: 2px 0 20px rgba(0,0,0,0.2);
-            overflow-y: auto;
-        }
-
-        .menu-drawer.open {
-            left: 0;
-        }
-
-        .drawer-header {
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            padding: 40px 20px;
-            color: white;
-        }
-
-        .drawer-header i {
-            font-size: 50px;
-            color: #ffd600;
-            margin-bottom: 15px;
-        }
-
-        .drawer-header h3 {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-
-        .drawer-header p {
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .drawer-menu {
-            padding: 20px;
-        }
-
-        .drawer-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
-
-        .drawer-item i {
-            width: 24px;
-            color: #666;
-        }
-
-        .drawer-item.active {
-            background: #fff9e6;
-        }
-
-        .drawer-item.active i {
-            color: #ffd600;
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .overlay.active {
-            display: block;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #999;
-        }
-
-        .empty-state i {
-            font-size: 60px;
-            color: #e0e0e0;
-            margin-bottom: 15px;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1a237e;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 30px;
-            font-weight: 600;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            z-index: 3000;
-            display: none;
-            animation: slideUp 0.3s;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translate(-50%, 100%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TojRason — Админ Панел</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onerror="this.remove()">
+<style>
+/* Fallback if Font Awesome fails */
+.fas,.far,.fab{font-style:normal}
+</style>
+
+<style>
+:root{
+  --brand:#E8531F;--brand-dark:#C23F0A;--brand-hover:#FF6B35;
+  --gold:#F5C518;--gold-dark:#D4A017;
+  --navy:#1B2B4B;--navy2:#243659;--navy3:#2E4270;
+  --bg:#F0F2F8;--surface:#fff;
+  --text:#1B2B4B;--muted:#64748B;--border:#E2E8F0;
+  --green:#22C55E;--green-bg:#DCFCE7;
+  --orange:#F59E0B;--orange-bg:#FEF3C7;
+  --red:#EF4444;--red-bg:#FEE2E2;
+  --blue:#3B82F6;--blue-bg:#EFF6FF;
+  --purple:#8B5CF6;--purple-bg:#F5F3FF;
+  --r:16px;--r2:12px;--r3:8px;
+  --shadow:0 2px 12px rgba(27,43,75,.08);
+  --shadow2:0 8px 32px rgba(27,43,75,.14);
+  --shadow3:0 20px 60px rgba(27,43,75,.22);
+  --font:'Plus Jakarta Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+input,select,textarea,button{font-family:var(--font)}
+button{cursor:pointer}
+
+/* ── LOADING ── */
+#splash{position:fixed;inset:0;background:var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:9999;transition:opacity .4s}
+#splash.hide{opacity:0;pointer-events:none}
+.splash-logo{font-size:52px;font-weight:900;color:#fff;letter-spacing:-2px}
+.splash-logo span{color:var(--brand)}
+.splash-tag{font-size:13px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase}
+.spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:rgba(255,255,255,.8);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── LOGIN ── */
+#loginWrap{display:none;min-height:100vh;background:linear-gradient(145deg,var(--navy) 0%,var(--navy3) 60%,#3B5998 100%);align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+#loginWrap::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:rgba(232,83,31,.08);top:-150px;right:-150px}
+#loginWrap::after{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(245,197,24,.06);bottom:-100px;left:-100px}
+.login-box{width:100%;max-width:420px;position:relative;z-index:1}
+.login-brand{text-align:center;margin-bottom:36px}
+.login-brand h1{font-size:40px;font-weight:900;color:#fff;letter-spacing:-2px}
+.login-brand h1 span{color:var(--brand)}
+.login-brand p{font-size:13px;color:rgba(255,255,255,.45);margin-top:6px;letter-spacing:.5px}
+.login-card{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:32px 28px}
+.login-title{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.login-title i{color:var(--gold)}
+.login-sub{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:28px}
+.lf-group{margin-bottom:18px}
+.lf-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:block}
+.lf-input{width:100%;padding:14px 16px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r2);font-size:15px;color:#fff;outline:none;transition:border .2s}
+.lf-input::placeholder{color:rgba(255,255,255,.3)}
+.lf-input:focus{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12)}
+.lf-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='rgba(255,255,255,.4)' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.lf-select option{background:var(--navy);color:#fff}
+.btn-login{width:100%;padding:16px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));border:none;border-radius:var(--r2);font-size:16px;font-weight:700;color:#fff;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.btn-login:hover{background:linear-gradient(135deg,var(--brand-hover),var(--brand));transform:translateY(-1px);box-shadow:0 8px 24px rgba(232,83,31,.35)}
+.btn-register{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);margin-top:10px}
+.btn-register:hover{background:linear-gradient(135deg,#FFD700,var(--gold));box-shadow:0 8px 24px rgba(245,197,24,.3)}
+.login-toggle{text-align:center;margin-top:20px}
+.login-toggle a{color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.login-toggle a:hover{color:rgba(255,255,255,.8)}
+.login-error{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:12px 14px;border-radius:var(--r2);font-size:13px;margin-bottom:16px;display:none}
+.login-info{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.2);color:#93c5fd;padding:12px 14px;border-radius:var(--r2);font-size:13px;margin-bottom:16px}
+
+/* ── APP SHELL ── */
+#appWrap{display:none;min-height:100vh}
+.app-layout{display:flex;min-height:100vh;max-width:1400px;margin:0 auto}
+
+/* ── SIDEBAR ── */
+.sidebar{width:260px;background:var(--navy);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:200;transition:transform .3s}
+.sb-brand{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sb-brand h2{font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px}
+.sb-brand h2 span{color:var(--brand)}
+.sb-brand p{font-size:11px;color:rgba(255,255,255,.35);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.sb-user{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px}
+.sb-avatar{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;flex-shrink:0}
+.sb-user-info h4{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.sb-user-info p{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.sb-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.sb-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:1.5px;padding:0 12px;margin:16px 0 8px}
+.sb-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r2);color:rgba(255,255,255,.5);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.sb-item i{width:18px;text-align:center;font-size:16px}
+.sb-item .sb-badge{margin-left:auto;background:var(--brand);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;min-width:20px;text-align:center}
+.sb-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8)}
+.sb-item.active{background:rgba(232,83,31,.18);color:#fff;border-left:3px solid var(--brand)}
+.sb-bottom{padding:16px 12px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-logout{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r2);color:rgba(255,255,255,.4);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;width:100%;border:none;background:none}
+.sb-logout:hover{background:rgba(239,68,68,.12);color:#fca5a5}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 var(--border)}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.hamburger{display:none;width:38px;height:38px;border:1.5px solid var(--border);border-radius:var(--r3);background:none;color:var(--muted);font-size:18px;align-items:center;justify-content:center}
+.page-title{font-size:20px;font-weight:800;color:var(--text)}
+.page-subtitle{font-size:13px;color:var(--muted);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.tb-btn{width:38px;height:38px;border:1.5px solid var(--border);border-radius:var(--r3);background:none;color:var(--muted);font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.tb-btn:hover{border-color:var(--brand);color:var(--brand)}
+.tb-notif{position:relative}
+.tb-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--brand);border:1.5px solid var(--surface)}
+.date-chip{background:var(--bg);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted)}
+
+/* ── PAGE CONTENT ── */
+.pages{flex:1;padding:28px;overflow-y:auto}
+.page{display:none}
+.page.active{display:block}
+
+/* ── STATS GRID ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border-radius:var(--r);padding:22px 20px;border:1px solid var(--border);box-shadow:var(--shadow);position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
+.stat-card:hover{border-color:var(--brand);box-shadow:0 4px 20px rgba(232,83,31,.1);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;right:-20px;top:-20px;width:80px;height:80px;border-radius:50%;opacity:.06}
+.sc-navy::after{background:var(--navy)}
+.sc-green::after{background:var(--green)}
+.sc-orange::after{background:var(--orange)}
+.sc-red::after{background:var(--red)}
+.sc-blue::after{background:var(--blue)}
+.sc-purple::after{background:var(--purple)}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.stat-icon.navy{background:rgba(27,43,75,.08);color:var(--navy)}
+.stat-icon.green{background:var(--green-bg);color:var(--green)}
+.stat-icon.orange{background:var(--orange-bg);color:var(--orange)}
+.stat-icon.red{background:var(--red-bg);color:var(--red)}
+.stat-icon.blue{background:var(--blue-bg);color:var(--blue)}
+.stat-icon.purple{background:var(--purple-bg);color:var(--purple)}
+.stat-icon.brand{background:rgba(232,83,31,.08);color:var(--brand)}
+.stat-val{font-size:32px;font-weight:900;color:var(--text);line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:13px;color:var(--muted);font-weight:500}
+.stat-trend{font-size:11px;font-weight:600;margin-top:8px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px}
+.trend-up{background:var(--green-bg);color:var(--green)}
+.trend-down{background:var(--red-bg);color:var(--red)}
+
+/* ── SECTION HEADER ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-hdr h3{font-size:16px;font-weight:800;color:var(--text)}
+.section-hdr p{font-size:13px;color:var(--muted);margin-top:2px}
+.btn-ghost{background:none;border:1.5px solid var(--border);border-radius:var(--r3);padding:7px 14px;font-size:13px;font-weight:600;color:var(--muted);transition:all .2s}
+.btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.table-toolbar{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.search-box{display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r2);padding:8px 14px;flex:1;max-width:320px}
+.search-box i{color:var(--muted);font-size:14px}
+.search-box input{border:none;background:none;outline:none;font-size:14px;color:var(--text);width:100%}
+.search-box input::placeholder{color:var(--muted)}
+.filter-row{display:flex;gap:6px}
+.filter-chip{padding:6px 14px;border-radius:50px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.filter-chip.active,.filter-chip:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--bg)}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid var(--border)}
+td{padding:14px 16px;font-size:14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:rgba(232,83,31,.025)}
+.td-avatar{width:38px;height:38px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:var(--navy)}
+.td-name{font-weight:700;color:var(--text)}
+.td-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.td-actions{display:flex;gap:6px}
+.act-btn{width:32px;height:32px;border-radius:var(--r3);border:none;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s}
+.act-btn.approve{background:var(--green-bg);color:var(--green)}
+.act-btn.approve:hover{background:var(--green);color:#fff}
+.act-btn.reject{background:var(--red-bg);color:var(--red)}
+.act-btn.reject:hover{background:var(--red);color:#fff}
+.act-btn.edit{background:var(--blue-bg);color:var(--blue)}
+.act-btn.edit:hover{background:var(--blue);color:#fff}
+.act-btn.del{background:var(--red-bg);color:var(--red)}
+.act-btn.del:hover{background:var(--red);color:#fff}
+.act-btn.key{background:var(--green-bg);color:var(--green)}
+.act-btn.key:hover{background:var(--green);color:#fff}
+.act-btn.view{background:var(--purple-bg);color:var(--purple)}
+.act-btn.view:hover{background:var(--purple);color:#fff}
+.act-btn.assign{background:var(--orange-bg);color:var(--orange)}
+.act-btn.assign:hover{background:var(--orange);color:#fff}
+
+/* ── BADGES ── */
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.6}
+.badge.new{background:var(--blue-bg);color:var(--blue)}
+.badge.assigned{background:var(--orange-bg);color:var(--orange)}
+.badge.picked{background:var(--purple-bg);color:var(--purple)}
+.badge.delivered{background:var(--green-bg);color:var(--green)}
+.badge.cancelled{background:var(--red-bg);color:var(--red)}
+.badge.pending{background:var(--orange-bg);color:var(--orange)}
+.badge.approved{background:var(--green-bg);color:var(--green)}
+.badge.rejected{background:var(--red-bg);color:var(--red)}
+.badge.super{background:rgba(245,197,24,.15);color:var(--gold-dark)}
+.badge.admin{background:var(--blue-bg);color:var(--blue)}
+.badge.moderator{background:var(--purple-bg);color:var(--purple)}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.info-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow);transition:all .2s}
+.info-card:hover{box-shadow:var(--shadow2);border-color:#d1d9e6}
+.ic-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px}
+.ic-avatar{width:48px;height:48px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:var(--navy);flex-shrink:0}
+.ic-name{font-weight:700;font-size:15px;color:var(--text)}
+.ic-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.ic-body{padding:14px 20px}
+.ic-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.ic-row:last-child{border-bottom:none;padding-bottom:0}
+.ic-key{color:var(--muted);font-weight:500}
+.ic-val{font-weight:600;color:var(--text)}
+.ic-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px}
+
+/* ── RIGHT PANEL / DETAIL ── */
+.detail-panel{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow)}
+.dp-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.dp-title{font-size:16px;font-weight:800;color:var(--text)}
+.dp-sub{font-size:13px;color:var(--muted);margin-top:3px}
+.dp-body{padding:20px 24px}
+.dp-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.dp-row:last-child{border-bottom:none}
+.dp-icon{width:36px;height:36px;border-radius:var(--r3);background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--brand);font-size:14px;flex-shrink:0}
+.dp-key{font-size:11px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.dp-val{font-size:14px;font-weight:600;color:var(--text)}
+
+/* ── TRACKER ── */
+.tracker{display:flex;align-items:center;gap:0;margin:20px 0}
+.tr-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.tr-line{position:absolute;top:12px;left:50%;right:-50%;height:2px;background:var(--border);z-index:0}
+.tr-line.done{background:var(--green)}
+.tr-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);position:relative;z-index:1}
+.tr-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.tr-dot.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.tr-label{font-size:10px;font-weight:600;color:var(--muted);margin-top:6px;text-align:center}
+.tr-step.done .tr-label{color:var(--green)}
+.tr-step.active .tr-label{color:var(--brand)}
+
+/* ── PROFILE PAGE ── */
+.profile-hero{background:linear-gradient(135deg,var(--navy),var(--navy3));border-radius:var(--r);padding:32px;display:flex;align-items:center;gap:24px;margin-bottom:24px;position:relative;overflow:hidden}
+.profile-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.04)}
+.ph-avatar{width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;color:#fff;flex-shrink:0;position:relative;z-index:1}
+.ph-info{position:relative;z-index:1}
+.ph-info h2{font-size:24px;font-weight:800;color:#fff;margin-bottom:4px}
+.ph-info p{font-size:14px;color:rgba(255,255,255,.5)}
+.ph-badge{background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.25);color:var(--gold);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:6px;margin-top:10px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:24px;box-shadow:var(--shadow)}
+.form-card-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.fg{margin-bottom:16px}
+.fg:last-of-type{margin-bottom:0}
+.fl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px;display:block}
+.fi{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r2);font-size:14px;color:var(--text);background:var(--surface);outline:none;transition:border .2s}
+.fi:focus{border-color:var(--brand)}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2364748B' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.fi-row{display:flex;gap:8px}
+.fi-row .fi{flex:1}
+.btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;border:none;border-radius:var(--r2);padding:12px 22px;font-size:14px;font-weight:700;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{background:linear-gradient(135deg,var(--brand-hover),var(--brand));transform:translateY(-1px);box-shadow:0 6px 20px rgba(232,83,31,.3)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border:none;border-radius:var(--r2);padding:12px 22px;font-size:14px;font-weight:700;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-gold:hover{box-shadow:0 6px 20px rgba(245,197,24,.3);transform:translateY(-1px)}
+.btn-danger{background:linear-gradient(135deg,var(--red),#DC2626);color:#fff;border:none;border-radius:var(--r2);padding:12px 22px;font-size:14px;font-weight:700;transition:all .25s;display:inline-flex;align-items:center;gap:8px}
+.btn-outline{background:none;border:1.5px solid var(--border);border-radius:var(--r2);padding:11px 20px;font-size:14px;font-weight:600;color:var(--muted);transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-outline:hover{border-color:var(--brand);color:var(--brand)}
+
+/* ── ADMIN STATS ── */
+.admin-stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;margin-bottom:20px;box-shadow:var(--shadow)}
+.asb-item{padding:18px;text-align:center;border-right:1px solid var(--border)}
+.asb-item:last-child{border-right:none}
+.asb-num{font-size:28px;font-weight:900;color:var(--text)}
+.asb-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--surface);border-radius:20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow3);animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.94) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-head{padding:24px 24px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-head h3{font-size:20px;font-weight:800;color:var(--text)}
+.modal-close{width:36px;height:36px;border:1.5px solid var(--border);border-radius:var(--r3);background:none;color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+.modal-body{padding:0 24px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+/* ── PASSWORD DISPLAY ── */
+.pwd-box{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r2);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-family:monospace;font-size:18px;letter-spacing:2px}
+.pwd-gen{background:var(--brand);color:#fff;border:none;border-radius:var(--r3);padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s}
+.pwd-gen:hover{background:var(--brand-dark)}
+
+/* ── EMPTY STATE ── */
+.empty{padding:48px 24px;text-align:center}
+.empty i{font-size:48px;color:#d1d9e6;margin-bottom:14px}
+.empty h4{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px}
+.empty p{font-size:13px;color:var(--muted)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:28px;right:28px;padding:14px 22px;border-radius:50px;font-size:14px;font-weight:600;color:#fff;box-shadow:var(--shadow2);z-index:9999;display:none;animation:toastIn .3s ease;max-width:90vw}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#toast.success{background:var(--green)}
+#toast.error{background:var(--red)}
+#toast.info{background:var(--navy)}
+
+/* ── CONFIRM MODAL ── */
+.confirm-icon{text-align:center;padding:20px 0 10px;font-size:56px}
+.confirm-text{text-align:center;padding:0 10px 20px}
+.confirm-text h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+.confirm-text p{font-size:14px;color:var(--muted)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:none}
+  .main{margin-left:0}
+  .hamburger{display:flex}
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:12px}
+  .pages{padding:16px}
+  .table-wrap{overflow-x:auto}
+  table{min-width:600px}
+  .sb-overlay{display:block !important}
+  .topbar{padding:0 16px}
+}
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .stat-val{font-size:26px}
+}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199}
+</style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div class="login-screen" id="loginScreen">
-        <div class="login-container">
-            <div class="login-header">
-                <i class="fas fa-crown"></i>
-                <h2>Админ Панел</h2>
-                <p>Барои даромад логин ва паролро ворид кунед</p>
-            </div>
-            
-            <div class="error-message" id="loginError"></div>
-            <div class="success-message" id="loginSuccess"></div>
-            
-            <!-- Login Form -->
-            <div id="loginForm">
-                <div class="form-group">
-                    <label class="form-label">Логин</label>
-                    <input type="text" class="form-control" id="loginUsername" placeholder="Логини худро ворид кунед">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Парол</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Пароли худро ворид кунед">
-                </div>
-                
-                <button class="login-btn" onclick="login()">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Даромад
-                </button>
-                
-                <button class="login-btn register-btn" onclick="showRegister()" style="margin-top: 10px;">
-                    <i class="fas fa-user-plus"></i>
-                    Сабти ном ҳамчун Супер Админ
-                </button>
-            </div>
 
-            <!-- Register Form (hidden by default) -->
-            <div id="registerForm" style="display: none;">
-                <div class="info-box">
-                    <i class="fas fa-info-circle"></i>
-                    Шумо аввалин админро месозед. Ин админ Супер Админ хоҳад буд.
-                </div>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">Toj<span>Rason</span></div>
+  <div class="splash-tag">Admin Panel</div>
+  <div class="spinner"></div>
+</div>
 
-                <div class="form-group">
-                    <label class="form-label">Номи пурра</label>
-                    <input type="text" class="form-control" id="regName" placeholder="Масалан: Алишер Каримов">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Логин</label>
-                    <input type="text" class="form-control" id="regUsername" placeholder="Логини худро интихоб кунед">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Парол</label>
-                    <input type="password" class="form-control" id="regPassword" placeholder="Пароли худро ворид кунед">
-                    <small style="color: #666; display: block; margin-top: 5px;">Камаш 6 символов</small>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Такрори парол</label>
-                    <input type="password" class="form-control" id="regConfirmPassword" placeholder="Паролро такрор кунед">
-                </div>
-                
-                <button class="login-btn register-btn" onclick="register()">
-                    <i class="fas fa-check-circle"></i>
-                    Сабти ном
-                </button>
-                
-                <button class="login-btn" onclick="showLogin()" style="margin-top: 10px; background: #f5f5f5; color: #666;">
-                    <i class="fas fa-arrow-left"></i>
-                    Ба саҳифаи даромад
-                </button>
-            </div>
-
-            <!-- Admin List -->
-            <div class="admin-list" id="adminList" style="display: none;">
-                <h3>Админҳо дар система:</h3>
-                <div id="adminsDisplay"></div>
-            </div>
-        </div>
+<!-- LOGIN -->
+<div id="loginWrap" style="display:flex">
+  <div class="login-box">
+    <div class="login-brand">
+      <h1>Toj<span>Rason</span></h1>
+      <p>Delivery Management System</p>
     </div>
-
-    <!-- Main App -->
-    <div class="mobile-app" id="mainApp">
-        <!-- Header -->
-        <div class="app-header">
-            <div class="header-top">
-                <button class="menu-btn" onclick="toggleMenu()">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1>Админ Панел</h1>
-                <div class="admin-info">
-                    <span class="admin-name" id="currentAdminName">Админ</span>
-                    <button class="menu-btn" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="date-badge" id="currentDate"></div>
-        </div>
-
-        <!-- Content Area -->
-        <div class="content-area" id="contentArea">
-            <!-- Dashboard Page -->
-            <div id="dashboardPage">
-                <div class="stats-grid">
-                    <div class="stat-card" onclick="showPage('admins')">
-                        <div class="stat-icon">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <div class="stat-value" id="totalAdmins">0</div>
-                        <div class="stat-label">Админҳо</div>
-                    </div>
-                    
-                    <div class="stat-card" onclick="showPage('admins')">
-                        <div class="stat-icon">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <div class="stat-value" id="superAdmins">0</div>
-                        <div class="stat-label">Супер Админ</div>
-                    </div>
-                    
-                    <div class="stat-card" onclick="showPage('admins')">
-                        <div class="stat-icon">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="stat-value" id="regularAdmins">0</div>
-                        <div class="stat-label">Админҳо</div>
-                    </div>
-                    
-                    <div class="stat-card" onclick="showPage('settings')">
-                        <div class="stat-icon">
-                            <i class="fas fa-cog"></i>
-                        </div>
-                        <div class="stat-value">...</div>
-                        <div class="stat-label">Танзимот</div>
-                    </div>
-                </div>
-
-                <div class="section-header">
-                    <h2>Менюи асосӣ</h2>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card" onclick="showPage('admins')">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-value">Идора</div>
-                        <div class="stat-label">Админҳо</div>
-                    </div>
-                    
-                    <div class="stat-card" onclick="showPage('settings')">
-                        <div class="stat-icon">
-                            <i class="fas fa-user-edit"></i>
-                        </div>
-                        <div class="stat-value">Профил</div>
-                        <div class="stat-label">Танзимоти ман</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admins Page -->
-            <div id="adminsPage" style="display: none;">
-                <!-- Admin Stats -->
-                <div class="admin-stats">
-                    <div class="admin-stat-item">
-                        <div class="admin-stat-value" id="totalAdminsCount">0</div>
-                        <div class="admin-stat-label">Ҳамагӣ</div>
-                    </div>
-                    <div class="admin-stat-item">
-                        <div class="admin-stat-value" id="superAdminsCount">0</div>
-                        <div class="admin-stat-label">Супер Админ</div>
-                    </div>
-                    <div class="admin-stat-item">
-                        <div class="admin-stat-value" id="regularAdminsCount">0</div>
-                        <div class="admin-stat-label">Админҳо</div>
-                    </div>
-                </div>
-
-                <!-- Add Admin Button (only for Super Admin) -->
-                <div class="add-admin-btn" id="addAdminBtn" onclick="showAddAdminModal()">
-                    <i class="fas fa-plus-circle"></i>
-                    Илова кардани админи нав
-                </div>
-
-                <!-- Admins List -->
-                <div id="adminsList"></div>
-            </div>
-
-            <!-- Settings Page -->
-            <div id="settingsPage" style="display: none;">
-                <div class="admin-card">
-                    <div class="admin-avatar" id="myAvatar">A</div>
-                    <div class="admin-info">
-                        <h3 id="myName">Номи ман</h3>
-                        <p id="myUsername">логин</p>
-                        <span class="admin-role-badge role-super" id="myRole">Супер Админ</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Номи нав</label>
-                    <input type="text" class="form-control" id="newName" placeholder="Номи нав">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Логини нав</label>
-                    <input type="text" class="form-control" id="newUsername" placeholder="Логини нав">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Пароли нав</label>
-                    <input type="text" class="form-control" id="newPassword" placeholder="Пароли нав">
-                    <button class="copy-btn" onclick="generatePassword()" style="margin-top: 10px;">Генератсияи парол</button>
-                </div>
-
-                <button class="login-btn" onclick="updateMyProfile()">
-                    <i class="fas fa-save"></i>
-                    Сабти тағйирот
-                </button>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="showPage('dashboard')">
-                <i class="fas fa-home"></i>
-                <span>Асосӣ</span>
-            </div>
-            <div class="nav-item" onclick="showPage('admins')">
-                <i class="fas fa-users"></i>
-                <span>Админҳо</span>
-            </div>
-            <div class="nav-item" onclick="showPage('settings')">
-                <i class="fas fa-user"></i>
-                <span>Профил</span>
-            </div>
-        </div>
-
-        <!-- Menu Drawer -->
-        <div class="menu-drawer" id="menuDrawer">
-            <div class="drawer-header">
-                <i class="fas fa-crown"></i>
-                <h3 id="drawerAdminName">Админ</h3>
-                <p id="drawerAdminRole">Супер Админ</p>
-            </div>
-            <div class="drawer-menu">
-                <div class="drawer-item" onclick="showPage('dashboard'); toggleMenu()">
-                    <i class="fas fa-home"></i>
-                    <span>Асосӣ</span>
-                </div>
-                <div class="drawer-item" onclick="showPage('admins'); toggleMenu()">
-                    <i class="fas fa-users"></i>
-                    <span>Идоракунии админҳо</span>
-                </div>
-                <div class="drawer-item" onclick="showPage('settings'); toggleMenu()">
-                    <i class="fas fa-user-edit"></i>
-                    <span>Танзимоти ман</span>
-                </div>
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #f0f0f0;">
-                <div class="drawer-item" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Баромад</span>
-                </div>
-            </div>
-        </div>
-        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="login-card">
+      <!-- LOGIN FORM -->
+      <div id="loginFormWrap">
+        <div class="login-title"><i class="fas fa-crown"></i> Админ Панел</div>
+        <div class="login-sub">Логин ва паролро ворид кунед</div>
+        <div class="login-error" id="loginErr"></div>
+        <div class="lf-group"><label class="lf-label">Логин</label>
+          <input class="lf-input" id="liUser" placeholder="Логин" autocomplete="username"></div>
+        <div class="lf-group"><label class="lf-label">Парол</label>
+          <input class="lf-input" type="password" id="liPass" placeholder="••••••••" autocomplete="current-password"></div>
+        <button class="btn-login" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Даромад</button>
+        <button class="btn-login btn-register" onclick="showReg()"><i class="fas fa-user-plus"></i> Супер Админи аввал</button>
+      </div>
+      <!-- REGISTER FORM -->
+      <div id="regFormWrap" style="display:none">
+        <div class="login-title"><i class="fas fa-star"></i> Сабти ном</div>
+        <div class="login-sub">Супер Админи аввалро созед</div>
+        <div class="login-info"><i class="fas fa-info-circle"></i> Ин амал танҳо якбор иҷро мешавад</div>
+        <div class="login-error" id="regErr"></div>
+        <div class="lf-group"><label class="lf-label">Номи пурра</label>
+          <input class="lf-input" id="rnName" placeholder="Исм ва насаб"></div>
+        <div class="lf-group"><label class="lf-label">Логин</label>
+          <input class="lf-input" id="rnUser" placeholder="Логин"></div>
+        <div class="lf-group"><label class="lf-label">Парол</label>
+          <input class="lf-input" type="password" id="rnPass" placeholder="Камаш 6 символ"></div>
+        <div class="lf-group"><label class="lf-label">Такрори парол</label>
+          <input class="lf-input" type="password" id="rnConf" placeholder="Тасдиқи парол"></div>
+        <button class="btn-login btn-register" onclick="doRegister()"><i class="fas fa-check-circle"></i> Сабт</button>
+        <div class="login-toggle"><a onclick="showLogin()">← Ба саҳифаи даромад</a></div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- Add Admin Modal -->
-    <div class="modal" id="addAdminModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Илова кардани админи нав</h3>
-                <button class="close-btn" onclick="closeAddAdminModal()">&times;</button>
+<!-- APP -->
+<div id="appWrap">
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sb-brand">
+        <h2>Toj<span>Rason</span></h2>
+        <p>Admin Panel</p>
+      </div>
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar">A</div>
+        <div class="sb-user-info">
+          <h4 id="sbName">Админ</h4>
+          <p id="sbRole">Супер Админ</p>
+        </div>
+      </div>
+      <nav class="sb-nav">
+        <div class="sb-section-label">Асосӣ</div>
+        <button class="sb-item active" data-page="dashboard" onclick="goPage('dashboard',this)">
+          <i class="fas fa-chart-pie"></i> Бошгоҳ
+        </button>
+        <button class="sb-item" data-page="orders" onclick="goPage('orders',this)">
+          <i class="fas fa-box"></i> Фармоишҳо
+          <span class="sb-badge" id="sbNewOrders" style="display:none">0</span>
+        </button>
+        <div class="sb-section-label">Корбарон</div>
+        <button class="sb-item" data-page="couriers" onclick="goPage('couriers',this)">
+          <i class="fas fa-motorcycle"></i> Курьерҳо
+          <span class="sb-badge" id="sbPendingCouriers" style="display:none">0</span>
+        </button>
+        <button class="sb-item" data-page="customers" onclick="goPage('customers',this)">
+          <i class="fas fa-users"></i> Мизоҷон
+        </button>
+        <div class="sb-section-label">Система</div>
+        <button class="sb-item" data-page="admins" onclick="goPage('admins',this)">
+          <i class="fas fa-users-cog"></i> Админҳо
+        </button>
+        <button class="sb-item" data-page="profile" onclick="goPage('profile',this)">
+          <i class="fas fa-user-edit"></i> Профили ман
+        </button>
+      </nav>
+      <div class="sb-bottom">
+        <button class="sb-logout" onclick="doLogout()">
+          <i class="fas fa-sign-out-alt"></i> Баромад
+        </button>
+      </div>
+    </div>
+    <div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" id="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+          <div>
+            <div class="page-title" id="pageTitle">Бошгоҳ</div>
+            <div class="page-subtitle" id="pageDate"></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="date-chip" id="dateChip"></div>
+          <button class="tb-btn tb-notif" onclick="goPage('orders',document.querySelector('[data-page=orders]'))">
+            <i class="fas fa-bell"></i>
+            <div class="tb-dot" id="notifDot" style="display:none"></div>
+          </button>
+          <button class="tb-btn" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
+      </div>
+
+      <!-- PAGES -->
+      <div class="pages">
+
+        <!-- ── DASHBOARD ── -->
+        <div class="page active" id="pg-dashboard">
+          <div class="stats-row">
+            <div class="stat-card sc-navy" onclick="goPage('orders',document.querySelector('[data-page=orders]'))">
+              <div class="stat-icon navy"><i class="fas fa-box"></i></div>
+              <div class="stat-val" id="ds-orders">0</div>
+              <div class="stat-lbl">Ҳамаи фармоишҳо</div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">Номи пурра</label>
-                <input type="text" class="form-control" id="newAdminName" placeholder="Масалан: Алишер Каримов">
+            <div class="stat-card sc-blue" onclick="goPage('orders',document.querySelector('[data-page=orders]'))">
+              <div class="stat-icon blue"><i class="fas fa-clock"></i></div>
+              <div class="stat-val" id="ds-new">0</div>
+              <div class="stat-lbl">Нав / Интизор</div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">Логин</label>
-                <input type="text" class="form-control" id="newAdminLogin" placeholder="Логин">
+            <div class="stat-card sc-green" onclick="goPage('orders',document.querySelector('[data-page=orders]'))">
+              <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+              <div class="stat-val" id="ds-done">0</div>
+              <div class="stat-lbl">Расонида шуд</div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">Нақш</label>
-                <select class="form-control" id="newAdminRole">
-                    <option value="admin">Администратор</option>
-                    <option value="moderator">Модератор</option>
-                </select>
+            <div class="stat-card sc-orange" onclick="goPage('couriers',document.querySelector('[data-page=couriers]'))">
+              <div class="stat-icon orange"><i class="fas fa-motorcycle"></i></div>
+              <div class="stat-val" id="ds-couriers">0</div>
+              <div class="stat-lbl">Курьерҳои фаъол</div>
             </div>
-            
-            <div class="form-group">
-                <label class="form-label">Парол</label>
-                <div class="password-field">
-                    <span id="generatedPassword">********</span>
-                    <button class="copy-btn" onclick="generateNewPassword()">Генератсия</button>
+            <div class="stat-card sc-purple" onclick="goPage('customers',document.querySelector('[data-page=customers]'))">
+              <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+              <div class="stat-val" id="ds-customers">0</div>
+              <div class="stat-lbl">Мизоҷон</div>
+            </div>
+            <div class="stat-card sc-red" onclick="goPage('couriers',document.querySelector('[data-page=couriers]'))">
+              <div class="stat-icon red"><i class="fas fa-user-clock"></i></div>
+              <div class="stat-val" id="ds-pending">0</div>
+              <div class="stat-lbl">Курьерҳои интизор</div>
+            </div>
+          </div>
+          <div class="section-hdr">
+            <div><h3>Фармоишҳои охирин</h3><p>Охирин 10 фармоиш</p></div>
+            <button class="btn-ghost" onclick="goPage('orders',document.querySelector('[data-page=orders]'))">Ҳама <i class="fas fa-arrow-right"></i></button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>ID</th><th>Мизоҷ</th><th>Аз куҷо</th><th>Ба куҷо</th><th>Нарх</th><th>Ҳолат</th><th>Санаи санҷ</th>
+              </tr></thead>
+              <tbody id="dash-orders-tbody"></tbody>
+            </table>
+          </div>
+          <div style="height:24px"></div>
+          <div class="section-hdr">
+            <div><h3>Курьерҳои интизори тасдиқ</h3></div>
+            <button class="btn-ghost" onclick="goPage('couriers',document.querySelector('[data-page=couriers]'))">Ҳама</button>
+          </div>
+          <div id="dash-pending-couriers"></div>
+        </div>
+
+        <!-- ── ORDERS ── -->
+        <div class="page" id="pg-orders">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input placeholder="Ҷустуҷӯи фармоиш..." id="orderSearch" oninput="renderOrders()">
+              </div>
+              <div class="filter-row">
+                <div class="filter-chip active" onclick="setOrderFilter('all',this)">Ҳама</div>
+                <div class="filter-chip" onclick="setOrderFilter('new',this)">Нав</div>
+                <div class="filter-chip" onclick="setOrderFilter('assigned',this)">Дар роҳ</div>
+                <div class="filter-chip" onclick="setOrderFilter('delivered',this)">Расид</div>
+                <div class="filter-chip" onclick="setOrderFilter('cancelled',this)">Бекор</div>
+              </div>
+            </div>
+            <table>
+              <thead><tr>
+                <th>ID</th><th>Мизоҷ</th><th>Аз куҷо</th><th>Ба куҷо</th><th>Нарх</th><th>Курьер</th><th>Ҳолат</th><th>Амалиёт</th>
+              </tr></thead>
+              <tbody id="orders-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── COURIERS ── -->
+        <div class="page" id="pg-couriers">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input placeholder="Ҷустуҷӯи курьер..." id="courierSearch" oninput="renderCouriers()">
+              </div>
+              <div class="filter-row">
+                <div class="filter-chip active" onclick="setCourierFilter('pending',this)">Интизор</div>
+                <div class="filter-chip" onclick="setCourierFilter('approved',this)">Тасдиқ</div>
+                <div class="filter-chip" onclick="setCourierFilter('rejected',this)">Рад</div>
+              </div>
+            </div>
+            <table>
+              <thead><tr>
+                <th>Курьер</th><th>Телефон</th><th>Логин</th><th>Нақлиёт</th><th>Ҳолат</th><th>Сана</th><th>Амалиёт</th>
+              </tr></thead>
+              <tbody id="couriers-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── CUSTOMERS ── -->
+        <div class="page" id="pg-customers">
+          <div class="table-wrap">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input placeholder="Ҷустуҷӯи мизоҷ..." id="customerSearch" oninput="renderCustomers()">
+              </div>
+            </div>
+            <table>
+              <thead><tr>
+                <th>Мизоҷ</th><th>Телефон</th><th>Логин</th><th>Фармоишҳо</th><th>Сана</th><th>Амалиёт</th>
+              </tr></thead>
+              <tbody id="customers-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── ADMINS ── -->
+        <div class="page" id="pg-admins">
+          <div class="admin-stats-bar">
+            <div class="asb-item"><div class="asb-num" id="adm-total">0</div><div class="asb-lbl">Ҳамагӣ</div></div>
+            <div class="asb-item"><div class="asb-num" id="adm-super">0</div><div class="asb-lbl">Супер Админ</div></div>
+            <div class="asb-item"><div class="asb-num" id="adm-reg">0</div><div class="asb-lbl">Дигарон</div></div>
+          </div>
+          <div class="section-hdr">
+            <div><h3>Рӯйхати Админҳо</h3></div>
+            <button class="btn-gold" onclick="openAddAdminModal()"><i class="fas fa-plus"></i> Илова кардан</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Админ</th><th>Логин</th><th>Нақш</th><th>Сана</th><th>Амалиёт</th>
+              </tr></thead>
+              <tbody id="admins-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── PROFILE ── -->
+        <div class="page" id="pg-profile">
+          <div class="profile-hero">
+            <div class="ph-avatar" id="ph-avatar">A</div>
+            <div class="ph-info">
+              <h2 id="ph-name">Ном</h2>
+              <p id="ph-username">@логин</p>
+              <div class="ph-badge"><i class="fas fa-crown"></i> <span id="ph-role">Супер Админ</span></div>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="form-card">
+              <div class="form-card-title">Тағйири маълумот</div>
+              <div class="fg"><label class="fl">Номи нав</label><input class="fi" id="pf-name" placeholder="Ном"></div>
+              <div class="fg"><label class="fl">Логини нав</label><input class="fi" id="pf-user" placeholder="Логин"></div>
+              <div class="fg"><label class="fl">Пароли нав</label>
+                <div class="fi-row">
+                  <input class="fi" type="text" id="pf-pass" placeholder="Холӣ монед агар тағйир надиҳед">
+                  <button class="btn-outline" onclick="genInto('pf-pass')" style="white-space:nowrap"><i class="fas fa-dice"></i></button>
                 </div>
+              </div>
+              <button class="btn-primary" onclick="saveMyProfile()" style="margin-top:16px"><i class="fas fa-save"></i> Сабти тағйирот</button>
             </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="login-btn" onclick="addAdmin()" style="flex: 2;">Сабт</button>
-                <button class="login-btn" onclick="closeAddAdminModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
+            <div class="form-card">
+              <div class="form-card-title">Маълумоти ҳисоб</div>
+              <div class="dp-row"><div class="dp-icon"><i class="fas fa-user"></i></div><div><div class="dp-key">Ном</div><div class="dp-val" id="pf-disp-name">—</div></div></div>
+              <div class="dp-row"><div class="dp-icon"><i class="fas fa-at"></i></div><div><div class="dp-key">Логин</div><div class="dp-val" id="pf-disp-user">—</div></div></div>
+              <div class="dp-row"><div class="dp-icon"><i class="fas fa-shield-alt"></i></div><div><div class="dp-key">Нақш</div><div class="dp-val" id="pf-disp-role">—</div></div></div>
+              <div class="dp-row" style="border:none"><div class="dp-icon"><i class="fas fa-calendar"></i></div><div><div class="dp-key">Санаи сабт</div><div class="dp-val" id="pf-disp-date">—</div></div></div>
+              <button class="btn-danger" onclick="doLogout()" style="margin-top:16px;width:100%;justify-content:center"><i class="fas fa-sign-out-alt"></i> Баромад</button>
             </div>
+          </div>
         </div>
-    </div>
 
-    <!-- Edit Admin Modal -->
-    <div class="modal" id="editAdminModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Тағйир додани маълумот</h3>
-                <button class="close-btn" onclick="closeEditAdminModal()">&times;</button>
-            </div>
-            
-            <input type="hidden" id="editAdminId">
-            
-            <div class="form-group">
-                <label class="form-label">Номи пурра</label>
-                <input type="text" class="form-control" id="editAdminName">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Логин</label>
-                <input type="text" class="form-control" id="editAdminLogin">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Нақш</label>
-                <select class="form-control" id="editAdminRole">
-                    <option value="admin">Администратор</option>
-                    <option value="moderator">Модератор</option>
-                </select>
-            </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="login-btn" onclick="updateAdmin()" style="flex: 2;">Сабт</button>
-                <button class="login-btn" onclick="closeEditAdminModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
-            </div>
+      </div><!-- /pages -->
+    </div><!-- /main -->
+  </div><!-- /app-layout -->
+</div><!-- /appWrap -->
+
+<!-- ═════ MODALS ═════ -->
+
+<!-- Order Detail -->
+<div class="modal-bg" id="orderModal">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-head">
+      <h3 id="om-title">Фармоиш</h3>
+      <button class="modal-close" onclick="closeModal('orderModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="om-body"></div>
+  </div>
+</div>
+
+<!-- Assign Courier -->
+<div class="modal-bg" id="assignModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Таъин кардани Курьер</h3>
+      <button class="modal-close" onclick="closeModal('assignModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="assign-oid">
+      <div id="assign-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Admin -->
+<div class="modal-bg" id="addAdminModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Илова кардани Админ</h3>
+      <button class="modal-close" onclick="closeModal('addAdminModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Номи пурра</label><input class="fi" id="na-name" placeholder="Исм ва насаб"></div>
+      <div class="fg"><label class="fl">Логин</label><input class="fi" id="na-user" placeholder="Логин"></div>
+      <div class="fg"><label class="fl">Нақш</label>
+        <select class="fi" id="na-role">
+          <option value="admin">Администратор</option>
+          <option value="moderator">Модератор</option>
+        </select></div>
+      <div class="fg"><label class="fl">Парол</label>
+        <div class="pwd-box">
+          <span id="na-pass-disp" style="font-family:monospace;font-size:18px">••••••••</span>
+          <button class="pwd-gen" onclick="genAdminPass()"><i class="fas fa-sync-alt"></i> Генератсия</button>
         </div>
+      </div>
     </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('addAdminModal')">Бекор</button>
+      <button class="btn-gold" onclick="saveNewAdmin()"><i class="fas fa-check"></i> Сабт</button>
+    </div>
+  </div>
+</div>
 
-    <!-- Change Password Modal -->
-    <div class="modal" id="passwordModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Тағйир додани парол</h3>
-                <button class="close-btn" onclick="closePasswordModal()">&times;</button>
-            </div>
-            
-            <input type="hidden" id="passwordAdminId">
-            
-            <div class="form-group">
-                <label class="form-label">Пароли нав</label>
-                <div class="password-field">
-                    <span id="newPassword">********</span>
-                    <button class="copy-btn" onclick="generateNewPasswordForEdit()">Генератсия</button>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="login-btn" onclick="changePassword()" style="flex: 2;">Сабт</button>
-                <button class="login-btn" onclick="closePasswordModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
-            </div>
+<!-- Edit Admin -->
+<div class="modal-bg" id="editAdminModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Тағйири Админ</h3>
+      <button class="modal-close" onclick="closeModal('editAdminModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ea-id">
+      <div class="fg"><label class="fl">Ном</label><input class="fi" id="ea-name"></div>
+      <div class="fg"><label class="fl">Логин</label><input class="fi" id="ea-user"></div>
+      <div class="fg"><label class="fl">Нақш</label>
+        <select class="fi" id="ea-role">
+          <option value="admin">Администратор</option>
+          <option value="moderator">Модератор</option>
+        </select></div>
+      <div class="fg"><label class="fl">Пароли нав (ихтиёрӣ)</label>
+        <div class="fi-row">
+          <input class="fi" type="text" id="ea-pass" placeholder="Холӣ монед агар тағйир надиҳед">
+          <button class="btn-outline" onclick="genInto('ea-pass')"><i class="fas fa-dice"></i></button>
         </div>
+      </div>
     </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Тасдиқи нест кардан</h3>
-                <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
-            </div>
-            
-            <input type="hidden" id="deleteAdminId">
-            
-            <div style="text-align: center; margin: 30px 0;">
-                <i class="fas fa-exclamation-triangle" style="font-size: 60px; color: #f44336;"></i>
-                <p style="margin-top: 20px; font-size: 16px;">Оё шумо боварӣ доред, ки ин админро нест кардан мехоҳед?</p>
-                <p style="color: #666; font-size: 14px;" id="deleteAdminName"></p>
-            </div>
-            
-            <div style="display: flex; gap: 10px;">
-                <button class="login-btn" onclick="confirmDelete()" style="flex: 1; background: #f44336;">Нест кардан</button>
-                <button class="login-btn" onclick="closeDeleteModal()" style="flex: 1; background: #f5f5f5; color: #666;">Бекор</button>
-            </div>
-        </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('editAdminModal')">Бекор</button>
+      <button class="btn-primary" onclick="updateAdmin()"><i class="fas fa-save"></i> Сабт</button>
     </div>
+  </div>
+</div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
+<!-- Confirm -->
+<div class="modal-bg" id="confirmModal">
+  <div class="modal-box" style="max-width:400px">
+    <div class="confirm-icon" id="conf-icon">⚠️</div>
+    <div class="confirm-text">
+      <h3 id="conf-title">Тасдиқ</h3>
+      <p id="conf-text">Оё шумо боварӣ доред?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-outline" onclick="closeModal('confirmModal')">Бекор</button>
+      <button class="btn-danger" id="conf-ok"><i class="fas fa-check"></i> Тасдиқ</button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        // ========== GLOBAL VARIABLES ==========
-        let currentPage = 'dashboard';
-        let currentAdmin = null;
-        let admins = [];
-        let currentPassword = '';
+<div id="toast"></div>
 
-        // ========== INITIALIZE ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDate();
-            checkAuth();
-            loadAdmins();
-        });
-
-        // Update current date
-        function updateDate() {
-            const now = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('tg-TJ', options);
-        }
-
-        // ========== AUTH FUNCTIONS ==========
-        function checkAuth() {
-            const savedAdmin = localStorage.getItem('currentAdmin');
-            const savedAdmins = localStorage.getItem('admins');
-            
-            if (savedAdmins) {
-                admins = JSON.parse(savedAdmins);
-                displayAdminList(admins);
-            }
-
-            if (savedAdmin) {
-                currentAdmin = JSON.parse(savedAdmin);
-                showMainApp();
-                updateAdminUI();
-                loadAdmins();
-            }
-        }
-
-        function login() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            
-            if (!username || !password) {
-                showError('Лутфан логин ва паролро ворид кунед');
-                return;
-            }
-
-            const admins = JSON.parse(localStorage.getItem('admins') || '[]');
-            const admin = admins.find(a => a.username === username && a.password === password);
-            
-            if (admin) {
-                currentAdmin = admin;
-                localStorage.setItem('currentAdmin', JSON.stringify(admin));
-                showMainApp();
-                updateAdminUI();
-                loadAdmins();
-                showToast('✅ Хуш омадед, ' + admin.name);
-            } else {
-                showError('Логин ё парол нодуруст аст');
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('currentAdmin');
-            currentAdmin = null;
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            showToast('✅ Баромад карда шуд');
-        }
-
-        function showMainApp() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-        }
-
-        // ========== REGISTER ==========
-        function showRegister() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-        }
-
-        function showLogin() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-        }
-
-        function register() {
-            const name = document.getElementById('regName').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value.trim();
-            const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
-
-            if (!name || !username || !password || !confirmPassword) {
-                showError('Лутфан ҳамаи майдонҳоро пур кунед');
-                return;
-            }
-
-            if (password.length < 6) {
-                showError('Парол бояд камаш 6 символ бошад');
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showError('Паролҳо мувофиқ нестанд');
-                return;
-            }
-
-            let admins = JSON.parse(localStorage.getItem('admins') || '[]');
-            
-            if (admins.find(a => a.username === username)) {
-                showError('Ин логин аллакай истифода шудааст');
-                return;
-            }
-
-            const newAdmin = {
-                id: Date.now().toString(),
-                name: name,
-                username: username,
-                password: password,
-                role: 'super_admin'
-            };
-
-            admins.push(newAdmin);
-            localStorage.setItem('admins', JSON.stringify(admins));
-            
-            currentAdmin = newAdmin;
-            localStorage.setItem('currentAdmin', JSON.stringify(newAdmin));
-            
-            showMainApp();
-            updateAdminUI();
-            loadAdmins();
-            showToast('✅ Сабти ном муваффақиятли!');
-        }
-
-        // ========== ADMIN MANAGEMENT ==========
-        function loadAdmins() {
-            admins = JSON.parse(localStorage.getItem('admins') || '[]');
-            
-            const superAdmins = admins.filter(a => a.role === 'super_admin').length;
-            const regularAdmins = admins.filter(a => a.role === 'admin' || a.role === 'moderator').length;
-            
-            document.getElementById('totalAdmins').textContent = admins.length;
-            document.getElementById('superAdmins').textContent = superAdmins;
-            document.getElementById('regularAdmins').textContent = regularAdmins;
-            
-            document.getElementById('totalAdminsCount').textContent = admins.length;
-            document.getElementById('superAdminsCount').textContent = superAdmins;
-            document.getElementById('regularAdminsCount').textContent = regularAdmins;
-
-            displayAdmins();
-            displayAdminList(admins);
-        }
-
-        function displayAdmins() {
-            if (!currentAdmin) return;
-            
-            let html = '';
-            
-            admins.forEach(admin => {
-                const roleClass = admin.role === 'super_admin' ? 'role-super' : 
-                                 admin.role === 'admin' ? 'role-admin' : 'role-moderator';
-                
-                const roleText = admin.role === 'super_admin' ? 'Супер Админ' :
-                                admin.role === 'admin' ? 'Администратор' : 'Модератор';
-                
-                html += `
-                    <div class="admin-card">
-                        <div class="admin-avatar">${admin.name.charAt(0)}</div>
-                        <div class="admin-info">
-                            <h3>${admin.name}</h3>
-                            <p>Логин: ${admin.username}</p>
-                            <span class="admin-role-badge ${roleClass}">${roleText}</span>
-                        </div>
-                        ${currentAdmin.role === 'super_admin' && admin.id !== currentAdmin.id ? `
-                            <div class="admin-actions">
-                                <div class="action-icon edit" onclick="editAdmin('${admin.id}')" title="Тағйир додан">
-                                    <i class="fas fa-edit"></i>
-                                </div>
-                                <div class="action-icon password" onclick="showChangePassword('${admin.id}')" title="Тағйири парол">
-                                    <i class="fas fa-key"></i>
-                                </div>
-                                <div class="action-icon delete" onclick="showDeleteConfirm('${admin.id}', '${admin.name}')" title="Нест кардан">
-                                    <i class="fas fa-trash"></i>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            document.getElementById('adminsList').innerHTML = html || '<div class="empty-state"><i class="fas fa-users-cog"></i><p>Ҳеҷ админе нест</p></div>';
-        }
-
-        function displayAdminList(admins) {
-            let html = '';
-            
-            admins.forEach(admin => {
-                const roleClass = admin.role === 'super_admin' ? 'role-super' : 
-                                 admin.role === 'admin' ? 'role-admin' : 'role-moderator';
-                
-                const roleText = admin.role === 'super_admin' ? 'Супер Админ' :
-                                admin.role === 'admin' ? 'Администратор' : 'Модератор';
-                
-                html += `
-                    <div class="admin-item">
-                        <div class="admin-info">
-                            <i class="fas fa-user-circle" style="font-size: 24px; color: #1a237e;"></i>
-                            <div>
-                                <strong>${admin.name}</strong><br>
-                                <small>${admin.username}</small>
-                            </div>
-                            <span class="admin-role ${roleClass}">${roleText}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            document.getElementById('adminsDisplay').innerHTML = html;
-            document.getElementById('adminList').style.display = admins.length > 0 ? 'block' : 'none';
-        }
-
-        // Add new admin
-        function showAddAdminModal() {
-            if (currentAdmin.role !== 'super_admin') {
-                showToast('Шумо иҷозати илова кардани админро надоред');
-                return;
-            }
-            
-            if (admins.length >= 30) {
-                showToast('Шумо метавонед ҳамагӣ 30 админ илова кунед');
-                return;
-            }
-
-            document.getElementById('newAdminName').value = '';
-            document.getElementById('newAdminLogin').value = '';
-            document.getElementById('newAdminRole').value = 'admin';
-            generateNewPassword();
-            document.getElementById('addAdminModal').classList.add('active');
-        }
-
-        function closeAddAdminModal() {
-            document.getElementById('addAdminModal').classList.remove('active');
-        }
-
-        function generateNewPassword() {
-            const length = 8;
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let password = "";
-            for (let i = 0; i < length; i++) {
-                password += charset.charAt(Math.floor(Math.random() * charset.length));
-            }
-            currentPassword = password;
-            document.getElementById('generatedPassword').textContent = password;
-        }
-
-        function addAdmin() {
-            const name = document.getElementById('newAdminName').value.trim();
-            const username = document.getElementById('newAdminLogin').value.trim();
-            const role = document.getElementById('newAdminRole').value;
-
-            if (!name || !username || !currentPassword) {
-                showToast('Лутфан ҳамаи майдонҳоро пур кунед');
-                return;
-            }
-
-            if (admins.find(a => a.username === username)) {
-                showToast('Ин логин аллакай истифода шудааст');
-                return;
-            }
-
-            const newAdmin = {
-                id: Date.now().toString(),
-                name: name,
-                username: username,
-                password: currentPassword,
-                role: role
-            };
-
-            admins.push(newAdmin);
-            localStorage.setItem('admins', JSON.stringify(admins));
-            
-            loadAdmins();
-            closeAddAdminModal();
-            showToast('✅ Админи нав илова карда шуд\nЛогин: ' + username + '\nПарол: ' + currentPassword);
-        }
-
-        // Edit admin
-        function editAdmin(adminId) {
-            const admin = admins.find(a => a.id === adminId);
-            if (!admin) return;
-
-            document.getElementById('editAdminId').value = admin.id;
-            document.getElementById('editAdminName').value = admin.name;
-            document.getElementById('editAdminLogin').value = admin.username;
-            document.getElementById('editAdminRole').value = admin.role;
-            
-            document.getElementById('editAdminModal').classList.add('active');
-        }
-
-        function closeEditAdminModal() {
-            document.getElementById('editAdminModal').classList.remove('active');
-        }
-
-        function updateAdmin() {
-            const adminId = document.getElementById('editAdminId').value;
-            const name = document.getElementById('editAdminName').value.trim();
-            const username = document.getElementById('editAdminLogin').value.trim();
-            const role = document.getElementById('editAdminRole').value;
-
-            if (!name || !username) {
-                showToast('Лутфан ҳамаи майдонҳоро пур кунед');
-                return;
-            }
-
-            const index = admins.findIndex(a => a.id === adminId);
-            if (index !== -1) {
-                admins[index].name = name;
-                admins[index].username = username;
-                admins[index].role = role;
-                
-                localStorage.setItem('admins', JSON.stringify(admins));
-                loadAdmins();
-                closeEditAdminModal();
-                showToast('✅ Маълумоти админ тағйир дода шуд');
-            }
-        }
-
-        // Change password
-        function showChangePassword(adminId) {
-            document.getElementById('passwordAdminId').value = adminId;
-            generateNewPasswordForEdit();
-            document.getElementById('passwordModal').classList.add('active');
-        }
-
-        function closePasswordModal() {
-            document.getElementById('passwordModal').classList.remove('active');
-        }
-
-        function generateNewPasswordForEdit() {
-            const length = 8;
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let password = "";
-            for (let i = 0; i < length; i++) {
-                password += charset.charAt(Math.floor(Math.random() * charset.length));
-            }
-            currentPassword = password;
-            document.getElementById('newPassword').textContent = password;
-        }
-
-        function changePassword() {
-            const adminId = document.getElementById('passwordAdminId').value;
-
-            const index = admins.findIndex(a => a.id === adminId);
-            if (index !== -1) {
-                admins[index].password = currentPassword;
-                localStorage.setItem('admins', JSON.stringify(admins));
-                
-                if (adminId === currentAdmin.id) {
-                    currentAdmin.password = currentPassword;
-                    localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
-                }
-                
-                closePasswordModal();
-                showToast('✅ Парол тағйир дода шуд\nПароли нав: ' + currentPassword);
-            }
-        }
-
-        // Delete admin
-        function showDeleteConfirm(adminId, adminName) {
-            document.getElementById('deleteAdminId').value = adminId;
-            document.getElementById('deleteAdminName').textContent = adminName;
-            document.getElementById('deleteModal').classList.add('active');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.remove('active');
-        }
-
-        function confirmDelete() {
-            const adminId = document.getElementById('deleteAdminId').value;
-
-            admins = admins.filter(a => a.id !== adminId);
-            localStorage.setItem('admins', JSON.stringify(admins));
-            
-            loadAdmins();
-            closeDeleteModal();
-            showToast('✅ Админ нест карда шуд');
-        }
-
-        // Profile settings
-        function generatePassword() {
-            const length = 8;
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            let password = "";
-            for (let i = 0; i < length; i++) {
-                password += charset.charAt(Math.floor(Math.random() * charset.length));
-            }
-            document.getElementById('newPassword').value = password;
-        }
-
-        function updateMyProfile() {
-            const newName = document.getElementById('newName').value.trim();
-            const newUsername = document.getElementById('newUsername').value.trim();
-            const newPassword = document.getElementById('newPassword').value.trim();
-
-            if (newName) {
-                currentAdmin.name = newName;
-            }
-
-            if (newUsername) {
-                currentAdmin.username = newUsername;
-            }
-
-            if (newPassword) {
-                currentAdmin.password = newPassword;
-            }
-
-            const index = admins.findIndex(a => a.id === currentAdmin.id);
-            if (index !== -1) {
-                admins[index] = currentAdmin;
-                localStorage.setItem('admins', JSON.stringify(admins));
-                localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
-                updateAdminUI();
-                loadAdmins();
-                showToast('✅ Маълумоти шумо тағйир дода шуд');
-            }
-        }
-
-        function updateAdminUI() {
-            document.getElementById('currentAdminName').textContent = currentAdmin.name;
-            document.getElementById('drawerAdminName').textContent = currentAdmin.name;
-            document.getElementById('drawerAdminRole').textContent = 
-                currentAdmin.role === 'super_admin' ? 'Супер Админ' :
-                currentAdmin.role === 'admin' ? 'Администратор' : 'Модератор';
-            
-            document.getElementById('myName').textContent = currentAdmin.name;
-            document.getElementById('myUsername').textContent = currentAdmin.username;
-            document.getElementById('myRole').textContent = 
-                currentAdmin.role === 'super_admin' ? 'Супер Админ' :
-                currentAdmin.role === 'admin' ? 'Администратор' : 'Модератор';
-            document.getElementById('myAvatar').textContent = currentAdmin.name.charAt(0);
-        }
-
-        // ========== UI FUNCTIONS ==========
-        function toggleMenu() {
-            document.getElementById('menuDrawer').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function showPage(page) {
-            currentPage = page;
-            
-            document.querySelectorAll('#dashboardPage, #adminsPage, #settingsPage').forEach(el => {
-                el.style.display = 'none';
-            });
-            
-            document.getElementById(page + 'Page').style.display = 'block';
-            
-            document.querySelectorAll('.nav-item').forEach((item, index) => {
-                item.classList.remove('active');
-            });
-            
-            const navIndex = ['dashboard', 'admins', 'settings'].indexOf(page);
-            if (navIndex !== -1) {
-                document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
-            }
-            
-            if (page === 'admins') {
-                displayAdmins();
-            }
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('loginError');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            document.getElementById('loginSuccess').style.display = 'none';
-            setTimeout(() => errorDiv.style.display = 'none', 3000);
-        }
-
-        function showSuccess(message) {
-            const successDiv = document.getElementById('loginSuccess');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-            document.getElementById('loginError').style.display = 'none';
-            setTimeout(() => successDiv.style.display = 'none', 3000);
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.display = 'block';
-            setTimeout(() => toast.style.display = 'none', 3000);
-        }
-
-        // Clear all admins
-        window.clearAllAdmins = function() {
-            if (confirm('Оё шумо боварӣ доред, ки ҳамаи админҳоро тоза кардан мехоҳед?')) {
-                localStorage.removeItem('admins');
-                localStorage.removeItem('currentAdmin');
-                location.reload();
-            }
-        };
-    </script>
-    </script>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-
+<script>
+// ═══════════════ FIREBASE — Dynamic Load ═══════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
-  authDomain: "tojrason.firebaseapp.com",
-  databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
-  projectId: "tojrason",
-  storageBucket: "tojrason.firebasestorage.app",
-  messagingSenderId: "734402668671",
-  appId: "1:734402668671:web:ca983940b6870335d2374a",
-  measurementId: "G-M4LKWDWSB7"
+  apiKey:"AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
+  authDomain:"tojrason.firebaseapp.com",
+  databaseURL:"https://tojrason-default-rtdb.firebaseio.com",
+  projectId:"tojrason",
+  storageBucket:"tojrason.firebasestorage.app",
+  messagingSenderId:"734402668671",
+  appId:"1:734402668671:web:ca983940b6870335d2374a"
+};
+let db = null;
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error('Хато дар бор кардани: ' + src));
+    document.head.appendChild(s);
+  });
+}
+
+async function initFirebase() {
+  // Try multiple CDN sources for reliability
+  const cdns = [
+    ['https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js',
+     'https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js'],
+    ['https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-app-compat.min.js',
+     'https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-database-compat.min.js'],
+    ['https://unpkg.com/firebase@10.12.0/firebase-app-compat.js',
+     'https://unpkg.com/firebase@10.12.0/firebase-database-compat.js'],
+  ];
+  let loaded = false;
+  for (const [appUrl, dbUrl] of cdns) {
+    try {
+      await loadScript(appUrl);
+      await loadScript(dbUrl);
+      loaded = true;
+      break;
+    } catch(e) {
+      // Try next CDN
+    }
+  }
+  if (!loaded) throw new Error('Ҳеҷ CDN кор накард');
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+}
+
+// ═══════════════ STATE ═══════════════
+let me = null;
+let allOrders = [], allCouriers = [], allCustomers = [], allAdmins = [];
+let orderFilter = 'all', courierFilter = 'pending';
+let newAdminPwd = '';
+let listeners = [];
+
+// ═══════════════ INIT ═══════════════
+window.onload = async () => {
+  setDate();
+  // loginWrap is visible by default - hide it until we know what to show
+  document.getElementById('loginWrap').style.display = 'none';
+
+  // Show splash, then init firebase
+  const splashEl = document.getElementById('splash');
+
+  try {
+    await Promise.race([
+      initFirebase(),
+      new Promise((_,rej) => setTimeout(() => rej(new Error('Timeout')), 8000))
+    ]);
+  } catch(e) {
+    splashEl.innerHTML = `
+      <div style="font-size:36px;font-weight:900;color:#fff;letter-spacing:-1px">Toj<span style="color:#E8531F">Rason</span></div>
+      <div style="color:#ef4444;font-size:13px;text-align:center;padding:0 30px;margin-top:12px;line-height:1.6">
+        ⚠️ Интернет пайваст нест ё Firebase бор нашуд.<br>Лутфан шабакаро санҷед.
+      </div>
+      <button onclick="location.reload()" style="background:#E8531F;color:#fff;border:none;padding:14px 30px;border-radius:14px;font-weight:700;font-size:15px;cursor:pointer;margin-top:20px">🔄 Аз нав</button>`;
+    return;
+  }
+
+  // Firebase loaded - check session
+  splashEl.classList.add('hide');
+  setTimeout(() => { splashEl.style.display = 'none'; }, 500);
+
+  const saved = localStorage.getItem('adminSession');
+  if (saved) {
+    try {
+      me = JSON.parse(saved);
+      // Verify admin still exists in DB
+      const snap = await db.ref('admins/' + me.id).once('value');
+      if (snap.exists()) {
+        document.getElementById('appWrap').style.display = 'block';
+        launch();
+        return;
+      }
+    } catch(e) {}
+    localStorage.removeItem('adminSession');
+  }
+  document.getElementById('loginWrap').style.display = 'flex';
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-</script>
+function setDate() {
+  const d = new Date();
+  const s = d.toLocaleDateString('ru', {day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('dateChip').textContent = s;
+  document.getElementById('pageDate').textContent = s;
+}
 
-</body>
-</html>
+function showLogin() {
+  document.getElementById('appWrap').style.display = 'none';
+  document.getElementById('loginWrap').style.display = 'flex';
+}
+function showReg() { document.getElementById('loginFormWrap').style.display='none'; document.getElementById('regFormWrap').style.display='block'; }
+function showLogin2() { document.getElementById('loginFormWrap').style.display='block'; document.getElementById('regFormWrap').style.display='none'; }
+window.showLogin = showLogin2;
+
+// ═══════════════ LOGIN ═══════════════
+async function doLogin() {
+  const u = document.getElementById('liUser').value.trim();
+  const p = document.getElementById('liPass').value.trim();
+  if (!u||!p) return loginErr('Логин ва паролро ворид кунед');
+  try {
+    const snap = await db.ref('admins').once('value');
+    const data = snap.val()||{};
+    const found = Object.entries(data).find(([k,v])=>v.username===u&&v.password===p);
+    if (!found) return loginErr('Логин ё парол нодуруст аст');
+    me = {id:found[0],...found[1]};
+    localStorage.setItem('adminSession',JSON.stringify(me));
+    launch();
+  } catch(e){ loginErr('Хато: '+e.message); }
+}
+
+async function doRegister() {
+  const name = document.getElementById('rnName').value.trim();
+  const user = document.getElementById('rnUser').value.trim();
+  const pass = document.getElementById('rnPass').value.trim();
+  const conf = document.getElementById('rnConf').value.trim();
+  if (!name||!user||!pass||!conf) return regErr('Ҳамаи майдонҳоро пур кунед');
+  if (pass.length<6) return regErr('Парол камаш 6 символ');
+  if (pass!==conf) return regErr('Паролҳо мувофиқ нестанд');
+  try {
+    const snap = await db.ref('admins').once('value');
+    if (snap.exists()) return regErr('Супер Админ аллакай вуҷуд дорад');
+    const id = db.ref('admins').push().key;
+    const obj = {id,name,username:user,password:pass,role:'super_admin',createdAt:Date.now()};
+    await db.ref('admins/'+id).set(obj);
+    me = obj; localStorage.setItem('adminSession',JSON.stringify(me));
+    launch();
+    toast('✅ Сабти ном муваффақ!','success');
+  } catch(e){ regErr('Хато: '+e.message); }
+}
+
+function loginErr(m){ const e=document.getElementById('loginErr'); e.textContent=m; e.style.display='block'; setTimeout(()=>e.style.display='none',3000); }
+function regErr(m){ const e=document.getElementById('regErr'); e.textContent=m; e.style.display='block'; setTimeout(()=>e.style.display='none',3000); }
+
+// ═══════════════ LAUNCH ═══════════════
+function launch() {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+  updateSidebarUser();
+  setupListeners();
+  goPage('dashboard', document.querySelector('[data-page=dashboard]'));
+}
+
+function doLogout() {
+  removeListeners();
+  me = null; localStorage.removeItem('adminSession');
+  document.getElementById('appWrap').style.display = 'none';
+  showLogin();
+  toast('Баромад карда шуд','info');
+}
+
+function updateSidebarUser() {
+  document.getElementById('sbAvatar').textContent = me.name.charAt(0);
+  document.getElementById('sbName').textContent = me.name;
+  document.getElementById('sbRole').textContent = roleLabel(me.role);
+  // profile page
+  document.getElementById('ph-avatar').textContent = me.name.charAt(0);
+  document.getElementById('ph-name').textContent = me.name;
+  document.getElementById('ph-username').textContent = '@'+me.username;
+  document.getElementById('ph-role').textContent = roleLabel(me.role);
+  document.getElementById('pf-disp-name').textContent = me.name;
+  document.getElementById('pf-disp-user').textContent = me.username;
+  document.getElementById('pf-disp-role').textContent = roleLabel(me.role);
+  document.getElementById('pf-disp-date').textContent = me.createdAt ? new Date(me.createdAt).toLocaleDateString('ru') : '—';
+}
+
+// ═══════════════ FIREBASE LISTENERS ═══════════════
+function setupListeners() {
+  db.ref('orders').on('value', snap => {
+    allOrders = [];
+    const d = snap.val()||{};
+    Object.entries(d).forEach(([k,v])=>allOrders.push({id:k,...v}));
+    allOrders.sort((a,b)=>b.createdAt-a.createdAt);
+    updateDashStats();
+    renderDashOrders();
+    renderOrders();
+    updateNotifBadge();
+  });
+  db.ref('couriers').on('value', snap => {
+    allCouriers = [];
+    const d = snap.val()||{};
+    Object.entries(d).forEach(([k,v])=>allCouriers.push({id:k,...v}));
+    allCouriers.sort((a,b)=>b.createdAt-a.createdAt);
+    updateDashStats();
+    renderCouriers();
+    renderDashPendingCouriers();
+    updateCourierBadge();
+  });
+  db.ref('customers').on('value', snap => {
+    allCustomers = [];
+    const d = snap.val()||{};
+    Object.entries(d).forEach(([k,v])=>allCustomers.push({id:k,...v}));
+    allCustomers.sort((a,b)=>b.createdAt-a.createdAt);
+    updateDashStats();
+    renderCustomers();
+  });
+  db.ref('admins').on('value', snap => {
+    allAdmins = [];
+    const d = snap.val()||{};
+    Object.entries(d).forEach(([k,v])=>allAdmins.push({id:k,...v}));
+    renderAdmins();
+    updateAdminStats();
+  });
+}
+
+function removeListeners() {
+  ['orders','couriers','customers','admins'].forEach(r=>db.ref(r).off('value'));
+}
+
+// ═══════════════ DASHBOARD ═══════════════
+function updateDashStats() {
+  document.getElementById('ds-orders').textContent = allOrders.length;
+  document.getElementById('ds-new').textContent = allOrders.filter(o=>o.status==='new').length;
+  document.getElementById('ds-done').textContent = allOrders.filter(o=>o.status==='delivered').length;
+  document.getElementById('ds-couriers').textContent = allCouriers.filter(c=>c.status==='approved').length;
+  document.getElementById('ds-customers').textContent = allCustomers.length;
+  document.getElementById('ds-pending').textContent = allCouriers.filter(c=>c.status==='pending').length;
+}
+
+function renderDashOrders() {
+  const tbody = document.getElementById('dash-orders-tbody');
+  const rows = allOrders.slice(0,10);
+  if (!rows.length) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">Фармоиш нест</td></tr>'; return; }
+  tbody.innerHTML = rows.map(o=>orderRow(o,false)).join('');
+}
+
+function renderDashPendingCouriers() {
+  const el = document.getElementById('dash-pending-couriers');
+  const pc = allCouriers.filter(c=>c.status==='pending').slice(0,5);
+  if (!pc.length) { el.innerHTML='<div class="empty"><i class="fas fa-user-check"></i><h4>Аризаи нав нест</h4><p>Курьерҳои интизор пайдо нашуданд</p></div>'; return; }
+  el.innerHTML = `<div class="cards-grid">${pc.map(c=>courierCard(c)).join('')}</div>`;
+}
+
+function updateNotifBadge() {
+  const n = allOrders.filter(o=>o.status==='new').length;
+  const dot = document.getElementById('notifDot');
+  const badge = document.getElementById('sbNewOrders');
+  dot.style.display = n>0?'block':'none';
+  if (n>0) { badge.textContent=n; badge.style.display='inline-block'; }
+  else badge.style.display='none';
+}
+
+function updateCourierBadge() {
+  const n = allCouriers.filter(c=>c.status==='pending').length;
+  const badge = document.getElementById('sbPendingCouriers');
+  if (n>0) { badge.textContent=n; badge.style.display='inline-block'; }
+  else badge.style.display='none';
+}
+
+// ═══════════════ ORDERS ═══════════════
+window.setOrderFilter = function(f,el) {
+  orderFilter = f;
+  document.querySelectorAll('#pg-orders .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderOrders();
+};
+
+function renderOrders() {
+  let data = allOrders;
+  const q = (document.getElementById('orderSearch')?.value||'').toLowerCase();
+  if (q) data = data.filter(o=>(o.customerName||'').toLowerCase().includes(q)||(o.fromAddress||'').toLowerCase().includes(q)||(o.toAddress||'').toLowerCase().includes(q));
+  if (orderFilter!=='all') data = data.filter(o=>o.status===orderFilter||(orderFilter==='assigned'&&o.status==='picked_up'));
+  const tbody = document.getElementById('orders-tbody');
+  if (!data.length) { tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">Фармоиш нест</td></tr>'; return; }
+  tbody.innerHTML = data.map(o=>orderRow(o,true)).join('');
+}
+
+function orderRow(o, actions) {
+  const d = new Date(o.createdAt).toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'});
+  const statusMap = {new:'new Нав',assigned:'assigned Таъин',picked_up:'picked Дар роҳ',delivered:'delivered Расид',cancelled:'cancelled Бекор'};
+  const [sc,sl] = (statusMap[o.status]||'new Нов').split(' ');
+  const acts = actions ? `
+    <div class="td-actions">
+      <button class="act-btn view" onclick="openOrderDetail('${o.id}')" title="Дидан"><i class="fas fa-eye"></i></button>
+      ${o.status==='new'?`<button class="act-btn assign" onclick="openAssignModal('${o.id}')" title="Таъин"><i class="fas fa-user-plus"></i></button>`:''}
+      ${!['delivered','cancelled'].includes(o.status)?`<button class="act-btn del" onclick="cancelOrder('${o.id}')" title="Бекор"><i class="fas fa-ban"></i></button>`:''}
+    </div>` : `<span class="badge ${sc}">${sl}</span>`;
+  return `<tr>
+    <td><span style="font-weight:700;color:var(--brand)">#${o.id.slice(-6).toUpperCase()}</span><div style="font-size:11px;color:var(--muted)">${d}</div></td>
+    <td><div class="td-name">${o.customerName||'—'}</div><div class="td-meta">${o.customerPhone||''}</div></td>
+    <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.fromAddress||'—'}</td>
+    <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.toAddress||'—'}</td>
+    <td><strong>${o.price||0}</strong> смн</td>
+    ${actions?`<td>${o.courierName?`<span style="font-size:13px;font-weight:600">${o.courierName}</span>`:'<span style="color:var(--muted);font-size:12px">—</span>'}</td>`:''}
+    <td><span class="badge ${sc}">${sl}</span></td>
+    <td>${acts}</td>
+  </tr>`;
+}
+
+async function openOrderDetail(orderId) {
+  const o = allOrders.find(x=>x.id===orderId);
+  if (!o) return;
+  const steps = ['new','assigned','picked_up','delivered'];
+  const stepLabels = ['Нав','Таъин','Бардошта','Расид'];
+  const cur = steps.indexOf(o.status);
+  const tracker = `<div class="tracker">${steps.map((s,i)=>`
+    <div class="tr-step ${i<cur?'done':i===cur?'active':''}">
+      ${i>0?`<div class="tr-line ${i<=cur?'done':''}"></div>`:''}
+      <div class="tr-dot ${i<cur?'done':i===cur?'active':''}">${i<cur?'✓':i+1}</div>
+      <div class="tr-label">${stepLabels[i]}</div>
+    </div>`).join('')}</div>`;
+  const statusMap = {new:'new Нав',assigned:'assigned Таъин',picked_up:'picked Дар роҳ',delivered:'delivered Расид',cancelled:'cancelled Бекор'};
+  const [sc,sl] = (statusMap[o.status]||'new Нав').split(' ');
+  document.getElementById('om-title').innerHTML = `#${o.id.slice(-6).toUpperCase()} <span class="badge ${sc}">${sl}</span>`;
+  document.getElementById('om-body').innerHTML = `
+    ${tracker}
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="dp-key">Аз куҷо</div><div class="dp-val">${o.fromAddress}</div></div></div>
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-flag"></i></div><div><div class="dp-key">Ба куҷо</div><div class="dp-val">${o.toAddress}</div></div></div>
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-box"></i></div><div><div class="dp-key">Тавсиф</div><div class="dp-val">${o.description||'—'}</div></div></div>
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-weight-hanging"></i></div><div><div class="dp-key">Вазн</div><div class="dp-val">${o.weight||'—'} кг</div></div></div>
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-coins"></i></div><div><div class="dp-key">Нарх</div><div class="dp-val">${o.price||0} смн</div></div></div>
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-phone"></i></div><div><div class="dp-key">Телефони гиранда</div><div class="dp-val">${o.receiverPhone||'—'}</div></div></div>
+    <div class="dp-row"><div class="dp-icon"><i class="fas fa-user"></i></div><div><div class="dp-key">Мизоҷ</div><div class="dp-val">${o.customerName||'—'}</div></div></div>
+    ${o.courierName?`<div class="dp-row"><div class="dp-icon"><i class="fas fa-motorcycle"></i></div><div><div class="dp-key">Курьер</div><div class="dp-val">${o.courierName}</div></div></div>`:''}
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      ${o.status==='new'?`<button class="btn-gold" onclick="closeModal('orderModal');openAssignModal('${o.id}')"><i class="fas fa-user-plus"></i> Таъин кардан</button>`:''}
+      ${!['delivered','cancelled'].includes(o.status)?`<button class="btn-danger" onclick="cancelOrder('${o.id}');closeModal('orderModal')"><i class="fas fa-ban"></i> Бекор кардан</button>`:''}
+      <button class="btn-outline" onclick="closeModal('orderModal')">Бастан</button>
+    </div>`;
+  openModal('orderModal');
+}
+
+async function cancelOrder(oid) {
+  confirm2('Бекор кардани фармоиш','Ин фармоиш бекор карда шавад?', async ()=>{
+    await db.ref('orders/'+oid).update({status:'cancelled',updatedAt:Date.now()});
+    toast('Фармоиш бекор карда шуд','info');
+  });
+}
+
+// ═══════════════ ASSIGN ═══════════════
+async function openAssignModal(oid) {
+  document.getElementById('assign-oid').value = oid;
+  const approved = allCouriers.filter(c=>c.status==='approved');
+  const vIcons = {motorcycle:'🏍️',car:'🚗',bicycle:'🚲',foot:'🚶'};
+  document.getElementById('assign-list').innerHTML = approved.length
+    ? approved.map(c=>`
+      <div style="display:flex;align-items:center;gap:14px;padding:14px;border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;transition:border .2s;margin-bottom:8px"
+        onmouseover="this.style.borderColor='var(--brand)'" onmouseout="this.style.borderColor='var(--border)'"
+        onclick="assignCourier('${oid}','${c.id}','${c.name}')">
+        <div style="font-size:28px">${vIcons[c.vehicle]||'🚴'}</div>
+        <div><div style="font-weight:700">${c.name}</div><div style="font-size:12px;color:var(--muted)">${c.phone}</div></div>
+        <i class="fas fa-chevron-right" style="margin-left:auto;color:var(--muted)"></i>
+      </div>`).join('')
+    : '<div class="empty"><i class="fas fa-motorcycle"></i><h4>Курьери тасдиқшуда нест</h4></div>';
+  openModal('assignModal');
+}
+
+async function assignCourier(oid, cid, cname) {
+  await db.ref('orders/'+oid).update({status:'assigned',courierId:cid,courierName:cname,updatedAt:Date.now()});
+  closeModal('assignModal');
+  toast('✅ Курьер таъин карда шуд: '+cname,'success');
+}
+
+// ═══════════════ COURIERS ═══════════════
+window.setCourierFilter = function(f,el) {
+  courierFilter = f;
+  document.querySelectorAll('#pg-couriers .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderCouriers();
+};
+
+function renderCouriers() {
+  let data = allCouriers.filter(c=>c.status===courierFilter);
+  const q = (document.getElementById('courierSearch')?.value||'').toLowerCase();
+  if (q) data = data.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').toLowerCase().includes(q)||(c.username||'').toLowerCase().includes(q));
+  const tbody = document.getElementById('couriers-tbody');
+  if (!data.length) { tbody.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Курьер нест</td></tr>`; return; }
+  const vLabels = {motorcycle:'Мотосикл',car:'Автомобил',bicycle:'Велосипед',foot:'Пиёда'};
+  const vIcons = {motorcycle:'🏍️',car:'🚗',bicycle:'🚲',foot:'🚶'};
+  tbody.innerHTML = data.map(c=>{
+    const sClass = {pending:'pending',approved:'approved',rejected:'rejected'}[c.status]||'pending';
+    const sLabel = {pending:'Интизор',approved:'Тасдиқ',rejected:'Рад'}[c.status]||c.status;
+    const d = new Date(c.createdAt||Date.now()).toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:12px">
+        <div class="td-avatar">${c.name.charAt(0)}</div>
+        <div><div class="td-name">${c.name}</div></div>
+      </div></td>
+      <td>${c.phone}</td>
+      <td><code style="font-size:13px">@${c.username}</code></td>
+      <td>${vIcons[c.vehicle]||''} ${vLabels[c.vehicle]||c.vehicle||'—'}</td>
+      <td><span class="badge ${sClass}">${sLabel}</span></td>
+      <td>${d}</td>
+      <td><div class="td-actions">
+        ${c.status==='pending'?`
+          <button class="act-btn approve" onclick="approveCourier('${c.id}')" title="Тасдиқ"><i class="fas fa-check"></i></button>
+          <button class="act-btn reject" onclick="rejectCourier('${c.id}','${c.name}')" title="Рад"><i class="fas fa-times"></i></button>
+        `:''}
+        ${c.status==='approved'?`<button class="act-btn del" onclick="deleteCourier('${c.id}','${c.name}')" title="Нест"><i class="fas fa-trash"></i></button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function courierCard(c) {
+  const vIcons = {motorcycle:'🏍️',car:'🚗',bicycle:'🚲',foot:'🚶'};
+  return `<div class="info-card">
+    <div class="ic-head">
+      <div class="ic-avatar">${vIcons[c.vehicle]||'🚴'}</div>
+      <div><div class="ic-name">${c.name}</div><div class="ic-meta">${c.phone}</div></div>
+      <span class="badge pending" style="margin-left:auto">Интизор</span>
+    </div>
+    <div class="ic-body">
+      <div class="ic-row"><span class="ic-key">Логин</span><span class="ic-val">@${c.username}</span></div>
+    </div>
+    <div class="ic-foot">
+      <button class="btn-primary" onclick="approveCourier('${c.id}')" style="flex:1;justify-content:center;padding:10px"><i class="fas fa-check"></i> Тасдиқ</button>
+      <button class="btn-danger" onclick="rejectCourier('${c.id}','${c.name}')" style="flex:1;justify-content:center;padding:10px"><i class="fas fa-times"></i> Рад</button>
+    </div>
+  </div>`;
+}
+
+async function approveCourier(id) {
+  await db.ref('couriers/'+id).update({status:'approved'});
+  toast('✅ Курьер тасдиқ карда шуд','success');
+}
+
+async function rejectCourier(id, name) {
+  confirm2('Рад кардан',`"${name}" рад карда шавад?`, async ()=>{
+    await db.ref('couriers/'+id).update({status:'rejected'});
+    toast('Курьер рад карда шуд','info');
+  });
+}
+
+async function deleteCourier(id, name) {
+  confirm2('Нест кардан',`"${name}" нест карда шавад?`, async ()=>{
+    await db.ref('couriers/'+id).remove();
+    toast('Курьер нест карда шуд','info');
+  });
+}
+
+// ═══════════════ CUSTOMERS ═══════════════
+function renderCustomers() {
+  let data = allCustomers;
+  const q = (document.getElementById('customerSearch')?.value||'').toLowerCase();
+  if (q) data = data.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.phone||'').toLowerCase().includes(q)||(c.username||'').toLowerCase().includes(q));
+  const tbody = document.getElementById('customers-tbody');
+  if (!data.length) { tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Мизоҷ нест</td></tr>`; return; }
+  tbody.innerHTML = data.map(c=>{
+    const cnt = allOrders.filter(o=>o.customerId===c.id).length;
+    const d = new Date(c.createdAt||Date.now()).toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:12px">
+        <div class="td-avatar">${c.name.charAt(0)}</div>
+        <div class="td-name">${c.name}</div>
+      </div></td>
+      <td>${c.phone}</td>
+      <td><code style="font-size:13px">@${c.username}</code></td>
+      <td><span style="font-weight:700;color:var(--brand)">${cnt}</span> фармоиш</td>
+      <td>${d}</td>
+      <td><div class="td-actions">
+        <button class="act-btn del" onclick="deleteCustomer('${c.id}','${c.name}')" title="Нест"><i class="fas fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+async function deleteCustomer(id, name) {
+  confirm2('Нест кардан',`Мизоҷ "${name}" нест карда шавад?`, async ()=>{
+    await db.ref('customers/'+id).remove();
+    toast('Мизоҷ нест карда шуд','info');
+  });
+}
+
+// ═══════════════ ADMINS ═══════════════
+function renderAdmins() {
+  const tbody = document.getElementById('admins-tbody');
+  if (!allAdmins.length) { tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted)">Админ нест</td></tr>'; return; }
+  tbody.innerHTML = allAdmins.map(a=>{
+    const d = new Date(a.createdAt||Date.now()).toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const rc = {super_admin:'super',admin:'admin',moderator:'moderator'}[a.role]||'admin';
+    const rl = roleLabel(a.role);
+    const isSelf = a.id===me.id;
+    const canEdit = me.role==='super_admin' && !isSelf;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:12px">
+        <div class="td-avatar">${a.name.charAt(0)}</div>
+        <div><div class="td-name">${a.name}${isSelf?'<span style="font-size:11px;color:var(--brand);margin-left:6px">(Ман)</span>':''}</div></div>
+      </div></td>
+      <td><code style="font-size:13px">@${a.username}</code></td>
+      <td><span class="badge ${rc}">${rl}</span></td>
+      <td>${d}</td>
+      <td><div class="td-actions">
+        ${canEdit?`
+          <button class="act-btn edit" onclick="openEditAdmin('${a.id}')" title="Тағйир"><i class="fas fa-edit"></i></button>
+          <button class="act-btn del" onclick="deleteAdmin('${a.id}','${a.name}')" title="Нест"><i class="fas fa-trash"></i></button>
+        `:'<span style="font-size:12px;color:var(--muted)">—</span>'}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateAdminStats() {
+  document.getElementById('adm-total').textContent = allAdmins.length;
+  document.getElementById('adm-super').textContent = allAdmins.filter(a=>a.role==='super_admin').length;
+  document.getElementById('adm-reg').textContent = allAdmins.filter(a=>a.role!=='super_admin').length;
+}
+
+let tempAdminPwd = '';
+window.openAddAdminModal = function() {
+  if (me.role!=='super_admin') return toast('Танҳо Супер Админ метавонад','error');
+  document.getElementById('na-name').value='';
+  document.getElementById('na-user').value='';
+  document.getElementById('na-role').value='admin';
+  genAdminPass();
+  openModal('addAdminModal');
+};
+
+window.genAdminPass = function() {
+  const p = genPass();
+  tempAdminPwd = p;
+  document.getElementById('na-pass-disp').textContent = p;
+};
+
+window.saveNewAdmin = async function() {
+  const name = document.getElementById('na-name').value.trim();
+  const user = document.getElementById('na-user').value.trim();
+  const role = document.getElementById('na-role').value;
+  if (!name||!user||!tempAdminPwd) return toast('Ҳамаи майдонҳоро пур кунед','error');
+  const exists = allAdmins.find(a=>a.username===user);
+  if (exists) return toast('Ин логин аллакай мавҷуд аст','error');
+  const id = db.ref('admins').push().key;
+  await db.ref('admins/'+id).set({id,name,username:user,password:tempAdminPwd,role,createdAt:Date.now()});
+  closeModal('addAdminModal');
+  toast(`✅ Илова шуд — Логин: ${user} | Парол: ${tempAdminPwd}`,'success');
+};
+
+window.openEditAdmin = function(aid) {
+  const a = allAdmins.find(x=>x.id===aid);
+  if (!a) return;
+  document.getElementById('ea-id').value = aid;
+  document.getElementById('ea-name').value = a.name;
+  document.getElementById('ea-user').value = a.username;
+  document.getElementById('ea-role').value = a.role==='super_admin'?'admin':a.role;
+  document.getElementById('ea-pass').value = '';
+  openModal('editAdminModal');
+};
+
+window.updateAdmin = async function() {
+  const id = document.getElementById('ea-id').value;
+  const name = document.getElementById('ea-name').value.trim();
+  const user = document.getElementById('ea-user').value.trim();
+  const role = document.getElementById('ea-role').value;
+  const pass = document.getElementById('ea-pass').value.trim();
+  if (!name||!user) return toast('Ном ва логинро ворид кунед','error');
+  const upd = {name,username:user,role};
+  if (pass) upd.password = pass;
+  await db.ref('admins/'+id).update(upd);
+  closeModal('editAdminModal');
+  toast('✅ Тағйирот сабт шуд','success');
+};
+
+async function deleteAdmin(id, name) {
+  confirm2('Нест кардан',`Админ "${name}" нест карда шавад?`, async ()=>{
+    await db.ref('admins/'+id).remove();
+    toast('Админ нест карда шуд','info');
+  });
+}
+
+// ═══════════════ PROFILE ═══════════════
+window.saveMyProfile = async function() {
+  const name = document.getElementById('pf-name').value.trim();
+  const user = document.getElementById('pf-user').value.trim();
+  const pass = document.getElementById('pf-pass').value.trim();
+  const upd = {};
+  if (name) { upd.name=name; me.name=name; }
+  if (user) { upd.username=user; me.username=user; }
+  if (pass) { upd.password=pass; me.password=pass; }
+  if (!Object.keys(upd).length) return toast('Ҳеҷ чизе тағйир накардед','info');
+  await db.ref('admins/'+me.id).update(upd);
+  localStorage.setItem('adminSession',JSON.stringify(me));
+  updateSidebarUser();
+  toast('✅ Маълумоти шумо тағйир ёфт','success');
+};
+
+// ═══════════════ PAGE NAV ═══════════════
+const pageTitles = {dashboard:'Бошгоҳ',orders:'Фармоишҳо',couriers:'Курьерҳо',customers:'Мизоҷон',admins:'Идоракунии Админҳо',profile:'Профили ман'};
+
+window.goPage = function(page, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+page).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById('pageTitle').textContent = pageTitles[page]||page;
+  closeSidebar();
+};
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').style.display = document.getElementById('sidebar').classList.contains('open')?'block':'none';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').style.display='none';
+}
+
+// ═══════════════ MODALS ═══════════════
+window.openModal = id => document.getElementById(id).classList.add('open');
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+
+document.querySelectorAll('.modal-bg').forEach(m=>{
+  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+});
+
+function confirm2(title,text,onOk) {
+  document.getElementById('conf-title').textContent=title;
+  document.getElementById('conf-text').textContent=text;
+  document.getElementById('conf-ok').onclick=()=>{ closeModal('confirmModal'); onOk(); };
+  openModal('confirmModal');
+}
+
+// ═══════════════ UTILS ═══════════════
+function genPass(len=10) {
+  const c='abcdefghijkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$';
+  return Array.from({length:len},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+
+window.genInto = id => document.getElementById(id).value = genPass();
+
+function roleLabel(r) {
+  return {super_admin:'Супер Админ',admin:'Администратор',moderator:'Модератор'}[r]||r;
+}
+
+let toastTmr;
+function toast(msg,type='info') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=type; t.style.display='block';
+  clearTimeout(toastTmr);
+  toastTmr=setTimeout(()=>t.style.display='none',3500);
+}
+</script>
 </body>
 </html>
