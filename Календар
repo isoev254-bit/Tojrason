@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Заявки</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #0d0f18;
+  --card: #13151f;
+  --card2: #1a1d2e;
+  --border: #1f2338;
+  --purple: #7c3aed;
+  --purple2: #a855f7;
+  --purple-bg: rgba(124,58,237,0.15);
+  --purple-light: rgba(168,85,247,0.12);
+  --text: #ffffff;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --red: #ef4444;
+  --blue: #3b82f6;
+}
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+  font-size: 15px;
+  overflow: hidden;
+}
+.app { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+/* PAGES */
+.page { flex: 1; overflow-y: auto; display: none; flex-direction: column; padding-bottom: 80px; }
+.page.active { display: flex; }
+.page::-webkit-scrollbar { display: none; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 10px 0 8px;
+  cursor: pointer; border: none; background: transparent;
+  color: var(--muted); font-size: 10px; gap: 4px;
+  transition: color 0.15s;
+}
+.nav-item svg { width: 22px; height: 22px; }
+.nav-item.active { color: var(--purple2); }
+.nav-item span { font-size: 10px; font-weight: 500; }
+
+/* ==================== CALENDAR PAGE ==================== */
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 16px 8px;
+  background: var(--card);
+}
+.cal-title { font-size: 17px; font-weight: 600; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--card2); border: 1px solid var(--border);
+  color: var(--text); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.weekdays {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  background: var(--card); padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.wd { text-align: center; font-size: 12px; color: var(--muted); font-weight: 500; padding: 4px 0; }
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  flex: 1;
+}
+.cal-cell {
+  min-height: 80px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 6px 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.cal-cell:nth-child(7n) { border-right: none; }
+.cal-cell.other { opacity: 0.3; }
+.cal-cell.today .cell-num { color: var(--purple2); font-weight: 700; }
+.cell-num { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.cell-orders { margin-top: 3px; display: flex; flex-direction: column; gap: 1px; }
+.cell-order-item {
+  font-size: 10px; color: var(--muted); white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; line-height: 1.4;
+}
+.cell-order-item.done { color: var(--muted); }
+.cell-order-item.done::before { content: '✓ '; color: var(--green); }
+
+/* ==================== DAY PAGE ==================== */
+.day-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 16px 12px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 10;
+}
+.back-btn {
+  background: none; border: none; color: var(--text);
+  font-size: 20px; cursor: pointer; padding: 4px; line-height: 1;
+}
+.day-header-title { font-size: 17px; font-weight: 600; }
+.profit-banner {
+  margin: 12px 14px;
+  background: var(--purple-bg);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+.profit-banner-label { font-size: 13px; color: var(--muted); }
+.profit-banner-value { font-size: 28px; font-weight: 700; color: var(--purple2); margin-top: 2px; }
+.day-orders { padding: 0 14px; display: flex; flex-direction: column; gap: 10px; }
+.order-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 14px 14px 16px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.order-card-body { flex: 1; }
+.order-card-label { font-size: 15px; font-weight: 600; color: var(--text); }
+.order-card-meta { font-size: 13px; color: var(--muted); margin-top: 2px; line-height: 1.6; }
+.order-card-price { margin-top: 4px; font-size: 13px; color: var(--muted); }
+.order-card-profit { color: var(--purple2); font-weight: 600; font-size: 14px; }
+.order-card-actions { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
+.circle-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--muted); background: transparent;
+  cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.circle-btn.done { border-color: var(--green); background: var(--green); }
+.circle-btn.done::after { content: '✓'; color: #fff; font-size: 12px; font-weight: 700; }
+.icon-action {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 16px; padding: 2px;
+  transition: color 0.15s;
+}
+.icon-action:hover { color: var(--text); }
+.icon-action.del:hover { color: var(--red); }
+.add-btn {
+  margin: 14px 14px 0;
+  width: calc(100% - 28px);
+  padding: 16px;
+  background: var(--purple);
+  border: none; border-radius: 16px;
+  color: #fff; font-size: 16px; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity 0.15s;
+}
+.add-btn:active { opacity: 0.85; }
+.empty-day {
+  text-align: center; padding: 40px 20px;
+  color: var(--muted); font-size: 14px;
+}
+
+/* ==================== OVERLAYS ==================== */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.6);
+  display: none; align-items: flex-end;
+}
+.overlay.open { display: flex; }
+.sheet {
+  background: var(--card);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 20px 16px 36px;
+  animation: slideUp 0.25s ease;
+}
+.sheet::-webkit-scrollbar { display: none; }
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.sheet-handle {
+  width: 40px; height: 4px;
+  background: var(--border); border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.sheet-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+/* FORM */
+.field-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+.field-input {
+  width: 100%; background: var(--card2);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 14px; color: var(--text);
+  font-size: 15px; font-family: inherit;
+  transition: border-color 0.15s;
+}
+.field-input:focus { outline: none; border-color: var(--purple); }
+.field-input::placeholder { color: var(--muted); }
+.contractor-dropdown {
+  width: 100%; background: var(--card2);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 14px; color: var(--text);
+  font-size: 15px; font-family: inherit;
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.contractor-dropdown.selected { border-color: var(--purple); }
+.toggle-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.toggle-pill {
+  flex: 1; padding: 12px 8px;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: var(--card2); color: var(--muted);
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s; text-align: center;
+}
+.toggle-pill.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+.dur-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.dur-pill {
+  padding: 10px 14px;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: var(--card2); color: var(--muted);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: all 0.15s;
+}
+.dur-pill.active { border-color: var(--purple); color: var(--purple2); background: var(--purple-light); }
+.mb14 { margin-bottom: 14px; }
+.mb8 { margin-bottom: 8px; }
+.btn-purple {
+  width: 100%; padding: 16px;
+  background: var(--purple); border: none; border-radius: 14px;
+  color: #fff; font-size: 16px; font-weight: 700;
+  cursor: pointer; margin-bottom: 10px; transition: opacity 0.15s;
+}
+.btn-purple:active { opacity: 0.85; }
+.btn-outline {
+  width: 100%; padding: 16px;
+  background: transparent; border: 1px solid var(--border); border-radius: 14px;
+  color: var(--text); font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-outline:active { background: var(--card2); }
+
+/* CONTRACTOR OVERLAY */
+.ct-search {
+  width: 100%; background: var(--card2);
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 12px 14px; color: var(--text);
+  font-size: 15px; font-family: inherit; margin-bottom: 10px;
+}
+.ct-search:focus { outline: none; border-color: var(--purple); }
+.ct-list { display: flex; flex-direction: column; gap: 2px; }
+.ct-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 4px; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.ct-item:last-child { border-bottom: none; }
+.ct-item-name { font-size: 15px; font-weight: 500; }
+.ct-item.selected .ct-item-name { color: var(--purple2); }
+.ct-item-actions { display: flex; gap: 16px; }
+
+/* ==================== ANALYTICS ==================== */
+.anal-header { padding: 20px 16px 8px; }
+.anal-title { font-size: 26px; font-weight: 800; }
+.anal-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.month-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 12px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 12px 14px;
+}
+.month-nav-title { text-align: center; }
+.month-nav-title strong { font-size: 16px; font-weight: 700; display: block; }
+.month-nav-title span { font-size: 12px; color: var(--muted); }
+.a-card {
+  margin: 0 14px 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px 18px;
+}
+.a-card-label { font-size: 13px; color: var(--muted); }
+.a-card-label.purple { color: var(--purple2); }
+.a-card-value { font-size: 26px; font-weight: 700; margin-top: 4px; }
+.contractor-chips {
+  display: flex; gap: 8px; overflow-x: auto; padding: 0 14px;
+  margin-bottom: 10px; -webkit-overflow-scrolling: touch;
+}
+.contractor-chips::-webkit-scrollbar { display: none; }
+.contractor-chips-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px; margin-bottom: 8px;
+}
+.chip-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.manage-link { font-size: 13px; color: var(--purple2); cursor: pointer; font-weight: 600; }
+.chip {
+  padding: 8px 16px; border-radius: 20px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0;
+  background: var(--card2); border: 1px solid var(--border); color: var(--muted);
+  transition: all 0.15s;
+}
+.chip.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+.bar-chart-wrap {
+  margin: 0 14px 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 16px 14px;
+}
+.bar-chart-title { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 100px; overflow-x: auto; }
+.bar-chart::-webkit-scrollbar { display: none; }
+.bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 28px; flex-shrink: 0; }
+.bar-rect { width: 20px; border-radius: 4px 4px 0 0; background: var(--purple); min-height: 3px; cursor: pointer; transition: opacity 0.15s; }
+.bar-rect:hover { opacity: 0.8; }
+.bar-date { font-size: 9px; color: var(--muted); }
+.bar-val { font-size: 9px; color: var(--muted); }
+.tooltip-box {
+  position: fixed; background: var(--card2);
+  border: 1px solid var(--purple); border-radius: 12px;
+  padding: 10px 14px; z-index: 300; min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.tooltip-box h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.tooltip-box p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+.struct-bar {
+  height: 14px; border-radius: 7px; overflow: hidden;
+  display: flex; margin-top: 10px;
+}
+.struct-cost { background: var(--blue); }
+.struct-profit { background: var(--purple2); }
+.struct-legend { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; }
+.legend-item { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ct-anal-list { display: flex; flex-direction: column; gap: 2px; }
+.ct-anal-row {
+  padding: 12px 4px; border-bottom: 1px solid var(--border);
+}
+.ct-anal-row:last-child { border-bottom: none; }
+.ct-anal-name { font-size: 15px; font-weight: 700; }
+.ct-anal-meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== CALENDAR PAGE ===== -->
+  <div class="page active" id="page-cal">
+    <div class="cal-header">
+      <button class="icon-btn" onclick="prevMonth()">‹</button>
+      <div class="cal-title" id="calTitle"></div>
+      <button class="icon-btn" onclick="nextMonth()">›</button>
+    </div>
+    <div class="weekdays">
+      <div class="wd">ПН</div><div class="wd">ВТ</div><div class="wd">СР</div>
+      <div class="wd">ЧТ</div><div class="wd">ПТ</div><div class="wd">СБ</div>
+      <div class="wd">ВС</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <!-- ===== DAY PAGE ===== -->
+  <div class="page" id="page-day">
+    <div class="day-header">
+      <button class="back-btn" onclick="showCal()">‹</button>
+      <div class="day-header-title" id="dayTitle"></div>
+    </div>
+    <div class="profit-banner">
+      <div class="profit-banner-label">Прибыль за день</div>
+      <div class="profit-banner-value" id="dayProfit">0 ₽</div>
+    </div>
+    <div class="day-orders" id="dayOrders"></div>
+    <button class="add-btn" onclick="openAddForm()">＋ Добавить заявку</button>
+  </div>
+
+  <!-- ===== ANALYTICS PAGE ===== -->
+  <div class="page" id="page-anal">
+    <div class="anal-header">
+      <div class="anal-title">Аналитика</div>
+      <div class="anal-sub">По месяцам</div>
+    </div>
+    <div class="month-nav">
+      <button class="icon-btn" onclick="prevAnalMonth()">‹</button>
+      <div class="month-nav-title">
+        <strong id="analTitle"></strong>
+        <span>За месяц</span>
+      </div>
+      <button class="icon-btn" onclick="nextAnalMonth()">›</button>
+    </div>
+    <div class="contractor-chips-header">
+      <span class="chip-label">Подрядчик</span>
+      <span class="manage-link" onclick="openContractorMgr()">Управлять</span>
+    </div>
+    <div class="contractor-chips" id="analChips"></div>
+    <div id="analStats"></div>
+  </div>
+
+  <!-- ===== BOTTOM NAV ===== -->
+  <div class="bottom-nav">
+    <button class="nav-item active" id="nav-cal" onclick="switchPage('cal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span>Календарь</span>
+    </button>
+    <button class="nav-item" id="nav-anal" onclick="switchPage('anal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      <span>Аналитика</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== ADD/EDIT ORDER OVERLAY ===== -->
+<div class="overlay" id="ol-form">
+  <div class="sheet" id="form-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="formTitle">Добавить заявку</div>
+
+    <div class="contractor-dropdown" id="ctDropdown" onclick="openCtPicker()">
+      <span id="ctDropdownText" style="color:var(--muted)">Выбрать подрядчика</span>
+      <span style="color:var(--muted)">∨</span>
+    </div>
+
+    <div class="mb8"><div class="field-label">Тип услуги</div>
+    <div class="toggle-row">
+      <button class="toggle-pill active" id="togInd" onclick="setType('ind')">Индивидуально</button>
+      <button class="toggle-pill" id="togGrp" onclick="setType('grp')">Группа</button>
+    </div></div>
+
+    <div class="mb14">
+      <input class="field-input" id="fDesc" type="text" placeholder="Описание (необязательно)">
+    </div>
+
+    <div class="mb14">
+      <input class="field-input" id="fAmount" type="number" inputmode="numeric" placeholder="Сумма заказа (₽)" oninput="calcP()">
+    </div>
+    <div class="mb14">
+      <input class="field-input" id="fCost" type="number" inputmode="numeric" placeholder="Себестоимость (₽)" oninput="calcP()">
+    </div>
+
+    <div class="field-label">Длительность</div>
+    <div class="dur-row" id="durRow">
+      <button class="dur-pill" onclick="setDur(this,'30 сек')">30 сек</button>
+      <button class="dur-pill" onclick="setDur(this,'1 мин')">1 мин</button>
+      <button class="dur-pill" onclick="setDur(this,'2 мин')">2 мин</button>
+      <button class="dur-pill" onclick="setDur(this,'3 мин')">3 мин</button>
+      <button class="dur-pill" onclick="setDur(this,'4 мин')">4 мин</button>
+      <button class="dur-pill" onclick="setDur(this,'5 мин')">5 мин</button>
+    </div>
+
+    <button class="btn-purple" onclick="saveOrder()">Добавить</button>
+    <button class="btn-outline" onclick="closeForm()">Закрыть</button>
+  </div>
+</div>
+
+<!-- ===== CONTRACTOR PICKER OVERLAY ===== -->
+<div class="overlay" id="ol-ct" onclick="closeCtPicker(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Подрядчики</div>
+    <input class="ct-search" id="ctSearch" type="text" placeholder="Поиск" oninput="renderCtList()">
+    <button class="btn-purple mb14" onclick="promptAddCt()">+ Добавить подрядчика</button>
+    <div class="ct-list" id="ctPickerList"></div>
+    <div style="height:10px"></div>
+    <button class="btn-outline" onclick="closeCtPicker()">Закрыть</button>
+  </div>
+</div>
+
+<!-- ===== CONTRACTOR MANAGER OVERLAY ===== -->
+<div class="overlay" id="ol-ctmgr" onclick="closeCtMgr(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Управление подрядчиками</div>
+    <button class="btn-purple mb14" onclick="promptAddCt(true)">+ Добавить подрядчика</button>
+    <div class="ct-list" id="ctMgrList"></div>
+    <div style="height:10px"></div>
+    <button class="btn-outline" onclick="closeCtMgr()">Закрыть</button>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div class="tooltip-box" id="tooltip" style="display:none"></div>
+
+<script>
+// ===== DATA =====
+let D = {
+  orders: {}, // key: "YYYY-MM-DD" → [{id,desc,ctId,type,dur,amount,cost,done}]
+  contractors: [] // [{id,name}]
+};
+function loadD() {
+  try { const s = localStorage.getItem('ordersApp2'); if(s) D = JSON.parse(s); } catch(e){}
+}
+function saveD() { localStorage.setItem('ordersApp2', JSON.stringify(D)); }
+loadD();
+
+let curY = new Date().getFullYear(), curM = new Date().getMonth();
+let analY = curY, analM = curM;
+let selectedDay = null; // "YYYY-MM-DD"
+let formEdit = null; // order id being edited
+let formCt = null; // selected contractor id in form
+let formType = 'ind';
+let formDur = '';
+let analCt = null; // null = all
+
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTHS_G = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+
+function dayKey(y,m,d) { return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; }
+function fmt(n) { return Math.round(n).toLocaleString('ru-RU') + ' ₽'; }
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2); }
+
+// ===== PAGE SWITCH =====
+function switchPage(p) {
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('nav-'+p)?.classList.add('active');
+  if(p==='anal') renderAnalytics();
+}
+function showCal() {
+  switchPage('cal');
+  renderCalendar();
+}
+function showDay(key) {
+  selectedDay = key;
+  const [y,m,d] = key.split('-').map(Number);
+  document.getElementById('dayTitle').textContent = `${d} ${MONTHS_G[m-1]} ${y}`;
+  renderDay();
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-day').classList.add('active');
+  document.getElementById('page-day').scrollTop = 0;
+}
+
+// ===== CALENDAR =====
+function renderCalendar() {
+  document.getElementById('calTitle').textContent = `${MONTHS[curM]} ${curY}`;
+  const today = new Date();
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  const first = new Date(curY, curM, 1);
+  let start = first.getDay()-1; if(start<0)start=6;
+  const dim = new Date(curY, curM+1, 0).getDate();
+  const prev = new Date(curY, curM, 0).getDate();
+
+  const [py,pm] = curM===0?[curY-1,11]:[curY,curM-1];
+  for(let i=0;i<start;i++) {
+    const d = prev-start+1+i;
+    grid.appendChild(makeCell(py,pm,d,true));
+  }
+  for(let d=1;d<=dim;d++) {
+    const cell = makeCell(curY,curM,d,false);
+    if(d===today.getDate()&&curM===today.getMonth()&&curY===today.getFullYear())
+      cell.classList.add('today');
+    grid.appendChild(cell);
+  }
+  const rem = 7-((start+dim)%7);
+  if(rem<7){
+    const [ny,nm]=curM===11?[curY+1,0]:[curY,curM+1];
+    for(let d=1;d<=rem;d++) grid.appendChild(makeCell(ny,nm,d,true));
+  }
+}
+function makeCell(y,m,d,other) {
+  const key = dayKey(y,m,d);
+  const ords = D.orders[key]||[];
+  const el = document.createElement('div');
+  el.className = 'cal-cell'+(other?' other':'');
+  el.onclick = ()=>showDay(key);
+  let html = `<div class="cell-num">${d}</div>`;
+  if(ords.length) {
+    html += `<div class="cell-orders">`;
+    ords.forEach(o=>{
+      const label = o.desc||(ctName(o.ctId)||'Заявка');
+      html += `<div class="cell-order-item${o.done?' done':''}">${label}</div>`;
+    });
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+  return el;
+}
+function prevMonth(){if(--curM<0){curM=11;curY--;}renderCalendar();}
+function nextMonth(){if(++curM>11){curM=0;curY++;}renderCalendar();}
+
+// ===== DAY =====
+function renderDay() {
+  if(!selectedDay) return;
+  if(!D.orders[selectedDay]) D.orders[selectedDay]=[];
+  const ords = D.orders[selectedDay];
+  const profit = ords.reduce((s,o)=>s+(o.amount-o.cost),0);
+  document.getElementById('dayProfit').textContent = fmt(profit);
+  const cont = document.getElementById('dayOrders');
+  if(!ords.length){
+    cont.innerHTML = '<div class="empty-day">Нет заявок на этот день</div>';
+    return;
+  }
+  cont.innerHTML = ords.map((o,i)=>{
+    const ctN = ctName(o.ctId)||'Без подрядчика';
+    const typeN = o.type==='grp'?'Группа':'Индивидуально';
+    const pr = o.amount-o.cost;
+    return `<div class="order-card">
+      <div class="order-card-body">
+        <div class="order-card-label">Заявка</div>
+        <div class="order-card-meta">${o.ctId?'Подрядчик: '+ctN:''}${o.ctId&&(o.desc||o.dur)?'<br>':''
+        }${o.desc?o.desc+(o.dur?'<br>':''):''}${o.dur?'Длительность: '+o.dur:''}</div>
+        <div class="order-card-price">${fmt(o.amount)} – ${fmt(o.cost)}</div>
+        <div class="order-card-profit">= ${fmt(pr)}</div>
+      </div>
+      <div class="order-card-actions">
+        <div class="circle-btn${o.done?' done':''}" onclick="toggleDone('${o.id}')"></div>
+        <button class="icon-action del" onclick="deleteOrder('${o.id}')">🗑</button>
+        <button class="icon-action" onclick="editOrder('${o.id}')">✏️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleDone(id) {
+  const o = findOrder(id); if(!o) return;
+  o.done = !o.done; saveD(); renderDay(); renderCalendar();
+}
+function deleteOrder(id) {
+  if(!D.orders[selectedDay]) return;
+  D.orders[selectedDay] = D.orders[selectedDay].filter(o=>o.id!==id);
+  saveD(); renderDay(); renderCalendar();
+}
+function editOrder(id) {
+  const o = findOrder(id); if(!o) return;
+  formEdit = id;
+  formCt = o.ctId||null;
+  formType = o.type||'ind';
+  formDur = o.dur||'';
+  document.getElementById('formTitle').textContent = 'Редактировать заявку';
+  document.getElementById('fDesc').value = o.desc||'';
+  document.getElementById('fAmount').value = o.amount||'';
+  document.getElementById('fCost').value = o.cost||'';
+  updateCtDropdown();
+  updateTypeToggle();
+  document.querySelectorAll('.dur-pill').forEach(b=>b.classList.toggle('active',b.textContent===formDur));
+  document.getElementById('ol-form').classList.add('open');
+}
+function findOrder(id) {
+  if(!D.orders[selectedDay]) return null;
+  return D.orders[selectedDay].find(o=>o.id===id);
+}
+
+// ===== FORM =====
+function openAddForm() {
+  formEdit = null; formCt = null; formType='ind'; formDur='';
+  document.getElementById('formTitle').textContent = 'Добавить заявку';
+  document.getElementById('fDesc').value='';
+  document.getElementById('fAmount').value='';
+  document.getElementById('fCost').value='';
+  updateCtDropdown();
+  updateTypeToggle();
+  document.querySelectorAll('.dur-pill').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ol-form').classList.add('open');
+}
+function closeForm() { document.getElementById('ol-form').classList.remove('open'); }
+function calcP() {
+  const a=parseFloat(document.getElementById('fAmount').value)||0;
+  const c=parseFloat(document.getElementById('fCost').value)||0;
+}
+function setType(t) {
+  formType=t;
+  updateTypeToggle();
+}
+function updateTypeToggle() {
+  document.getElementById('togInd').classList.toggle('active',formType==='ind');
+  document.getElementById('togGrp').classList.toggle('active',formType==='grp');
+}
+function setDur(btn,d) {
+  formDur=d;
+  document.querySelectorAll('.dur-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function updateCtDropdown() {
+  const el = document.getElementById('ctDropdownText');
+  if(formCt) {
+    const n = ctName(formCt);
+    el.textContent = n||'Выбрать подрядчика';
+    el.style.color = 'var(--text)';
+    document.getElementById('ctDropdown').classList.add('selected');
+  } else {
+    el.textContent = 'Выбрать подрядчика';
+    el.style.color = 'var(--muted)';
+    document.getElementById('ctDropdown').classList.remove('selected');
+  }
+}
+function saveOrder() {
+  const amount = parseFloat(document.getElementById('fAmount').value)||0;
+  const cost = parseFloat(document.getElementById('fCost').value)||0;
+  const desc = document.getElementById('fDesc').value.trim();
+  if(!D.orders[selectedDay]) D.orders[selectedDay]=[];
+  if(formEdit) {
+    const o = findOrder(formEdit);
+    if(o) { o.ctId=formCt; o.type=formType; o.desc=desc; o.dur=formDur; o.amount=amount; o.cost=cost; }
+  } else {
+    D.orders[selectedDay].push({id:uid(),ctId:formCt,type:formType,desc,dur:formDur,amount,cost,done:false});
+  }
+  saveD(); renderDay(); renderCalendar(); closeForm();
+}
+
+// ===== CONTRACTORS =====
+function ctName(id) {
+  if(!id) return '';
+  const c = D.contractors.find(c=>c.id===id);
+  return c?c.name:'';
+}
+function openCtPicker() {
+  document.getElementById('ctSearch').value='';
+  renderCtList();
+  document.getElementById('ol-ct').classList.add('open');
+}
+function closeCtPicker(e) {
+  if(e&&e.target!==document.getElementById('ol-ct')) return;
+  document.getElementById('ol-ct').classList.remove('open');
+}
+function renderCtList() {
+  const q = (document.getElementById('ctSearch').value||'').toLowerCase();
+  const list = document.getElementById('ctPickerList');
+  let html = `<div class="ct-item" onclick="selectCt(null)">
+    <span class="ct-item-name${formCt===null?' selected':''}">Без подрядчика</span>
+  </div>`;
+  D.contractors.filter(c=>c.name.toLowerCase().includes(q)).forEach(c=>{
+    html += `<div class="ct-item" onclick="selectCt('${c.id}')">
+      <span class="ct-item-name${formCt===c.id?' selected':''}">${c.name}</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+function selectCt(id) {
+  formCt = id;
+  updateCtDropdown();
+  document.getElementById('ol-ct').classList.remove('open');
+}
+function promptAddCt(mgr) {
+  const name = prompt('Имя подрядчика:');
+  if(!name||!name.trim()) return;
+  D.contractors.push({id:uid(),name:name.trim()});
+  saveD();
+  if(mgr) { renderCtMgrList(); renderAnalChips(); }
+  else { renderCtList(); renderAnalChips(); }
+}
+function openContractorMgr() {
+  renderCtMgrList();
+  document.getElementById('ol-ctmgr').classList.add('open');
+}
+function closeCtMgr(e) {
+  if(e&&e.target!==document.getElementById('ol-ctmgr')) return;
+  document.getElementById('ol-ctmgr').classList.remove('open');
+  renderAnalytics();
+}
+function renderCtMgrList() {
+  const list = document.getElementById('ctMgrList');
+  if(!D.contractors.length){list.innerHTML='<div style="color:var(--muted);padding:10px 0;font-size:14px">Нет подрядчиков</div>';return;}
+  list.innerHTML = D.contractors.map(c=>`
+    <div class="ct-item">
+      <span class="ct-item-name">${c.name}</span>
+      <div class="ct-item-actions">
+        <button class="icon-action" onclick="renameCt('${c.id}')">✏️</button>
+        <button class="icon-action del" onclick="deleteCt('${c.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function renameCt(id) {
+  const c = D.contractors.find(x=>x.id===id); if(!c) return;
+  const n = prompt('Новое имя:', c.name);
+  if(n&&n.trim()) { c.name=n.trim(); saveD(); renderCtMgrList(); }
+}
+function deleteCt(id) {
+  if(!confirm('Удалить подрядчика?')) return;
+  D.contractors = D.contractors.filter(c=>c.id!==id);
+  // clear from orders
+  Object.values(D.orders).forEach(arr=>arr.forEach(o=>{if(o.ctId===id)o.ctId=null;}));
+  saveD(); renderCtMgrList();
+}
+
+// ===== ANALYTICS =====
+function prevAnalMonth(){if(--analM<0){analM=11;analY--;}renderAnalytics();}
+function nextAnalMonth(){if(++analM>11){analM=0;analY++;}renderAnalytics();}
+
+function renderAnalChips() {
+  const chips = document.getElementById('analChips');
+  let html = `<div class="chip${analCt===null?' active':''}" onclick="setAnalCt(null)">Все</div>`;
+  D.contractors.forEach(c=>{
+    html += `<div class="chip${analCt===c.id?' active':''}" onclick="setAnalCt('${c.id}')">${c.name}</div>`;
+  });
+  chips.innerHTML = html;
+}
+function setAnalCt(id) { analCt=id; renderAnalytics(); }
+
+function renderAnalytics() {
+  document.getElementById('analTitle').textContent = `${MONTHS[analM]} ${analY}`;
+  renderAnalChips();
+  const prefix = `${analY}-${String(analM+1).padStart(2,'0')}-`;
+  const monthOrds = [];
+  Object.keys(D.orders).forEach(k=>{
+    if(k.startsWith(prefix)) {
+      D.orders[k].forEach(o=>{
+        if(analCt===null||o.ctId===analCt) monthOrds.push({...o,date:k});
+      });
+    }
+  });
+  const totalAmt = monthOrds.reduce((s,o)=>s+o.amount,0);
+  const totalCost = monthOrds.reduce((s,o)=>s+o.cost,0);
+  const totalProfit = totalAmt - totalCost;
+  const dim = new Date(analY, analM+1, 0).getDate();
+
+  // By day
+  const byDay = {};
+  for(let d=1;d<=dim;d++) byDay[d]={profit:0,count:0,amount:0,cost:0};
+  monthOrds.forEach(o=>{
+    const d = parseInt(o.date.split('-')[2]);
+    byDay[d].profit += o.amount-o.cost;
+    byDay[d].count++;
+    byDay[d].amount += o.amount;
+    byDay[d].cost += o.cost;
+  });
+  const maxP = Math.max(...Object.values(byDay).map(x=>x.profit),1);
+
+  // By contractor
+  const ctMap = {};
+  monthOrds.forEach(o=>{
+    const k = o.ctId||'__none__';
+    if(!ctMap[k]) ctMap[k]={count:0,amount:0,cost:0};
+    ctMap[k].count++; ctMap[k].amount+=o.amount; ctMap[k].cost+=o.cost;
+  });
+
+  // Structure bar
+  const structCostPct = totalAmt>0?Math.round(totalCost/totalAmt*100):50;
+  const structProfPct = 100-structCostPct;
+
+  const statsEl = document.getElementById('analStats');
+  statsEl.innerHTML = `
+    <div class="a-card"><div class="a-card-label">Заказов за месяц</div><div class="a-card-value">${monthOrds.length}</div></div>
+    <div class="a-card"><div class="a-card-label" style="color:var(--muted)">Себестоимость за месяц</div><div class="a-card-value">${fmt(totalCost)}</div></div>
+    <div class="a-card"><div class="a-card-label">Выручка за месяц</div><div class="a-card-value">${fmt(totalAmt)}</div></div>
+    <div class="a-card"><div class="a-card-label" style="color:var(--purple2)">Прибыль за месяц</div><div class="a-card-value">${fmt(totalProfit)}</div></div>
+    <div class="bar-chart-wrap">
+      <div class="bar-chart-title">Прибыль по дням</div>
+      <div class="bar-chart" id="barChart">
+        ${Object.entries(byDay).filter(([d,v])=>v.count>0).map(([d,v])=>`
+          <div class="bar-col">
+            <div class="bar-val">${v.profit>=1000?(v.profit/1000).toFixed(0)+'к':''}</div>
+            <div class="bar-rect" style="height:${Math.max((v.profit/maxP)*85,3)}px"
+              onclick="showBarTooltip(event,${d},'${analY}-${String(analM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}',${v.count},${v.amount},${v.cost},${v.profit})"></div>
+            <div class="bar-date">${String(d).padStart(2,'0')}.${String(analM+1).padStart(2,'0')}</div>
+          </div>`).join('')}
+        ${monthOrds.length===0?'<div style="color:var(--muted);font-size:13px;padding:20px">Нет данных</div>':''}
+      </div>
+    </div>
+    <div class="a-card">
+      <div class="a-card-label">Структура месяца</div>
+      <div class="struct-bar">
+        <div class="struct-cost" style="width:${structCostPct}%"></div>
+        <div class="struct-profit" style="width:${structProfPct}%"></div>
+      </div>
+      <div class="struct-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Себестоимость</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--purple2)"></div>Прибыль</div>
+      </div>
+    </div>
+    <div class="a-card">
+      <div class="a-card-label" style="margin-bottom:10px">По подрядчикам</div>
+      <div class="ct-anal-list">
+        ${Object.entries(ctMap).sort((a,b)=>b[1].count-a[1].count).map(([cid,v])=>`
+          <div class="ct-anal-row">
+            <div class="ct-anal-name">${cid==='__none__'?'Без подрядчика':ctName(cid)||cid}</div>
+            <div class="ct-anal-meta">${v.count} заказ(ов) · ${fmt(v.amount)}</div>
+          </div>`).join('')}
+        ${Object.keys(ctMap).length===0?'<div style="color:var(--muted);font-size:13px">Нет данных</div>':''}
+      </div>
+    </div>
+  `;
+}
+
+function showBarTooltip(e, d, key, cnt, amt, cst, prf) {
+  const tt = document.getElementById('tooltip');
+  tt.style.display = 'block';
+  tt.innerHTML = `<h4>День ${String(d).padStart(2,'0')}.${String(analM+1).padStart(2,'0')}.${analY}</h4>
+    <p>Заказов: ${cnt}<br>Выручка: ${fmt(amt)}<br>Себестоимость: ${fmt(cst)}<br>Прибыль: ${fmt(prf)}</p>`;
+  tt.style.left = Math.min(e.clientX+10, window.innerWidth-180)+'px';
+  tt.style.top = Math.max(e.clientY-100, 10)+'px';
+  setTimeout(()=>tt.style.display='none', 3000);
+}
+
+// ===== INIT =====
+renderCalendar();
+</script>
+</body>
+</html>
