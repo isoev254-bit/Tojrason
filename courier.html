@@ -3,931 +3,871 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ТоҷРасон - Курьер</title>
+<title>TojRason - Курьер</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
+input,select,button,textarea{font-family:'Inter',sans-serif;outline:none}
+button{cursor:pointer}
+
 :root{
-  --primary:#4361ee;--primary-dark:#3a56d4;--secondary:#ffd600;
+  --primary:#4361ee;--primary-dark:#3a56d4;
+  --secondary:#ffd600;
   --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
-  --dark:#1e293b;--light:#f8fafc;--gray:#64748b;--border:#e2e8f0;
-  --shadow:0 10px 30px rgba(0,0,0,.08);--r:20px;--rs:14px;
+  --dark:#1e293b;--light:#f8fafc;--gray:#64748b;
+  --border:#e2e8f0;--shadow:0 8px 24px rgba(0,0,0,.08);
+  --r:20px;--rs:14px;
 }
-body{background:var(--light);color:var(--dark);-webkit-font-smoothing:antialiased}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:var(--primary-dark);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
+#splash.fade{opacity:0;pointer-events:none}
+.sp-logo{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px}
+.sp-sub{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px;text-transform:uppercase}
+.sp-spin{width:28px;height:28px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* SCREENS */
-.screen{display:none;min-height:100vh;padding-bottom:90px}
-.screen.active{display:block;animation:fadeIn .3s ease}
+.scr{display:none;min-height:100vh}
+.scr.on{display:block;animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* HEADER */
-.hdr{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
-  padding:40px 20px;border-radius:0 0 36px 36px;text-align:center;position:relative;overflow:hidden}
-.hdr::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;
-  background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 70%);
-  animation:rot 20s linear infinite}
+.hdr{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:40px 20px 28px;border-radius:0 0 32px 32px;text-align:center;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);animation:rot 20s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
-.hdr i{font-size:64px;color:var(--secondary);position:relative;z-index:1;display:block;margin-bottom:12px}
-.hdr h1{font-size:26px;font-weight:800;position:relative;z-index:1}
-.hdr p{font-size:15px;opacity:.9;position:relative;z-index:1;margin-top:6px}
+.hdr-ico{font-size:56px;display:block;margin-bottom:10px;position:relative;z-index:1}
+.hdr h1{font-size:24px;font-weight:900;position:relative;z-index:1}
+.hdr p{font-size:14px;opacity:.85;position:relative;z-index:1;margin-top:5px}
 
 .content{padding:20px}
 
 /* FORM */
-.fg{margin-bottom:20px}
-.flabel{display:block;font-size:14px;font-weight:600;color:var(--dark);margin-bottom:8px}
-.finput{width:100%;padding:15px;border:2px solid var(--border);border-radius:var(--rs);
-  font-size:16px;background:#fff;transition:.3s}
-.finput:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.1)}
-.phone-wrap{display:flex;align-items:center;background:#fff;border:2px solid var(--border);border-radius:var(--rs);overflow:hidden}
-.phone-pre{padding:15px;background:#f8fafc;font-weight:700;color:var(--primary);border-right:2px solid var(--border)}
-.phone-inp{flex:1;padding:15px;border:none;font-size:16px}
-.phone-inp:focus{outline:none}
+.fg{margin-bottom:18px}
+.flabel{display:block;font-size:14px;font-weight:600;color:var(--dark);margin-bottom:7px}
+.finput{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--rs);font-size:15px;background:#fff;transition:.3s}
+.finput:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.08)}
+select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%2364748B' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.err-box{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);color:#dc2626;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;display:none}
 
 /* BUTTONS */
-.btn{width:100%;padding:17px;border:none;border-radius:var(--r);font-weight:700;
-  font-size:17px;cursor:pointer;transition:.25s;margin-bottom:12px;
-  display:flex;align-items:center;justify-content:center;gap:10px}
-.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;box-shadow:0 8px 20px rgba(67,97,238,.3)}
-.btn-primary:active{transform:scale(.98)}
+.btn{width:100%;padding:16px;border:none;border-radius:var(--r);font-weight:700;font-size:16px;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 6px 20px rgba(67,97,238,.3)}
 .btn-outline{background:#fff;border:2px solid var(--primary)!important;color:var(--primary)}
-.btn-outline:active{background:var(--primary);color:#fff}
+.btn-success{background:linear-gradient(135deg,var(--success),#0d9488);color:#fff}
+.btn-danger{background:#fff;border:2px solid var(--danger)!important;color:var(--danger)}
+.btn-warn{background:linear-gradient(135deg,var(--warning),#d97706);color:#fff}
+.btn:disabled{opacity:.5;pointer-events:none}
 
-/* PHOTO SECTION */
-.photo-section{background:#f8fafc;border-radius:var(--rs);padding:16px;margin-top:10px}
-.photo-btns{display:flex;flex-direction:column;gap:10px}
-
-/* Камера тугмаси */
-.btn-cam{width:100%;padding:15px 20px;border:none;border-radius:var(--rs);
-  background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;font-size:15px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:.25s;-webkit-tap-highlight-color:transparent}
-.btn-cam:active{opacity:.85;transform:scale(.98)}
-.btn-cam i{font-size:18px}
-
-/* Галерея тугмаси */
-.btn-gallery{width:100%;padding:13px 20px;border:2px solid var(--border);border-radius:var(--rs);
-  background:#fff;color:var(--gray);font-size:14px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:.25s;-webkit-tap-highlight-color:transparent}
-.btn-gallery:active{border-color:var(--primary);color:var(--primary)}
-
-/* Hidden file inputs */
+/* PHOTO */
+.photo-section{background:#f8fafc;border-radius:var(--rs);padding:14px;margin-top:8px}
+.photo-btns{display:flex;flex-direction:column;gap:8px}
+.btn-cam{width:100%;padding:13px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-cam:active{opacity:.85}
+.btn-gallery{width:100%;padding:11px;border:2px solid var(--border);border-radius:var(--rs);background:#fff;color:var(--gray);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .file-inp{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}
-
-/* Preview */
-.preview-wrap{display:none;position:relative;margin-top:12px;border-radius:var(--rs);overflow:hidden;border:2px solid var(--success)}
-.preview-wrap img{width:100%;height:180px;object-fit:cover;display:block}
-.preview-ok{position:absolute;top:8px;left:8px;background:var(--success);color:#fff;
-  padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
-.btn-remove{position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;
-  border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:14px;
-  display:flex;align-items:center;justify-content:center}
+.preview-wrap{display:none;position:relative;margin-top:10px;border-radius:var(--rs);overflow:hidden;border:2px solid var(--success)}
+.preview-wrap img{width:100%;height:160px;object-fit:cover;display:block}
+.preview-ok{position:absolute;top:8px;left:8px;background:var(--success);color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.btn-remove{position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
 
 /* STATUS BAR */
-.status-bar{background:rgba(255,255,255,.95);padding:14px 18px;display:flex;
-  justify-content:space-between;align-items:center;
-  box-shadow:var(--shadow);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.status-bar{background:rgba(255,255,255,.95);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
 .toggle-wrap{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
-.toggle{width:56px;height:28px;background:#e2e8f0;border-radius:28px;position:relative;cursor:pointer;transition:.3s}
+.toggle{width:52px;height:26px;background:var(--border);border-radius:28px;position:relative;cursor:pointer;transition:.3s}
 .toggle.on{background:var(--success)}
-.toggle-dot{width:24px;height:24px;background:#fff;border-radius:50%;position:absolute;
-  top:2px;left:2px;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.15)}
-.toggle.on .toggle-dot{left:30px}
-.balance-btn{font-weight:800;font-size:18px;color:var(--primary);background:#f1f5f9;
-  padding:7px 14px;border-radius:28px;cursor:pointer;border:none;transition:.25s}
-.profile-btn{width:42px;height:42px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:18px;cursor:pointer;border:2px solid #fff;box-shadow:var(--shadow)}
+.toggle-dot{width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.toggle.on .toggle-dot{left:28px}
+.profile-btn{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;cursor:pointer;border:none;box-shadow:var(--shadow)}
+.bal-chip{background:#f1f5f9;padding:7px 14px;border-radius:28px;font-size:15px;font-weight:800;color:var(--primary);border:none;cursor:pointer}
 
 /* MAP */
-.map-wrap{height:320px;position:relative}
+.map-wrap{height:280px;position:relative}
 #map{width:100%;height:100%}
-.map-btns{position:absolute;bottom:16px;right:16px;z-index:10;display:flex;flex-direction:column;gap:8px}
-.map-btn{width:44px;height:44px;background:#fff;border:none;border-radius:50%;
-  box-shadow:var(--shadow);cursor:pointer;font-size:18px;color:var(--primary);
-  display:flex;align-items:center;justify-content:center}
+.map-btns{position:absolute;bottom:14px;right:14px;z-index:10;display:flex;flex-direction:column;gap:8px}
+.map-btn{width:42px;height:42px;background:#fff;border:none;border-radius:50%;box-shadow:var(--shadow);cursor:pointer;font-size:16px;color:var(--primary);display:flex;align-items:center;justify-content:center}
 
 /* ORDER CARD */
-.order-card{background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);
-  margin-bottom:18px;border:1px solid var(--border);animation:slideUp .4s ease}
-@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.order-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;
-  padding-bottom:14px;border-bottom:2px solid var(--border)}
-.order-icon{width:54px;height:54px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
-.order-info h3{font-weight:700;font-size:17px;margin-bottom:4px}
+.order-card{background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--border);animation:slideUp .35s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.order-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--border)}
+.order-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;flex-shrink:0}
+.order-info h3{font-weight:700;font-size:17px;margin-bottom:3px}
 .order-info p{color:var(--gray);font-size:13px}
-.timer-box{background:#f1f5f9;padding:10px 14px;border-radius:10px;margin-bottom:14px;
-  display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
-.timer-box i{color:var(--primary)}
-.timer-val{font-size:19px;color:var(--primary);font-weight:800}
-.route-box{background:#f8fafc;border-radius:var(--rs);padding:14px;margin-bottom:16px}
-.route-pt{display:flex;align-items:center;gap:14px;margin-bottom:12px;position:relative}
+.route-box{background:#f8fafc;border-radius:var(--rs);padding:14px;margin-bottom:14px}
+.route-pt{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;position:relative}
 .route-pt:last-child{margin-bottom:0}
-.route-pt:not(:last-child)::after{content:'';position:absolute;left:7px;top:18px;
-  width:2px;height:26px;background:var(--border)}
-.pt-dot{width:16px;height:16px;border-radius:50%;z-index:1;flex-shrink:0}
+.route-pt:not(:last-child)::after{content:'';position:absolute;left:7px;top:18px;width:2px;height:20px;background:var(--border)}
+.pt-dot{width:16px;height:16px;border-radius:50%;z-index:1;flex-shrink:0;margin-top:2px}
 .pt-dot.pick{background:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.15)}
 .pt-dot.drop{background:var(--success);box-shadow:0 0 0 4px rgba(16,185,129,.15)}
-.pt-addr{font-size:14px;font-weight:500}
+.pt-addr{font-size:14px;font-weight:600}
 .pt-sub{font-size:12px;color:var(--gray)}
-.order-meta{display:flex;justify-content:space-between;margin-bottom:14px;font-size:14px}
+.order-meta{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.meta-item{font-size:13px;color:var(--gray);display:flex;align-items:center;gap:5px}
+.meta-item strong{color:var(--dark);font-weight:700}
 .order-actions{display:flex;gap:10px}
-.order-actions button{flex:1;padding:15px;border:none;border-radius:var(--rs);
-  font-weight:700;font-size:15px;cursor:pointer;transition:.25s;
-  display:flex;align-items:center;justify-content:center;gap:8px}
+.order-actions button{flex:1;padding:14px;border:none;border-radius:var(--rs);font-weight:700;font-size:14px;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-accept{background:linear-gradient(135deg,var(--success),#0d9488);color:#fff}
-.btn-decline{background:#fff;border:2px solid var(--danger)!important;color:var(--danger)}
-.btn-arrived{background:linear-gradient(135deg,var(--warning),#d97706);color:#fff}
+.btn-pickup{background:linear-gradient(135deg,var(--warning),#d97706);color:#fff}
 .btn-deliver{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+.btn-decline{background:#fff;border:2px solid var(--danger)!important;color:var(--danger);font-size:13px;max-width:80px;flex:0 0 80px}
 
-/* WAITING */
-.wait-card{background:#fff;border-radius:var(--r);padding:40px 20px;text-align:center;box-shadow:var(--shadow);margin:20px 0}
-.wait-card i{font-size:64px;color:var(--primary);margin-bottom:18px;animation:pulse 2s infinite;display:block}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-.wait-card h3{font-weight:700;margin-bottom:8px;font-size:20px}
-.wait-card p{color:var(--gray);font-size:14px;margin-bottom:24px}
-.spinner{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--primary);
-  border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* WAIT */
+.wait-card{background:#fff;border-radius:var(--r);padding:36px 20px;text-align:center;box-shadow:var(--shadow);margin:20px 0}
+.wait-icon{font-size:60px;display:block;margin-bottom:16px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.wait-card h3{font-weight:800;margin-bottom:8px;font-size:20px}
+.wait-card p{color:var(--gray);font-size:14px;margin-bottom:20px;line-height:1.6}
+.wait-id{background:#f1f5f9;border-radius:12px;padding:12px;font-family:monospace;font-size:18px;font-weight:800;color:var(--primary);margin-bottom:20px;letter-spacing:2px}
 
 /* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);
-  display:flex;justify-content:space-around;padding:10px 16px 20px;
-  box-shadow:0 -4px 24px rgba(0,0,0,.06);border-top:1px solid var(--border);
-  z-index:100;backdrop-filter:blur(8px)}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;
-  color:var(--gray);font-size:11px;cursor:pointer;padding:6px 18px;border-radius:28px;transition:.25s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);display:flex;justify-content:space-around;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));box-shadow:0 -4px 24px rgba(0,0,0,.06);border-top:1px solid var(--border);z-index:100;backdrop-filter:blur(8px)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--gray);font-size:11px;cursor:pointer;padding:5px 16px;border-radius:24px;transition:.25s;border:none;background:none;font-family:'Inter',sans-serif}
 .nav-item i{font-size:20px}
 .nav-item.active{color:var(--primary);background:rgba(67,97,238,.1)}
 
-/* BALANCE CARD */
-.bal-card{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;
-  padding:20px;border-radius:var(--r);margin-bottom:18px}
-.bal-title{font-size:13px;opacity:.9;margin-bottom:4px}
-.bal-amt{font-size:34px;font-weight:800;color:var(--secondary)}
+/* BAL CARD */
+.bal-card{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:20px;border-radius:var(--r);margin-bottom:16px}
+.bal-title{font-size:13px;opacity:.85;margin-bottom:4px}
+.bal-amt{font-size:32px;font-weight:900;color:var(--secondary)}
 
 /* STATS */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
-.stat-card{background:#fff;padding:18px;border-radius:var(--rs);box-shadow:var(--shadow);
-  text-align:center;border:1px solid var(--border)}
-.stat-val{font-size:26px;font-weight:800;color:var(--primary)}
-.stat-lbl{font-size:12px;color:var(--gray);margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:#fff;padding:16px;border-radius:var(--rs);box-shadow:var(--shadow);text-align:center;border:1px solid var(--border)}
+.stat-val{font-size:26px;font-weight:900;color:var(--primary)}
+.stat-lbl{font-size:12px;color:var(--gray);margin-top:3px;font-weight:600}
 
 /* HISTORY */
-.hist-item{background:#fff;padding:14px;border-radius:var(--rs);margin-bottom:10px;
-  border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.hist-info h4{font-weight:600;margin-bottom:4px;font-size:15px}
+.hist-item{background:#fff;padding:14px;border-radius:var(--rs);margin-bottom:10px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.hist-info h4{font-weight:700;margin-bottom:4px;font-size:14px}
 .hist-info p{font-size:12px;color:var(--gray);margin-bottom:2px}
-.badge{padding:5px 12px;border-radius:28px;font-size:12px;font-weight:600}
-.badge-ok{background:rgba(16,185,129,.12);color:var(--success)}
-.badge-no{background:rgba(239,68,68,.1);color:var(--danger)}
+.hist-badge{padding:5px 12px;border-radius:28px;font-size:12px;font-weight:700}
+.hb-ok{background:rgba(16,185,129,.12);color:var(--success)}
+.hb-no{background:rgba(239,68,68,.1);color:var(--danger)}
 
 /* MODAL */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;
-  align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-.modal.active{display:flex;animation:fadeIn .3s ease}
-.modal-box{background:#fff;border-radius:var(--r);width:100%;max-width:400px;
-  max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
-.modal-head{background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-  color:#fff;padding:28px 20px;text-align:center}
-.modal-ava{width:90px;height:90px;background:var(--secondary);border-radius:50%;
-  margin:0 auto 12px;display:flex;align-items:center;justify-content:center;
-  font-size:36px;color:var(--primary);border:4px solid #fff;box-shadow:var(--shadow)}
-.modal-name{font-size:22px;font-weight:700;margin-bottom:4px}
-.modal-phone{font-size:14px;opacity:.9}
-.modal-body{padding:18px}
-.modal-row{padding:14px 0;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:14px;font-size:14px}
-.modal-row i{width:26px;color:var(--primary);font-size:16px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:var(--r);width:100%;max-width:400px;max-height:88vh;overflow-y:auto;animation:slideUp .3s ease}
+.modal-head{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:26px 20px;text-align:center}
+.modal-ava{width:80px;height:80px;background:var(--secondary);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--primary-dark);border:4px solid #fff;box-shadow:var(--shadow)}
+.modal-name{font-size:20px;font-weight:800;margin-bottom:4px}
+.modal-sub{font-size:14px;opacity:.9}
+.modal-body{padding:16px}
+.modal-row{padding:13px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-size:14px}
+.modal-row i{width:24px;color:var(--primary);font-size:16px}
 .modal-row .lbl{flex:1;color:var(--gray)}
-.modal-row .val{font-weight:600;color:var(--dark)}
-.modal-foot{padding:18px;display:flex;flex-direction:column;gap:10px}
-.btn-logout{padding:14px;background:var(--danger);border:none;border-radius:var(--rs);
-  color:#fff;font-weight:600;cursor:pointer;display:flex;align-items:center;
-  justify-content:center;gap:10px;font-size:15px;transition:.25s}
-.btn-close{padding:12px;background:#f1f5f9;border:none;border-radius:var(--rs);
-  color:var(--gray);font-weight:600;cursor:pointer;font-size:15px}
+.modal-row .val{font-weight:700;color:var(--dark)}
+.modal-foot{padding:16px;display:flex;flex-direction:column;gap:8px}
+.btn-logout{padding:14px;background:var(--danger);border:none;border-radius:var(--rs);color:#fff;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px}
+.btn-close-m{padding:12px;background:#f1f5f9;border:none;border-radius:var(--rs);color:var(--gray);font-weight:600;cursor:pointer;font-size:14px}
 
-/* NOTIFICATION */
-.notif{position:fixed;top:16px;left:16px;right:16px;background:#fff;
-  padding:14px 18px;border-radius:var(--rs);box-shadow:var(--shadow);
-  display:flex;align-items:center;gap:14px;z-index:2000;
-  transform:translateY(-120%);transition:transform .35s ease;
-  max-width:420px;margin:0 auto;border-left:4px solid var(--primary)}
+/* NOTIF */
+.notif{position:fixed;top:14px;left:14px;right:14px;background:#fff;padding:14px 16px;border-radius:var(--rs);box-shadow:0 8px 32px rgba(0,0,0,.15);display:flex;align-items:center;gap:12px;z-index:2000;transform:translateY(-130%);transition:transform .35s ease;max-width:460px;margin:0 auto;border-left:4px solid var(--primary)}
 .notif.show{transform:translateY(0)}
-.notif i{font-size:22px;color:var(--primary)}
-.notif-title{font-weight:700;font-size:14px;margin-bottom:3px}
-.notif-text{font-size:13px;color:var(--gray)}
-
-/* DIVIDER */
-.divider{text-align:center;position:relative;margin:28px 0}
-.divider::before,.divider::after{content:'';position:absolute;top:50%;
-  width:calc(50% - 28px);height:2px;background:var(--border)}
-.divider::before{left:0}.divider::after{right:0}
-.divider span{background:#f8fafc;padding:0 14px;color:var(--gray);font-size:13px}
+.notif-ico{font-size:20px}
+.notif-title{font-weight:700;font-size:14px;margin-bottom:2px}
+.notif-text{font-size:12px;color:var(--gray)}
 
 /* EMPTY */
 .empty{text-align:center;padding:40px 20px}
-.empty i{font-size:56px;color:var(--border);margin-bottom:16px;display:block}
-.empty h3{color:var(--gray);font-weight:600}
+.empty-ico{font-size:52px;margin-bottom:12px;opacity:.3;display:block}
+.empty h3{color:var(--gray);font-weight:700;margin-bottom:6px}
+.empty p{color:var(--gray);font-size:13px}
 
-/* ADMIN */
-.admin-box{margin-top:28px;padding:18px;background:#fff8ed;border-radius:var(--r);border-left:4px solid var(--warning)}
-.admin-title{font-weight:700;color:var(--warning);margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.p-courier{background:#fff;padding:14px;border-radius:var(--rs);margin-bottom:10px;border:1px solid var(--border)}
-.p-photos{display:flex;gap:10px;margin-top:10px;overflow-x:auto}
-.p-photo{width:76px;height:76px;border-radius:10px;object-fit:cover;border:2px solid var(--border)}
+/* LOGIN TABS */
+.ln-tabs{display:flex;background:#f1f5f9;border-radius:12px;padding:3px;margin-bottom:20px;gap:3px}
+.ln-tab{flex:1;padding:9px;text-align:center;border-radius:10px;font-weight:700;font-size:13px;color:var(--gray);cursor:pointer;border:none;background:none;transition:all .2s}
+.ln-tab.on{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
+/* DIVIDER */
+.divider{text-align:center;position:relative;margin:24px 0}
+.divider::before,.divider::after{content:'';position:absolute;top:50%;width:calc(50% - 28px);height:1.5px;background:var(--border)}
+.divider::before{left:0}.divider::after{right:0}
+.divider span{background:#f8fafc;padding:0 14px;color:var(--gray);font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- =================== SCREEN: AUTH =================== -->
-<div class="screen active" id="screenAuth">
+<div id="splash">
+  <div class="sp-logo">🏍️ TojRason</div>
+  <div class="sp-sub">Барои Курьерҳо</div>
+  <div class="sp-spin"></div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div class="scr on" id="scrAuth">
   <div class="hdr">
-    <i class="fas fa-bolt"></i>
-    <h1>ТоҷРасон</h1>
-    <p>Барои курьерҳо</p>
+    <span class="hdr-ico">🏍️</span>
+    <h1>TojRason Курьер</h1>
+    <p>Барномаи курьерони касбӣ</p>
   </div>
-
   <div class="content">
+    <div class="ln-tabs">
+      <button class="ln-tab on" id="at1" onclick="aTab(0)">Ворид шудан</button>
+      <button class="ln-tab" id="at2" onclick="aTab(1)">Сабти ном</button>
+    </div>
 
-    <!-- LOGIN -->
-    <div class="login-section" style="margin-bottom:28px;padding-bottom:28px;border-bottom:2px solid var(--border)">
-      <h3 style="margin-bottom:18px;font-size:18px">Ворид шудан</h3>
+    <!-- LOGIN FORM -->
+    <div id="af1">
+      <div class="err-box" id="lerr">Хато</div>
       <div class="fg">
-        <label class="flabel">ID курьер</label>
-        <input type="text" class="finput" id="loginId" placeholder="Масалан: C12345">
+        <label class="flabel">Номи корбар (username)</label>
+        <input class="finput" id="lUser" placeholder="Масалан: courier_ali">
       </div>
       <div class="fg">
-        <label class="flabel">Пароль</label>
-        <input type="password" class="finput" id="loginPwd" placeholder="Пароли худро ворид кунед">
+        <label class="flabel">Парол</label>
+        <input class="finput" type="password" id="lPass" placeholder="Паролатонро ворид кунед">
       </div>
-      <button class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Ворид шудан</button>
+      <button class="btn btn-primary" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Ворид шудан
+      </button>
     </div>
 
-    <div class="divider"><span>ё</span></div>
-
-    <!-- REGISTER -->
-    <h3 style="margin-bottom:18px;font-size:18px">Сабти номи нав</h3>
-
-    <div class="fg">
-      <label class="flabel">Ном ва насаб</label>
-      <input type="text" class="finput" id="regName" placeholder="Масалан: Алишер Каримов">
-    </div>
-    <div class="fg">
-      <label class="flabel">Рақами телефон</label>
-      <div class="phone-wrap">
-        <span class="phone-pre">+992</span>
-        <input type="tel" class="phone-inp" id="regPhone" placeholder="90 000 00 00">
+    <!-- REGISTER FORM -->
+    <div id="af2" style="display:none">
+      <div class="err-box" id="rerr">Хато</div>
+      <div class="fg">
+        <label class="flabel">Ном ва насаб</label>
+        <input class="finput" id="rName" placeholder="Масалан: Алишер Каримов">
       </div>
-    </div>
-    <div class="fg">
-      <label class="flabel">Пароль</label>
-      <input type="password" class="finput" id="regPwd" placeholder="Пароли худро ворид кунед">
-    </div>
-
-    <!-- PHOTO 1: FACE -->
-    <div class="fg">
-      <label class="flabel"><i class="fas fa-user" style="color:var(--primary)"></i> Акси рӯй (selfie равшан)</label>
-      <div class="photo-section">
-        <div class="photo-btns">
-          <button class="btn-cam" onclick="pickPhoto('face','cam')">
-            <i class="fas fa-camera"></i> Аз камера гирифтан
-          </button>
-          <button class="btn-gallery" onclick="pickPhoto('face','gallery')">
-            <i class="fas fa-images"></i> Аз галерея интихоб кардан
-          </button>
-        </div>
-        <div class="preview-wrap" id="prevFace">
-          <img id="imgFace" src="" alt="">
-          <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
-          <button class="btn-remove" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
-        </div>
+      <div class="fg">
+        <label class="flabel">Телефон</label>
+        <input class="finput" type="tel" id="rPhone" placeholder="+992 XX XXX XXXX">
       </div>
-    </div>
-
-    <!-- PHOTO 2: PASSPORT -->
-    <div class="fg">
-      <label class="flabel"><i class="fas fa-id-card" style="color:var(--primary)"></i> Акси паспорт (саҳифаи аввал)</label>
-      <div class="photo-section">
-        <div class="photo-btns">
-          <button class="btn-cam" onclick="pickPhoto('passport','cam')">
-            <i class="fas fa-camera"></i> Аз камера гирифтан
-          </button>
-          <button class="btn-gallery" onclick="pickPhoto('passport','gallery')">
-            <i class="fas fa-images"></i> Аз галерея интихоб кардан
-          </button>
-        </div>
-        <div class="preview-wrap" id="prevPassport">
-          <img id="imgPassport" src="" alt="">
-          <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
-          <button class="btn-remove" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
+      <div class="fg">
+        <label class="flabel">Номи корбар (username)</label>
+        <input class="finput" id="rUser" placeholder="Ҳарфҳо ва рақамҳо, бе фосила">
+      </div>
+      <div class="fg">
+        <label class="flabel">Парол</label>
+        <input class="finput" type="password" id="rPass" placeholder="камаш 6 символ">
+      </div>
+      <div class="fg">
+        <label class="flabel">Воситаи нақлиёт</label>
+        <select class="finput" id="rVeh">
+          <option value="motorcycle">🏍️ Мотосикл</option>
+          <option value="bicycle">🚲 Велосипед</option>
+          <option value="car">🚗 Мошин</option>
+          <option value="foot">🚶 Пиёда</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="flabel"><i class="fas fa-user"></i> Акси рӯй (selfie)</label>
+        <div class="photo-section">
+          <div class="photo-btns">
+            <button class="btn-cam" onclick="pickPhoto('face','cam')"><i class="fas fa-camera"></i> Аз камера</button>
+            <button class="btn-gallery" onclick="pickPhoto('face','gal')"><i class="fas fa-images"></i> Аз галерея</button>
+          </div>
+          <div class="preview-wrap" id="prevFace">
+            <img id="imgFace" src="" alt="">
+            <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
+            <button class="btn-remove" onclick="removePhoto('face')"><i class="fas fa-times"></i></button>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- PHOTO 3: SELFIE WITH PASSPORT -->
-    <div class="fg">
-      <label class="flabel"><i class="fas fa-camera-retro" style="color:var(--primary)"></i> Акси худ бо паспорт дар даст</label>
-      <div class="photo-section">
-        <div class="photo-btns">
-          <button class="btn-cam" onclick="pickPhoto('selfie','cam')">
-            <i class="fas fa-camera"></i> Аз камера гирифтан
-          </button>
-          <button class="btn-gallery" onclick="pickPhoto('selfie','gallery')">
-            <i class="fas fa-images"></i> Аз галерея интихоб кардан
-          </button>
-        </div>
-        <div class="preview-wrap" id="prevSelfie">
-          <img id="imgSelfie" src="" alt="">
-          <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
-          <button class="btn-remove" onclick="removePhoto('selfie')"><i class="fas fa-times"></i></button>
+      <div class="fg">
+        <label class="flabel"><i class="fas fa-id-card"></i> Акси паспорт</label>
+        <div class="photo-section">
+          <div class="photo-btns">
+            <button class="btn-cam" onclick="pickPhoto('passport','cam')"><i class="fas fa-camera"></i> Аз камера</button>
+            <button class="btn-gallery" onclick="pickPhoto('passport','gal')"><i class="fas fa-images"></i> Аз галерея</button>
+          </div>
+          <div class="preview-wrap" id="prevPassport">
+            <img id="imgPassport" src="" alt="">
+            <span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span>
+            <button class="btn-remove" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button>
+          </div>
         </div>
       </div>
+      <input type="file" id="inCamFace"     class="file-inp" accept="image/*" capture="user">
+      <input type="file" id="inGalFace"     class="file-inp" accept="image/*">
+      <input type="file" id="inCamPassport" class="file-inp" accept="image/*" capture="environment">
+      <input type="file" id="inGalPassport" class="file-inp" accept="image/*">
+      <button class="btn btn-primary" onclick="doRegister()">
+        <i class="fas fa-user-plus"></i> Фиристодани ариза
+      </button>
     </div>
-
-    <!-- Hidden file inputs — яке барои камера, яке барои галерея -->
-    <input type="file" id="inputCamFace"      class="file-inp" accept="image/*" capture="user">
-    <input type="file" id="inputGalFace"      class="file-inp" accept="image/*">
-    <input type="file" id="inputCamPassport"  class="file-inp" accept="image/*" capture="environment">
-    <input type="file" id="inputGalPassport"  class="file-inp" accept="image/*">
-    <input type="file" id="inputCamSelfie"    class="file-inp" accept="image/*" capture="user">
-    <input type="file" id="inputGalSelfie"    class="file-inp" accept="image/*">
-
-    <button class="btn btn-primary" onclick="register()" style="margin-top:8px">
-      <i class="fas fa-user-plus"></i> Сабти ном
-    </button>
-    <button class="btn btn-outline" onclick="demoMode()">
-      <i class="fas fa-play"></i> Режими демо
-    </button>
-
-    <div class="admin-box" id="adminBox" style="display:none">
-      <div class="admin-title"><i class="fas fa-shield-alt"></i> Панели админ</div>
-      <div id="adminList"></div>
-    </div>
-
   </div>
 </div>
 
-<!-- =================== SCREEN: WAITING =================== -->
-<div class="screen" id="screenWait">
+<!-- WAIT SCREEN -->
+<div class="scr" id="scrWait">
   <div class="hdr">
-    <i class="fas fa-hourglass-half"></i>
+    <span class="hdr-ico">⏳</span>
     <h1>Интизори тасдиқ</h1>
-    <p>Аксҳои шумо дар ҳоли санҷиш</p>
+    <p>Аризаи шумо барраси мешавад</p>
   </div>
   <div class="content">
     <div class="wait-card">
-      <i class="fas fa-clock"></i>
+      <span class="wait-icon">🕐</span>
       <h3>Дар ҳоли баррасӣ</h3>
-      <p>Маълумот ба админ фиристода шуд. Одатан то 24 соат давом мекунад.</p>
-      <div class="spinner"></div>
+      <p>Маълумоти шумо ба Admin фиристода шуд.<br>Одатан то 24 соат давом мекунад.</p>
+      <div class="wait-id" id="waitId">—</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:16px">Ин ID-и курьерии шумо аст — онро ёддошт кунед</div>
     </div>
     <button class="btn btn-outline" onclick="checkApproval()">
       <i class="fas fa-sync"></i> Санҷидани ҳолат
     </button>
+    <button class="btn btn-outline" onclick="doLogout()" style="margin-top:0;border-color:var(--danger)!important;color:var(--danger)">
+      <i class="fas fa-sign-out-alt"></i> Баромад
+    </button>
   </div>
 </div>
 
-<!-- =================== SCREEN: MAIN =================== -->
-<div class="screen" id="screenMain">
+<!-- MAIN SCREEN -->
+<div class="scr" id="scrMain">
   <div class="status-bar">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div class="profile-btn" onclick="openProfile()"><i class="fas fa-user"></i></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="profile-btn" onclick="openProfile()"><i class="fas fa-user"></i></button>
       <div class="toggle-wrap">
-        <span>Ҳолат:</span>
+        <span style="font-size:13px">Ҳолат:</span>
         <div class="toggle" id="toggle" onclick="toggleOnline()"><div class="toggle-dot"></div></div>
-        <span id="statusTxt">Офлайн</span>
+        <span id="statusTxt" style="font-size:13px">Офлайн</span>
       </div>
     </div>
-    <button class="balance-btn" id="balDisp" onclick="openProfile()">0 сом</button>
+    <button class="bal-chip" id="balDisp" onclick="openProfile()">0 смн</button>
   </div>
 
   <div class="map-wrap">
     <div id="map"></div>
     <div class="map-btns">
       <button class="map-btn" onclick="centerMe()"><i class="fas fa-location-dot"></i></button>
-      <button class="map-btn" onclick="fitRoute()"><i class="fas fa-route"></i></button>
     </div>
   </div>
 
-  <div class="content" id="mainContent"></div>
+  <div style="padding:16px;padding-bottom:calc(72px + env(safe-area-inset-bottom))" id="mainContent"></div>
 
   <div class="bottom-nav">
-    <div class="nav-item active" id="navOrders"  onclick="switchTab('orders')"><i class="fas fa-box"></i><span>Заказҳо</span></div>
-    <div class="nav-item"        id="navHistory" onclick="switchTab('history')"><i class="fas fa-clock"></i><span>Таърих</span></div>
-    <div class="nav-item"        id="navStats"   onclick="switchTab('stats')"><i class="fas fa-chart-line"></i><span>Статистика</span></div>
+    <button class="nav-item active" id="navOrders" onclick="switchTab('orders')"><i class="fas fa-box"></i><span>Заказҳо</span></button>
+    <button class="nav-item" id="navHistory" onclick="switchTab('history')"><i class="fas fa-clock"></i><span>Таърих</span></button>
+    <button class="nav-item" id="navStats" onclick="switchTab('stats')"><i class="fas fa-chart-line"></i><span>Статистика</span></button>
   </div>
 </div>
 
-<!-- =================== PROFILE MODAL =================== -->
-<div class="modal" id="profileModal" onclick="modalOutside(event)">
-  <div class="modal-box">
+<!-- PROFILE MODAL -->
+<div class="modal" id="profileModal">
+  <div class="modal-box" onclick="event.stopPropagation()">
     <div class="modal-head">
       <div class="modal-ava"><i class="fas fa-user"></i></div>
-      <div class="modal-name" id="pName">-</div>
-      <div class="modal-phone" id="pPhone">-</div>
+      <div class="modal-name" id="pName">—</div>
+      <div class="modal-sub" id="pPhone">—</div>
     </div>
     <div class="modal-body">
-      <div class="modal-row"><i class="fas fa-id-card"></i><span class="lbl">ID:</span><span class="val" id="pId">-</span></div>
-      <div class="modal-row"><i class="fas fa-calendar"></i><span class="lbl">Санаи сабт:</span><span class="val" id="pDate">-</span></div>
-      <div class="modal-row"><i class="fas fa-star"></i><span class="lbl">Рейтинг:</span><span class="val" id="pRating">5.0 ⭐</span></div>
+      <div class="modal-row"><i class="fas fa-id-badge"></i><span class="lbl">Username:</span><span class="val" id="pUser">—</span></div>
+      <div class="modal-row"><i class="fas fa-motorcycle"></i><span class="lbl">Нақлиёт:</span><span class="val" id="pVeh">—</span></div>
       <div class="modal-row"><i class="fas fa-box"></i><span class="lbl">Заказҳо:</span><span class="val" id="pOrders">0</span></div>
-      <div class="modal-row"><i class="fas fa-wallet"></i><span class="lbl">Баланс:</span><span class="val" id="pBal">0 сом</span></div>
+      <div class="modal-row"><i class="fas fa-check-circle"></i><span class="lbl">Иҷрошуда:</span><span class="val" id="pComp">0</span></div>
+      <div class="modal-row"><i class="fas fa-wallet"></i><span class="lbl">Баланс:</span><span class="val" id="pBal">0 смн</span></div>
     </div>
     <div class="modal-foot">
-      <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Берун шудан</button>
-      <button class="btn-close" onclick="closeProfile()">Пӯшидан</button>
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Баромад</button>
+      <button class="btn-close-m" onclick="closeProfile()">Пӯшидан</button>
     </div>
   </div>
 </div>
 
-<!-- =================== NOTIFICATION =================== -->
+<!-- NOTIF -->
 <div class="notif" id="notif">
-  <i class="fas fa-bell" id="notifIcon"></i>
-  <div><div class="notif-title" id="notifTitle"></div><div class="notif-text" id="notifText"></div></div>
+  <div class="notif-ico" id="notifIco">🔔</div>
+  <div><div class="notif-title" id="notifTitle">Огоҳӣ</div><div class="notif-text" id="notifText"></div></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ============================================================
-// STATE
-// ============================================================
-let cu = null; // currentUser
-try { cu = JSON.parse(localStorage.getItem('cu')); } catch(e){}
-let users = [];
-try { users = JSON.parse(localStorage.getItem('users')) || []; } catch(e){}
-let pending = [];
-try { pending = JSON.parse(localStorage.getItem('pending')) || []; } catch(e){}
-let history = [];
-try { history = JSON.parse(localStorage.getItem('history')) || []; } catch(e){}
+// ══════ FIREBASE ══════
+const FB_CFG={
+  apiKey:"AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
+  authDomain:"tojrason.firebaseapp.com",
+  databaseURL:"https://tojrason-default-rtdb.firebaseio.com",
+  projectId:"tojrason",
+  storageBucket:"tojrason.firebasestorage.app",
+  messagingSenderId:"734402668671",
+  appId:"1:734402668671:web:ca983940b6870335d2374a"
+};
+let db=null;
 
-let bal=+(localStorage.getItem('bal')||0),
-    tot=+(localStorage.getItem('tot')||0),
-    comp=+(localStorage.getItem('comp')||0),
-    canc=+(localStorage.getItem('canc')||0);
-
-let isOnline=false, map=null, cMark=null, oMark=null, rLine=null;
-let curOrder=null, wId=null, oTimer=null, tSec=0, notifTO=null;
-let photos={face:null,passport:null,selfie:null};
-const DEF={lat:38.5737,lng:68.7864};
-
-let orders=[
-  {id:'O1',customer:'Фаррух Раҳимов',pickup:'112-й микрорайон',delivery:'2-юм микрорайон',dist:'4.1',price:25,lat:38.5737,lng:68.7864},
-  {id:'O2',customer:'Дилшод Каримов',pickup:'Зарафшон',delivery:'Сомон',dist:'3.2',price:20,lat:38.5627,lng:68.7739}
-];
-
-// ============================================================
-// FILE INPUT SETUP  ← ИСЛОҲИ АСОСӢ
-// Ҳар input event-ро дар JS мегирем — label нест
-// ============================================================
-function setupFileInputs(){
-  const pairs = [
-    ['inputCamFace',     'face'],
-    ['inputGalFace',     'face'],
-    ['inputCamPassport', 'passport'],
-    ['inputGalPassport', 'passport'],
-    ['inputCamSelfie',   'selfie'],
-    ['inputGalSelfie',   'selfie'],
+function lds(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);})}
+async function initFB(){
+  const cdns=[
+    ['https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js'],
+    ['https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-app-compat.min.js','https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-database-compat.min.js'],
   ];
-  pairs.forEach(([id, type]) => {
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.addEventListener('change', function(e){
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = function(ev){
-        setPhoto(type, ev.target.result);
-        notify('Муваффақият', 'Акс илова шуд ✓', 'success');
-      };
-      reader.readAsDataURL(file);
-      e.target.value = ''; // reset барои дубора клик
-    });
+  for(const[a,b]of cdns){try{await lds(a);await lds(b);break;}catch(e){}}
+  if(typeof firebase==='undefined')throw new Error('no firebase');
+  if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+  db=firebase.database();
+}
+
+// ══════ STATE ══════
+let me=null, isOnline=false, myOrders=[], myHistory=[];
+let map=null, cMark=null, oMark=null, rLine=null, wId=null;
+let photos={face:null,passport:null};
+let notifTO=null, ordersListener=null;
+let knownOrderIds=new Set(); // Bug fix #3: track known IDs to avoid notification spam
+let declinedIds=new Set();   // Bug fix #2: track locally declined orders
+const DEF={lat:38.5737,lng:68.7864};
+const VEH={motorcycle:'🏍️',bicycle:'🚲',car:'🚗',foot:'🚶'};
+
+// ══════ INIT ══════
+window.onload=async()=>{
+  const splash=document.getElementById('splash');
+  try{
+    await Promise.race([initFB(),new Promise((_,r)=>setTimeout(()=>r(),9000))]);
+    if(!db)throw new Error();
+  }catch(e){
+    splash.innerHTML=`<div class="sp-logo">🏍️ TojRason</div><div style="color:#ef4444;font-size:13px;text-align:center;padding:0 24px;margin-top:8px">⚠️ Интернет нест</div><button onclick="location.reload()" style="background:#4361ee;color:#fff;border:none;padding:13px 28px;border-radius:14px;font-weight:700;cursor:pointer;margin-top:8px">🔄 Аз нав</button>`;
+    return;
+  }
+  setupFileInputs();
+
+  const saved=localStorage.getItem('trCourierV1');
+  if(saved){
+    try{
+      const s=JSON.parse(saved);
+      const snap=await db.ref('couriers/'+s.id).once('value');
+      if(snap.exists()){
+        me={id:s.id,...snap.val()};
+        localStorage.setItem('trCourierV1',JSON.stringify(me));
+        splash.classList.add('fade');
+        setTimeout(()=>{splash.style.display='none';checkStatus();},350);
+        return;
+      }
+    }catch(e){}
+    localStorage.removeItem('trCourierV1');
+  }
+  splash.classList.add('fade');
+  setTimeout(()=>{splash.style.display='none';showScr('auth');},350);
+};
+
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById('scr'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('on');
+}
+
+function checkStatus(){
+  if(!me)return showScr('auth');
+  if(me.status==='approved'){goMain();}
+  else if(me.status==='pending'){document.getElementById('waitId').textContent=me.id||'—';showScr('wait');}
+  else{showScr('auth');}
+}
+
+// ══════ AUTH TABS ══════
+window.aTab=function(i){
+  document.getElementById('af1').style.display=i===0?'block':'none';
+  document.getElementById('af2').style.display=i===1?'block':'none';
+  document.getElementById('at1').classList.toggle('on',i===0);
+  document.getElementById('at2').classList.toggle('on',i===1);
+};
+
+// ══════ LOGIN ══════
+window.doLogin=async function(){
+  const u=gv('lUser'),p=gv('lPass');
+  if(!u||!p)return se('lerr','Username ва паролро ворид кунед');
+  try{
+    const snap=await db.ref('couriers').once('value');
+    const d=snap.val()||{};
+    const f=Object.entries(d).find(([k,v])=>v.username===u&&v.password===p);
+    if(!f)return se('lerr','Username ё парол нодуруст');
+    me={id:f[0],...f[1]};
+    localStorage.setItem('trCourierV1',JSON.stringify(me));
+    checkStatus();
+  }catch(e){se('lerr','Хато: '+e.message);}
+};
+
+// ══════ REGISTER ══════
+// Bug fix #5: compress image to avoid Firebase size limit
+function compressImg(base64, maxW=400, quality=0.6){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const scale=Math.min(1, maxW/Math.max(img.width,img.height));
+      canvas.width=img.width*scale;
+      canvas.height=img.height*scale;
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+      res(canvas.toDataURL('image/jpeg',quality));
+    };
+    img.src=base64;
   });
 }
 
-// pickPhoto — бевосита input-ро .click() мекунем
-window.pickPhoto = function(type, mode){
-  const map = {
-    face:     { cam: 'inputCamFace',     gal: 'inputGalFace'     },
-    passport: { cam: 'inputCamPassport', gal: 'inputGalPassport' },
-    selfie:   { cam: 'inputCamSelfie',   gal: 'inputGalSelfie'   },
-  };
-  const id = mode === 'cam' ? map[type].cam : map[type].gal;
-  const el = document.getElementById(id);
-  if(el){
-    el.click(); // мустақиман Click — Android дар он кор мекунад
-  }
+window.doRegister=async function(){
+  const name=gv('rName'),phone=gv('rPhone'),user=gv('rUser').toLowerCase().replace(/\s/g,''),pass=gv('rPass'),veh=document.getElementById('rVeh').value;
+  if(!name||!phone||!user||!pass)return se('rerr','Ҳамаи майдонҳоро пур кунед');
+  if(pass.length<6)return se('rerr','Парол камаш 6 символ');
+  if(!photos.face)return se('rerr','Акси рӯйро илова кунед');
+  if(!photos.passport)return se('rerr','Акси паспортро илова кунед');
+  try{
+    const snap=await db.ref('couriers').once('value');
+    const d=snap.val()||{};
+    if(Object.values(d).find(v=>v.username===user))return se('rerr','Ин username аллакай мавҷуд аст');
+    // Compress photos before saving to Firebase
+    const faceSmall=await compressImg(photos.face, 300, 0.5);
+    const passSmall=await compressImg(photos.passport, 300, 0.5);
+    const id=db.ref('couriers').push().key;
+    const obj={
+      id,name,phone,username:user,password:pass,vehicle:veh,
+      status:'pending',balance:0,totalOrders:0,completedOrders:0,
+      facePhoto:faceSmall,passportPhoto:passSmall,
+      createdAt:Date.now()
+    };
+    await db.ref('couriers/'+id).set(obj);
+    me=obj;localStorage.setItem('trCourierV1',JSON.stringify(me));
+    document.getElementById('waitId').textContent=id;
+    showScr('wait');
+    notify('Муваффақ!','Аризаи шумо қабул шуд','success');
+  }catch(e){se('rerr','Хато: '+e.message);}
 };
 
-function setPhoto(type, data){
-  photos[type] = data;
-  document.getElementById('img'+ type.charAt(0).toUpperCase()+type.slice(1)).src = data;
-  document.getElementById('prev'+ type.charAt(0).toUpperCase()+type.slice(1)).style.display = 'block';
-}
-
-window.removePhoto = function(type){
-  photos[type] = null;
-  const k = type.charAt(0).toUpperCase()+type.slice(1);
-  document.getElementById('prev'+k).style.display='none';
-  document.getElementById('img'+k).src='';
+// ══════ CHECK APPROVAL ══════
+window.checkApproval=async function(){
+  if(!me)return;
+  try{
+    const snap=await db.ref('couriers/'+me.id).once('value');
+    if(!snap.exists())return notify('Хато','Маълумот ёфт нашуд','err');
+    me={id:me.id,...snap.val()};
+    localStorage.setItem('trCourierV1',JSON.stringify(me));
+    if(me.status==='approved'){goMain();notify('Табрик!','Шумо тасдиқ шудед ✅','success');}
+    else if(me.status==='rejected'){notify('Рад шуд','Аризаи шумо рад карда шуд','err');}
+    else{notify('Ҳолат','Ҳанӯз дар баррасӣ...','info');}
+  }catch(e){notify('Хато',e.message,'err');}
 };
 
-// ============================================================
-// INIT
-// ============================================================
-document.addEventListener('DOMContentLoaded', function(){
-  setupFileInputs();
-  updateBalDisp();
-  checkAuth();
-  renderAdmin();
-});
+window.doLogout=function(){
+  if(ordersListener)db.ref('orders').off('value',ordersListener);
+  if(wId)navigator.geolocation.clearWatch(wId);
+  // Clear location from Firebase on logout
+  if(me&&db)db.ref('couriers/'+me.id).update({lat:null,lng:null,locAt:null});
+  me=null;localStorage.removeItem('trCourierV1');
+  showScr('auth');isOnline=false;
+  document.getElementById('toggle').classList.remove('on');
+  document.getElementById('statusTxt').textContent='Офлайн';
+};
 
-// ============================================================
-// AUTH
-// ============================================================
-function checkAuth(){
-  if(!cu) return;
-  if(cu.status==='approved'){ goMain(); }
-  else if(cu.status==='pending'){ showScreen('wait'); }
-}
+function se(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display='block';setTimeout(()=>e.style.display='none',3500);}
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('active');
-}
-
+// ══════ MAIN APP ══════
 function goMain(){
-  showScreen('main');
+  showScr('main');
   fillProfile();
   initMap();
   trackLoc();
-  loadOrders();
+  listenOrders();
+  switchTab('orders');
 }
 
-window.login = function(){
-  const id=v('loginId'), pw=v('loginPwd');
-  if(!id||!pw){notify('Хатогӣ','ID ва паролро ворид кунед','err');return;}
-  const u=users.find(x=>x.id===id&&x.pw===pw);
-  if(!u){notify('Хатогӣ','ID ё парол нодуруст','err');return;}
-  cu=u; bal=u.bal||0; tot=u.tot||0; comp=u.comp||0; canc=u.canc||0;
-  saveState(); updateBalDisp();
-  if(u.status==='approved'){goMain();notify('Хуш омадед',u.name,'success');}
-  else showScreen('wait');
-};
+function listenOrders(){
+  if(ordersListener)db.ref('orders').off('value',ordersListener);
+  ordersListener=db.ref('orders').on('value',snap=>{
+    const d=snap.val()||{};
+    myOrders=[];myHistory=[];
+    const freshNewIds=new Set();
 
-window.register = function(){
-  const name=v('regName'), phone=v('regPhone'), pw=v('regPwd');
-  if(!name||!phone||!pw){notify('Хатогӣ','Ҳамаи майдонҳоро пур кунед','err');return;}
-  if(!photos.face){notify('Хатогӣ','Акси рӯйро илова кунед','err');return;}
-  if(!photos.passport){notify('Хатогӣ','Акси паспортро илова кунед','err');return;}
-  if(!photos.selfie){notify('Хатогӣ','Акси худро бо паспорт илова кунед','err');return;}
+    Object.entries(d).forEach(([k,v])=>{
+      // Bug fix #2: skip locally declined orders
+      if(declinedIds.has(k))return;
+      const o={id:k,...v};
+      if(v.courierId===me.id){
+        if(['assigned','picked_up'].includes(v.status))myOrders.push(o);
+        else if(['delivered','cancelled'].includes(v.status))myHistory.push(o);
+      } else if(v.status==='new'&&isOnline){
+        myOrders.push(o);
+        freshNewIds.add(k);
+      }
+    });
+    myOrders.sort((a,b)=>b.createdAt-a.createdAt);
+    myHistory.sort((a,b)=>b.createdAt-a.createdAt);
 
-  const uid='C'+Math.floor(10000+Math.random()*90000);
-  const fmt=phone.replace(/\D/g,'').replace(/(\d{2})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4');
-  const u={id:uid,name,phone:'+992 '+fmt,pw,status:'pending',
-    bal:0,tot:0,comp:0,canc:0,rating:5.0,
-    reg:new Date().toLocaleDateString('ru-RU'),
-    photos:{face:photos.face,passport:photos.passport,selfie:photos.selfie}};
+    // Bug fix #3: only notify for TRULY NEW orders (not seen before)
+    if(isOnline){
+      const brandNew=[...freshNewIds].filter(id=>!knownOrderIds.has(id));
+      if(brandNew.length>0){
+        notify('📦 Закази нав!',`${brandNew.length} закази нав ёфт шуд`,'success');
+        brandNew.forEach(id=>knownOrderIds.add(id));
+      }
+    }
+    // Clean up knownOrderIds for orders that are no longer new
+    [...knownOrderIds].forEach(id=>{
+      if(!d[id]||d[id].status!=='new')knownOrderIds.delete(id);
+    });
 
-  users.push(u); pending.push(u); cu=u;
-  ls('users',users); ls('pending',pending); ls('cu',cu);
-  showScreen('wait'); renderAdmin();
-  notify('Муваффақият','ID шумо: '+uid+'. Ба интизорӣ бошед.','success');
-};
-
-window.demoMode = function(){
-  cu={id:'C12345',name:'Алишер Каримов',phone:'+992 90 123 45 67',
-    pw:'demo',status:'approved',bal:1250,tot:124,comp:120,canc:4,
-    rating:4.8,reg:'15.01.2024',photos:{}};
-  bal=1250;tot=124;comp=120;canc=4;
-  saveState(); ls('cu',cu);
-  goMain(); notify('Демо режим','Хуш омадед!','info');
-};
-
-window.checkApproval = function(){
-  if(!cu) return;
-  const u=users.find(x=>x.id===cu.id);
-  if(u&&u.status==='approved'){
-    cu=u; ls('cu',cu); goMain(); notify('Табрик!','Тасдиқ шудед','success');
-  } else {
-    notify('Маълумот','Ҳолат: дар интизор...','info');
-  }
-};
-
-// ============================================================
-// ADMIN
-// ============================================================
-function renderAdmin(){
-  const box=document.getElementById('adminBox');
-  const lst=document.getElementById('adminList');
-  if(!pending.length){box.style.display='none';return;}
-  box.style.display='block';
-  lst.innerHTML=pending.map(c=>`
-    <div class="p-courier">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <strong>${c.name}</strong>
-          <p style="font-size:12px;color:var(--gray)">ID:${c.id} | ${c.phone}</p>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn-cam" style="width:auto;padding:8px 14px;font-size:12px" onclick="approveCourier('${c.id}')">Тасдиқ</button>
-          <button style="padding:8px 14px;font-size:12px;background:var(--danger);color:#fff;border:none;border-radius:10px;cursor:pointer" onclick="rejectCourier('${c.id}')">Рад</button>
-        </div>
-      </div>
-      <div class="p-photos">
-        ${c.photos.face?`<img src="${c.photos.face}" class="p-photo">`:''}
-        ${c.photos.passport?`<img src="${c.photos.passport}" class="p-photo">`:''}
-        ${c.photos.selfie?`<img src="${c.photos.selfie}" class="p-photo">`:''}
-      </div>
-    </div>`).join('');
+    renderCurrentTab();
+    updateBalDisp();
+  });
 }
 
-window.approveCourier=function(id){
-  const pi=pending.findIndex(x=>x.id===id);
-  const ui=users.findIndex(x=>x.id===id);
-  if(pi>-1){pending[pi].status='approved';pending.splice(pi,1);}
-  if(ui>-1)users[ui].status='approved';
-  ls('pending',pending);ls('users',users);
-  renderAdmin();notify('Тасдиқ','Курьер қабул шуд','success');
-};
-window.rejectCourier=function(id){
-  if(!confirm('Рад кунед?'))return;
-  pending=pending.filter(x=>x.id!==id);
-  const ui=users.findIndex(x=>x.id===id);
-  if(ui>-1)users[ui].status='rejected';
-  ls('pending',pending);ls('users',users);
-  renderAdmin();notify('Рад','Курьер рад шуд','info');
-};
-
-// ============================================================
-// PROFILE MODAL
-// ============================================================
-window.openProfile=function(){fillProfile();document.getElementById('profileModal').classList.add('active');};
-window.closeProfile=function(){document.getElementById('profileModal').classList.remove('active');};
-window.modalOutside=function(e){if(e.target.id==='profileModal')closeProfile();};
-
-function fillProfile(){
-  if(!cu)return;
-  s('pName',cu.name);s('pPhone',cu.phone);s('pId',cu.id);
-  s('pDate',cu.reg||'-');s('pRating',cu.rating+' ⭐');
-  s('pOrders',tot);s('pBal',bal+' сом');
+let currentTab='orders';
+function renderCurrentTab(){
+  if(currentTab==='orders')loadOrders();
+  else if(currentTab==='history')loadHist();
+  else loadStats();
 }
 
-window.logout=function(){
-  if(!confirm('Берун шавед?'))return;
-  if(wId)navigator.geolocation.clearWatch(wId);
-  if(oTimer)clearInterval(oTimer);
-  ['cu','bal','tot','comp','canc'].forEach(k=>localStorage.removeItem(k));
-  cu=null;bal=tot=comp=canc=0;
-  photos={face:null,passport:null,selfie:null};
-  document.querySelectorAll('.preview-wrap').forEach(x=>x.style.display='none');
-  closeProfile();showScreen('auth');
-};
-
-// ============================================================
-// MAP
-// ============================================================
-function initMap(){
-  if(map)return;
-  map=L.map('map').setView([DEF.lat,DEF.lng],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© TojRason'}).addTo(map);
-}
-
-function trackLoc(){
-  if(!navigator.geolocation){moveMark(DEF.lat,DEF.lng);return;}
-  wId=navigator.geolocation.watchPosition(
-    p=>{moveMark(p.coords.latitude,p.coords.longitude);
-      if(curOrder)drawRoute(p.coords.latitude,p.coords.longitude,curOrder.lat,curOrder.lng);},
-    ()=>moveMark(DEF.lat,DEF.lng),
-    {enableHighAccuracy:true,maximumAge:0,timeout:5000}
-  );
-}
-
-function moveMark(la,ln){
-  const ico=L.divIcon({className:'',
-    html:'<div style="background:#4361ee;width:22px;height:22px;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
-    iconSize:[22,22]});
-  if(cMark)cMark.setLatLng([la,ln]);
-  else{cMark=L.marker([la,ln],{icon:ico,zIndexOffset:1000}).addTo(map).bindPopup('Шумо');}
-  if(!curOrder)map.setView([la,ln],15);
-}
-
-function drawRoute(la,ln,ola,oln){
-  if(rLine)map.removeLayer(rLine);
-  const pts=[[la,ln],[ola,oln]];
-  rLine=L.polyline(pts,{color:'#4361ee',weight:4,opacity:.8,dashArray:'8,8'}).addTo(map);
-  map.fitBounds(L.latLngBounds(pts),{padding:[48,48]});
-}
-
-window.centerMe=function(){if(cMark){const p=cMark.getLatLng();map.setView([p.lat,p.lng],16);}};
-window.fitRoute=function(){if(rLine)map.fitBounds(rLine.getBounds(),{padding:[48,48]});};
-
-// ============================================================
-// ONLINE TOGGLE
-// ============================================================
+// ══════ ONLINE TOGGLE ══════
 window.toggleOnline=function(){
   isOnline=!isOnline;
   document.getElementById('toggle').classList.toggle('on',isOnline);
   document.getElementById('statusTxt').textContent=isOnline?'Онлайн':'Офлайн';
-  notify('Ҳолат',isOnline?'Шумо онлайн ҳастед':'Шумо офлайн ҳастед',isOnline?'success':'info');
-  loadOrders();
+  notify('Ҳолат',isOnline?'Шумо онлайн ҳастед 🟢':'Шумо офлайн ҳастед ⚫',isOnline?'success':'info');
+  if(!isOnline){
+    knownOrderIds.clear();declinedIds.clear();
+    // Hide location when going offline
+    if(me&&db)db.ref('couriers/'+me.id).update({lat:null,lng:null,locAt:null});
+  }
+  listenOrders();
 };
 
-// ============================================================
-// ORDERS
-// ============================================================
+// ══════ ORDERS ══════
 function loadOrders(){
   const c=document.getElementById('mainContent');
   if(!isOnline){
-    c.innerHTML=`<div class="empty"><i class="fas fa-power-off"></i><h3>Шумо офлайн ҳастед</h3><p style="color:var(--gray);margin-top:8px">Барои заказҳо онлайн шавед</p></div>`;
+    c.innerHTML=`<div class="empty"><span class="empty-ico">⚡</span><h3>Онлайн шавед</h3><p>Барои заказ қабул кардан онлайн шавед</p></div>`;
     return;
   }
-  let h=`<div class="bal-card"><div class="bal-title">Баланси шумо</div><div class="bal-amt">${bal} сом</div></div>`;
-  if(orders.length){
-    orders.forEach(o=>{
-      h+=`<div class="order-card" id="oc-${o.id}">
-        <div class="order-head">
-          <div class="order-icon"><i class="fas fa-box"></i></div>
-          <div class="order-info"><h3>Закази нав</h3><p>Мизоҷ: ${o.customer}</p></div>
-        </div>
-        <div class="timer-box"><i class="fas fa-clock"></i><span>Вақт: </span><span class="timer-val" id="ot-${o.id}">0:00</span></div>
-        <div class="route-box">
-          <div class="route-pt"><div class="pt-dot pick"></div><div><div class="pt-addr">${o.pickup}</div><div class="pt-sub">Нуқтаи гирифтан</div></div></div>
-          <div class="route-pt"><div class="pt-dot drop"></div><div><div class="pt-addr">${o.delivery}</div><div class="pt-sub">Нуқтаи расонидан</div></div></div>
-        </div>
-        <div class="order-meta"><span><i class="fas fa-road"></i> ${o.dist} км</span><strong><i class="fas fa-money-bill"></i> ${o.price} сом</strong></div>
-        <div class="order-actions">
-          <button class="btn-accept" onclick="acceptOrder('${o.id}')"><i class="fas fa-check"></i> Қабул</button>
-          <button class="btn-decline" onclick="declineOrder('${o.id}')"><i class="fas fa-times"></i> Рад</button>
-        </div>
-      </div>`;
-    });
-    setTimeout(startTimer,50);
-  } else {
-    h+=`<div class="empty"><i class="fas fa-box-open"></i><h3>Заказе нест</h3><p style="color:var(--gray);margin-top:8px">Дар интизор...</p><div class="spinner" style="margin-top:16px"></div></div>`;
+  const myActive=myOrders.filter(o=>o.courierId===me.id&&['assigned','picked_up'].includes(o.status));
+  const newOrders=myOrders.filter(o=>o.status==='new');
+  let h=`<div class="bal-card"><div class="bal-title">Баланси шумо</div><div class="bal-amt" id="balCard">${me.balance||0} смн</div></div>`;
+
+  if(!myActive.length&&!newOrders.length){
+    h+=`<div class="empty"><span class="empty-ico">📭</span><h3>Заказе нест</h3><p>Дар интизори заказ...</p></div>`;
   }
+
+  // Show active (assigned/picked_up) orders first
+  myActive.forEach(o=>{
+    h+=renderOrderCard(o,true);
+  });
+  // Show new unassigned orders
+  newOrders.forEach(o=>{
+    h+=renderOrderCard(o,false);
+  });
   c.innerHTML=h;
 }
 
-window.acceptOrder=function(id){
-  const o=orders.find(x=>x.id===id);
-  if(!o)return;
-  curOrder=o;
-  orders=orders.filter(x=>x.id!==id);
-  const ico=L.divIcon({className:'',html:'<div style="background:#ef4444;width:28px;height:28px;border-radius:50%;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:bold;font-size:11px">C</div>',iconSize:[28,28]});
-  if(oMark)map.removeLayer(oMark);
-  oMark=L.marker([o.lat,o.lng],{icon:ico}).addTo(map).bindPopup(o.delivery);
-  if(cMark){const p=cMark.getLatLng();drawRoute(p.lat,p.lng,o.lat,o.lng);}
-  const card=document.getElementById('oc-'+id);
-  if(card){
-    card.querySelector('.order-head .order-icon').style.background='linear-gradient(135deg,var(--success),#0d9488)';
-    card.querySelector('.order-actions').innerHTML=`<button class="btn-arrived" onclick="arrived()" style="flex:1;padding:15px;border:none;border-radius:var(--rs);font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-location-dot"></i> Ман расидам</button>`;
-  }
-  notify('Қабул шуд','Ба сӯи мизоҷ ҳаракат кунед','success');
-};
-
-window.arrived=function(){
-  const card=document.querySelector('.order-card');
-  if(!card)return;
-  card.querySelector('.order-actions').innerHTML=`<button class="btn-deliver" onclick="deliver()" style="flex:1;padding:15px;border:none;border-radius:var(--rs);font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><i class="fas fa-check-circle"></i> Заказ супорида шуд</button>`;
-  notify('Расидед!','Заказро ба мизоҷ супоред','info');
-};
-
-window.deliver=function(){
-  if(!curOrder)return;
-  history.push({...curOrder,at:new Date().toLocaleString('ru-RU'),status:'delivered'});
-  ls('history',history);
-  bal+=curOrder.price;comp++;tot++;
-  if(cu){cu.bal=bal;cu.tot=tot;cu.comp=comp;ls('cu',cu);}
-  saveState();updateBalDisp();
-  curOrder=null;
-  if(oMark){map.removeLayer(oMark);oMark=null;}
-  if(rLine){map.removeLayer(rLine);rLine=null;}
-  stopTimer();loadOrders();
-  notify('Супорида шуд ✓','Барои заказҳои нав омода шавед','success');
-  setTimeout(()=>{if(isOnline)simOrder();},7000);
-};
-
-window.declineOrder=function(id){
-  if(!confirm('Рад кунед?'))return;
-  const o=orders.find(x=>x.id===id);
-  if(o){history.push({...o,at:new Date().toLocaleString('ru-RU'),status:'cancelled'});ls('history',history);}
-  canc++;tot++;
-  if(cu){cu.tot=tot;cu.canc=canc;ls('cu',cu);}
-  saveState();
-  orders=orders.filter(x=>x.id!==id);loadOrders();
-  notify('Рад шуд','Закази дигарро интизор шавед','info');
-};
-
-function simOrder(){
-  const names=['Навруз','Саломат','Баҳром','Гулнора','Рустам'];
-  const pts=['Бӯстон','Зарафшон','82-й','Сино','Айнӣ','Сомон'];
-  const o={
-    id:'O'+Date.now(),
-    customer:names[Math.floor(Math.random()*names.length)],
-    pickup:pts[Math.floor(Math.random()*pts.length)],
-    delivery:pts[Math.floor(Math.random()*pts.length)],
-    dist:(Math.random()*5+1).toFixed(1),
-    price:Math.floor(Math.random()*30+15),
-    lat:DEF.lat+(Math.random()-.5)*.02,
-    lng:DEF.lng+(Math.random()-.5)*.02
-  };
-  orders.unshift(o);loadOrders();
-  notify('Закази нав! 🚀',o.customer+' | '+o.price+' сом','success');
+function renderOrderCard(o,isMine){
+  const isPickedUp=o.status==='picked_up';
+  const isAssigned=o.status==='assigned'&&o.courierId===me.id;
+  const isNew=o.status==='new';
+  const iconColor=isMine?'linear-gradient(135deg,#10b981,#0d9488)':'linear-gradient(135deg,#4361ee,#3a56d4)';
+  return `<div class="order-card" id="oc-${o.id}">
+    <div class="order-head">
+      <div class="order-icon" style="background:${iconColor}"><i class="fas fa-box"></i></div>
+      <div class="order-info">
+        <h3>${isNew?'Закази нав':isPickedUp?'Бардошта шуд':'Дар роҳ'}</h3>
+        <p>Мизоҷ: ${o.customerName||'—'} ${o.customerPhone?'· '+o.customerPhone:''}</p>
+      </div>
+    </div>
+    <div class="route-box">
+      <div class="route-pt"><div class="pt-dot pick"></div><div><div class="pt-addr">${o.fromAddress||'—'}</div><div class="pt-sub">Нуқтаи гирифтан</div></div></div>
+      <div class="route-pt"><div class="pt-dot drop"></div><div><div class="pt-addr">${o.toAddress||'—'}</div><div class="pt-sub">Нуқтаи расонидан</div></div></div>
+    </div>
+    <div class="order-meta">
+      <div class="meta-item"><i class="fas fa-weight"></i><strong>${o.weight||1} кг</strong></div>
+      <div class="meta-item"><i class="fas fa-money-bill"></i><strong>${o.price||0} смн</strong></div>
+      ${o.receiverPhone?`<div class="meta-item"><i class="fas fa-phone"></i><strong>${o.receiverPhone}</strong></div>`:''}
+    </div>
+    ${o.description&&o.description!=='—'?`<div style="font-size:13px;color:var(--gray);background:#f8fafc;padding:10px;border-radius:8px;margin-bottom:12px">📝 ${o.description}</div>`:''}
+    <div class="order-actions">
+      ${isNew?`
+        <button class="btn-accept" onclick="acceptOrder('${o.id}')"><i class="fas fa-check"></i> Қабул кардан</button>
+        <button class="btn-decline" onclick="declineOrder('${o.id}')"><i class="fas fa-times"></i></button>
+      `:''}
+      ${isAssigned?`<button class="btn-pickup" onclick="pickupOrder('${o.id}')"><i class="fas fa-box-open"></i> Борро гирифтам</button>`:''}
+      ${isPickedUp?`<button class="btn-deliver" onclick="deliverOrder('${o.id}')"><i class="fas fa-check-circle"></i> Супорида шуд</button>`:''}
+    </div>
+  </div>`;
 }
 
-// ============================================================
-// TABS
-// ============================================================
-window.switchTab=function(tab){
-  ['orders','history','stats'].forEach(t=>{
-    document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab);
-  });
-  if(tab==='orders')loadOrders();
-  else if(tab==='history')loadHist();
-  else loadStats();
+// ══════ ORDER ACTIONS ══════
+window.acceptOrder=async function(oid){
+  try{
+    await db.ref('orders/'+oid).update({
+      status:'assigned',courierId:me.id,courierName:me.name,
+      updatedAt:Date.now()
+    });
+    notify('✅ Қабул шуд','Ба сӯи мизоҷ ҳаракат кунед','success');
+  }catch(e){notify('Хато',e.message,'err');}
 };
 
+window.declineOrder=function(oid){
+  // Bug fix #2: store in declinedIds so Firebase snapshot won't bring it back
+  declinedIds.add(oid);
+  myOrders=myOrders.filter(o=>o.id!==oid);
+  loadOrders();
+  notify('Рад кардед','Закази дигарро интизор шавед','info');
+};
+
+window.pickupOrder=async function(oid){
+  try{
+    await db.ref('orders/'+oid).update({status:'picked_up',updatedAt:Date.now()});
+    notify('📤 Гирифтед!','Акнун ба қабулкунанда расонед','success');
+  }catch(e){notify('Хато',e.message,'err');}
+};
+
+window.deliverOrder=async function(oid){
+  if(!confirm('Оё заказ супорида шуд?'))return;
+  const o=myOrders.find(x=>x.id===oid);
+  try{
+    await db.ref('orders/'+oid).update({status:'delivered',deliveredAt:Date.now(),updatedAt:Date.now()});
+    // Bug fix: read latest courier data from Firebase before updating balance
+    // to avoid race condition with stale local balance
+    const snap=await db.ref('couriers/'+me.id).once('value');
+    const latest=snap.val()||{};
+    const newBal=(latest.balance||0)+(o?.price||0);
+    const newTotal=(latest.totalOrders||0)+1;
+    const newComp=(latest.completedOrders||0)+1;
+    await db.ref('couriers/'+me.id).update({balance:newBal,totalOrders:newTotal,completedOrders:newComp});
+    me.balance=newBal;me.totalOrders=newTotal;me.completedOrders=newComp;
+    localStorage.setItem('trCourierV1',JSON.stringify(me));
+    updateBalDisp();
+    // Clear courier live-location from Firebase after delivery (privacy)
+    db.ref('couriers/'+me.id).update({lat:null,lng:null,locAt:null});
+    notify('🎉 Супорида шуд!','Пул ба ҳисоби шумо илова шуд','success');
+  }catch(e){notify('Хато',e.message,'err');}
+};
+
+// ══════ HISTORY & STATS ══════
 function loadHist(){
   const c=document.getElementById('mainContent');
-  let h=`<div class="bal-card"><div class="bal-title">Ҳамаи заказҳо</div><div class="bal-amt">${history.length}</div></div>`;
-  if(history.length){
-    [...history].reverse().forEach(o=>{
+  let h=`<div class="bal-card"><div class="bal-title">Ҳамаи заказҳо</div><div class="bal-amt">${myHistory.length}</div></div>`;
+  if(!myHistory.length){
+    h+=`<div class="empty"><span class="empty-ico">📋</span><h3>Таърих холӣ аст</h3></div>`;
+  } else {
+    myHistory.forEach(o=>{
       const ok=o.status==='delivered';
+      const d=new Date(o.deliveredAt||o.updatedAt||o.createdAt).toLocaleDateString('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
       h+=`<div class="hist-item">
         <div class="hist-info">
-          <h4>Заказ #${o.id.toString().slice(-4)}</h4>
-          <p><i class="fas fa-user"></i> ${o.customer}</p>
-          <p><i class="fas fa-clock"></i> ${o.at}</p>
-          <p style="color:var(--success);font-weight:600">${o.price} сом</p>
+          <h4>${o.fromAddress||'—'} → ${o.toAddress||'—'}</h4>
+          <p><i class="fas fa-user"></i> ${o.customerName||'—'}</p>
+          <p><i class="fas fa-clock"></i> ${d}</p>
+          <p style="color:var(--success);font-weight:700">${o.price||0} смн</p>
         </div>
-        <span class="badge ${ok?'badge-ok':'badge-no'}">${ok?'Супорида шуд':'Рад шуд'}</span>
+        <span class="hist-badge ${ok?'hb-ok':'hb-no'}">${ok?'✅ Расид':'❌ Бекор'}</span>
       </div>`;
     });
-  } else {
-    h+=`<div class="empty"><i class="fas fa-history"></i><h3>Таърих холӣ аст</h3></div>`;
   }
   c.innerHTML=h;
 }
 
 function loadStats(){
-  const rate=tot?((comp/tot)*100).toFixed(1):'0.0';
+  const total=me.totalOrders||0;
+  const comp=me.completedOrders||0;
+  const rate=total?((comp/total)*100).toFixed(0):'0';
   document.getElementById('mainContent').innerHTML=`
-    <div class="bal-card"><div class="bal-title">Баланси шумо</div><div class="bal-amt">${bal} сом</div></div>
+    <div class="bal-card"><div class="bal-title">Баланси шумо</div><div class="bal-amt">${me.balance||0} смн</div></div>
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-val">${tot}</div><div class="stat-lbl">Ҳамаи заказҳо</div></div>
-      <div class="stat-card"><div class="stat-val">${comp}</div><div class="stat-lbl">Супорида шуд</div></div>
-      <div class="stat-card"><div class="stat-val">${canc}</div><div class="stat-lbl">Рад карда шуд</div></div>
+      <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Ҳамаи заказҳо</div></div>
+      <div class="stat-card"><div class="stat-val">${comp}</div><div class="stat-lbl">Иҷрошуда</div></div>
+      <div class="stat-card"><div class="stat-val">${myOrders.filter(o=>o.courierId===me.id).length}</div><div class="stat-lbl">Фаъол</div></div>
       <div class="stat-card"><div class="stat-val">${rate}%</div><div class="stat-lbl">Муваффақият</div></div>
     </div>`;
 }
 
-// ============================================================
-// TIMER
-// ============================================================
-function startTimer(){
-  stopTimer(); tSec=0;
-  oTimer=setInterval(()=>{
-    tSec++;
-    const el=document.querySelector('.timer-val');
-    if(el){const m=Math.floor(tSec/60),s=tSec%60;el.textContent=m+':'+(s<10?'0':'')+s;}
-  },1000);
-}
-function stopTimer(){if(oTimer){clearInterval(oTimer);oTimer=null;}}
+window.switchTab=function(tab){
+  currentTab=tab;
+  ['orders','history','stats'].forEach(t=>{
+    document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active',t===tab);
+  });
+  renderCurrentTab();
+};
 
-// ============================================================
-// NOTIFICATION
-// ============================================================
+// ══════ PROFILE ══════
+function fillProfile(){
+  if(!me)return;
+  document.getElementById('pName').textContent=me.name||'—';
+  document.getElementById('pPhone').textContent=me.phone||'—';
+  document.getElementById('pUser').textContent='@'+(me.username||'—');
+  document.getElementById('pVeh').textContent=(VEH[me.vehicle]||'🏍️')+' '+(me.vehicle||'—');
+  document.getElementById('pOrders').textContent=me.totalOrders||0;
+  document.getElementById('pComp').textContent=me.completedOrders||0;
+  document.getElementById('pBal').textContent=(me.balance||0)+' смн';
+}
+function updateBalDisp(){
+  document.getElementById('balDisp').textContent=(me?.balance||0)+' смн';
+  const bc=document.getElementById('balCard');if(bc)bc.textContent=(me?.balance||0)+' смн';
+  fillProfile();
+}
+window.openProfile=function(){fillProfile();document.getElementById('profileModal').classList.add('active');};
+window.closeProfile=function(){document.getElementById('profileModal').classList.remove('active');};
+document.getElementById('profileModal').addEventListener('click',function(e){if(e.target===this)closeProfile();});
+
+// ══════ MAP ══════
+function initMap(){
+  if(map)return;
+  map=L.map('map').setView([DEF.lat,DEF.lng],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© TojRason'}).addTo(map);
+}
+function trackLoc(){
+  if(!navigator.geolocation){moveMark(DEF.lat,DEF.lng);return;}
+  wId=navigator.geolocation.watchPosition(p=>moveMark(p.coords.latitude,p.coords.longitude),()=>moveMark(DEF.lat,DEF.lng),{enableHighAccuracy:true,maximumAge:0,timeout:8000});
+}
+let _lastLocSave=0;
+function moveMark(la,ln){
+  const ico=L.divIcon({className:'',html:'<div style="background:#4361ee;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',iconSize:[20,20]});
+  if(cMark){cMark.setLatLng([la,ln]);}
+  else{cMark=L.marker([la,ln],{icon:ico,zIndexOffset:1000}).addTo(map).bindPopup('Шумо');map.setView([la,ln],14);}
+  // Save location to Firebase every 4s (customer live tracking)
+  const now=Date.now();
+  if(me&&db&&isOnline&&(now-_lastLocSave)>4000){
+    _lastLocSave=now;
+    db.ref('couriers/'+me.id).update({lat:la,lng:ln,locAt:now});
+  }
+}
+window.centerMe=function(){if(cMark){const p=cMark.getLatLng();map.setView([p.lat,p.lng],16);}};
+
+// ══════ PHOTO ══════
+function setupFileInputs(){
+  [['inCamFace','face'],['inGalFace','face'],['inCamPassport','passport'],['inGalPassport','passport']].forEach(([id,type])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('change',function(e){
+      const file=e.target.files?.[0];if(!file)return;
+      const r=new FileReader();
+      r.onload=ev=>setPhoto(type,ev.target.result);
+      r.readAsDataURL(file);
+      e.target.value='';
+    });
+  });
+}
+window.pickPhoto=function(type,mode){
+  const m={face:{cam:'inCamFace',gal:'inGalFace'},passport:{cam:'inCamPassport',gal:'inGalPassport'}};
+  document.getElementById(m[type][mode])?.click();
+};
+function setPhoto(type,data){
+  photos[type]=data;
+  const k=type.charAt(0).toUpperCase()+type.slice(1);
+  document.getElementById('img'+k).src=data;
+  document.getElementById('prev'+k).style.display='block';
+}
+window.removePhoto=function(type){
+  photos[type]=null;
+  const k=type.charAt(0).toUpperCase()+type.slice(1);
+  document.getElementById('prev'+k).style.display='none';
+  document.getElementById('img'+k).src='';
+};
+
+// ══════ NOTIFY ══════
 function notify(title,msg,type){
   const el=document.getElementById('notif');
   const colors={success:'var(--success)',err:'var(--danger)',info:'var(--primary)'};
+  const icons={success:'✅',err:'❌',info:'ℹ️'};
   el.style.borderLeftColor=colors[type]||colors.info;
-  s('notifTitle',title); s('notifText',msg);
+  document.getElementById('notifIco').textContent=icons[type]||'🔔';
+  document.getElementById('notifTitle').textContent=title;
+  document.getElementById('notifText').textContent=msg;
   el.classList.add('show');
   clearTimeout(notifTO);
   notifTO=setTimeout(()=>el.classList.remove('show'),4000);
 }
 
-// ============================================================
-// HELPERS
-// ============================================================
-function v(id){return document.getElementById(id)?.value.trim()||'';}
-function s(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
-function ls(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function saveState(){ls('bal',bal);ls('tot',tot);ls('comp',comp);ls('canc',canc);}
-function updateBalDisp(){s('balDisp',bal+' сом');}
-
-window.addEventListener('beforeunload',()=>{
-  if(wId)navigator.geolocation.clearWatch(wId);
-  if(oTimer)clearInterval(oTimer);
-});
+// ══════ UTILS ══════
+function gv(id){return document.getElementById(id)?.value.trim()||'';}
 </script>
 </body>
 </html>
