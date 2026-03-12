@@ -1,2369 +1,1203 @@
 <!DOCTYPE html>
 <html lang="tg">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Яндекс Такси - Фармоиши курьер</title>
-    <!-- Fonts and Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #FFFFFF;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .yandex-app {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Map Container */
-        .map-container {
-            flex: 1;
-            position: relative;
-            background: #E5E5E5;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        /* Navigation Controls */
-        .navigation-controls {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            border: none;
-            color: #666;
-            transition: all 0.2s;
-            font-size: 20px;
-        }
-
-        .nav-btn:hover {
-            background: #FFD600;
-            color: white;
-            transform: scale(1.1);
-        }
-
-        .nav-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Zoom Indicator */
-        .zoom-indicator {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            font-size: 14px;
-            color: #333;
-            border: 2px solid #FFD600;
-        }
-
-        .zoom-indicator i {
-            color: #FFD600;
-            margin-right: 5px;
-        }
-
-        /* Search Panel */
-        .search-panel {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            padding: 16px;
-        }
-
-        .location-inputs {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #F7F7F7;
-            border-radius: 16px;
-            padding: 8px 16px;
-            border: 2px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .input-wrapper.active {
-            border-color: #FFD600;
-            background: white;
-        }
-
-        .input-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: white;
-        }
-
-        .input-icon.pickup {
-            background: #FFD600;
-        }
-
-        .input-icon.delivery {
-            background: #00A85C;
-        }
-
-        .input-field {
-            flex: 1;
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            font-weight: 500;
-            outline: none;
-            padding: 8px 0;
-        }
-
-        .input-field:focus {
-            background: transparent;
-        }
-
-        .input-field::placeholder {
-            color: #999;
-            font-weight: 400;
-        }
-
-        .clear-btn {
-            color: #999;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 5px;
-        }
-
-        .clear-btn:hover {
-            color: #FFD600;
-        }
-
-        /* Address Suggestions */
-        .suggestions-box {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 16px;
-            margin-top: 8px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-            z-index: 1001;
-        }
-
-        .suggestion-item {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .suggestion-item:hover {
-            background: #FFF9E6;
-        }
-
-        .suggestion-item i {
-            width: 24px;
-            color: #FFD600;
-            font-size: 18px;
-        }
-
-        .suggestion-item div {
-            flex: 1;
-        }
-
-        .suggestion-item .main-text {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .suggestion-item .sub-text {
-            font-size: 13px;
-            color: #999;
-        }
-
-        .swap-btn {
-            position: absolute;
-            right: 20px;
-            top: 70px;
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            z-index: 1001;
-            border: none;
-            color: #666;
-            transition: all 0.2s;
-        }
-
-        .swap-btn:hover {
-            transform: rotate(180deg);
-            color: #FFD600;
-        }
-
-        /* My Location Button */
-        .my-location-btn {
-            position: absolute;
-            bottom: 120px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            cursor: pointer;
-            z-index: 1000;
-            border: none;
-            color: #666;
-            transition: all 0.2s;
-        }
-
-        .my-location-btn:hover {
-            color: #FFD600;
-            transform: scale(1.1);
-        }
-
-        /* Bottom Sheet */
-        .bottom-sheet {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 30px 30px 0 0;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-            z-index: 1002;
-            transition: transform 0.3s ease;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .sheet-handle {
-            width: 40px;
-            height: 5px;
-            background: #E0E0E0;
-            border-radius: 10px;
-            margin: 12px auto 20px;
-            cursor: pointer;
-        }
-
-        .sheet-content {
-            padding: 0 20px 30px;
-        }
-
-        .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .order-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1A1A1A;
-        }
-
-        .close-sheet {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #F7F7F7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #666;
-        }
-
-        /* Price Card */
-        .price-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #333 100%);
-            border-radius: 24px;
-            padding: 20px;
-            color: white;
-            margin-bottom: 24px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .price-label {
-            color: #B0B0B0;
-            font-size: 15px;
-        }
-
-        .price-value {
-            font-size: 48px;
-            font-weight: 800;
-            color: #FFD600;
-        }
-
-        .price-currency {
-            font-size: 24px;
-            color: #B0B0B0;
-        }
-
-        .price-details {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .price-detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .price-detail-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .price-detail-row.total {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            padding-top: 10px;
-            margin-top: 10px;
-            font-weight: 700;
-            color: #FFD600;
-        }
-
-        .price-note {
-            font-size: 12px;
-            color: #B0B0B0;
-            margin-top: 5px;
-            text-align: right;
-        }
-
-        .distance-info {
-            display: flex;
-            gap: 16px;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .distance-item {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .distance-item i {
-            color: #FFD600;
-        }
-
-        /* Order Status Card */
-        .order-status-card {
-            background: linear-gradient(135deg, #1A1A1A 0%, #333 100%);
-            border-radius: 24px;
-            padding: 20px;
-            color: white;
-            margin-bottom: 24px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        .status-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .status-icon {
-            width: 60px;
-            height: 60px;
-            background: #FFD600;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            color: #1A1A1A;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .status-text {
-            flex: 1;
-        }
-
-        .status-text h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .status-text p {
-            font-size: 13px;
-            color: #B0B0B0;
-        }
-
-        .status-timer {
-            font-size: 24px;
-            font-weight: 700;
-            color: #FFD600;
-        }
-
-        .courier-info-card {
-            background: rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .courier-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .courier-avatar-small {
-            width: 50px;
-            height: 50px;
-            background: #FFD600;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1A1A1A;
-            font-weight: 700;
-            font-size: 20px;
-        }
-
-        .courier-info-small h4 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .courier-info-small p {
-            font-size: 12px;
-            color: #B0B0B0;
-        }
-
-        .rating-stars {
-            color: #FFD600;
-            margin-top: 4px;
-        }
-
-        .rating-stars i {
-            margin-right: 2px;
-        }
-
-        /* Address Details Grid */
-        .address-details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-            background: #F7F7F7;
-            border-radius: 16px;
-            padding: 15px;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .detail-label {
-            font-size: 12px;
-            color: #666;
-            font-weight: 500;
-        }
-
-        .detail-input {
-            padding: 10px;
-            border: 2px solid #E0E0E0;
-            border-radius: 12px;
-            font-size: 14px;
-            transition: all 0.2s;
-            width: 100%;
-        }
-
-        .detail-input:focus {
-            border-color: #FFD600;
-            outline: none;
-        }
-
-        .detail-input::placeholder {
-            color: #999;
-        }
-
-        /* Order Form */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            font-weight: 600;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #F0F0F0;
-            border-radius: 16px;
-            font-size: 16px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: #FFD600;
-            outline: none;
-        }
-
-        .package-options {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .package-option {
-            text-align: center;
-            padding: 16px 8px;
-            background: #F7F7F7;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .package-option.active {
-            background: #FFF9E6;
-            border-color: #FFD600;
-        }
-
-        .package-option i {
-            font-size: 24px;
-            color: #666;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .package-option.active i {
-            color: #FFD600;
-        }
-
-        .package-option span {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1A1A1A;
-        }
-
-        .weight-slider {
-            width: 100%;
-            height: 6px;
-            background: #F0F0F0;
-            border-radius: 3px;
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        .weight-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            background: #FFD600;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.3);
-        }
-
-        .weight-value {
-            display: inline-block;
-            margin-left: 12px;
-            font-weight: 700;
-            color: #FFD600;
-        }
-
-        .weight-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 5px;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .free-weight {
-            color: #00A85C;
-            font-weight: 600;
-        }
-
-        .extra-weight {
-            color: #FFD600;
-            font-weight: 600;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 18px;
-            background: #FFD600;
-            border: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 700;
-            color: #1A1A1A;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: #FFE44D;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 214, 0, 0.3);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Courier Card */
-        .courier-card {
-            background: #F7F7F7;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        .courier-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .courier-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #FFD600, #FFE44D);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .courier-details h4 {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .courier-details p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .courier-rating {
-            color: #FFD600;
-            margin-top: 4px;
-        }
-
-        .courier-rating i {
-            margin-right: 2px;
-        }
-
-        .progress-track {
-            background: white;
-            border-radius: 30px;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .progress-bar {
-            flex: 1;
-            height: 6px;
-            background: #E0E0E0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #FFD600;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        /* Recent Orders */
-        .recent-orders {
-            margin-top: 20px;
-        }
-
-        .recent-order-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: #F7F7F7;
-            border-radius: 16px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .recent-order-item:hover {
-            background: #F0F0F0;
-        }
-
-        .order-icon {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #FFD600;
-            font-size: 20px;
-        }
-
-        .order-info {
-            flex: 1;
-        }
-
-        .order-info h6 {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .order-info p {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .order-status-badge {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 12px;
-            background: #FFD600;
-            border-radius: 20px;
-            color: #1A1A1A;
-        }
-
-        .order-status-badge.completed {
-            background: #00A85C;
-            color: white;
-        }
-
-        .order-status-badge.searching {
-            background: #FFD600;
-        }
-
-        .order-status-badge.accepted {
-            background: #007AFF;
-            color: white;
-        }
-
-        /* Map Markers */
-        .custom-pickup-marker, .custom-delivery-marker, .custom-courier-marker {
-            background: transparent;
-            border: none;
-        }
-
-        /* Direction Arrow */
-        .direction-arrow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 214, 0, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            pointer-events: none;
-            animation: pulse 2s infinite;
-            backdrop-filter: blur(5px);
-        }
-
-        .direction-arrow i {
-            font-size: 40px;
-            color: #FFD600;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
-        }
-
-        /* Promo Code */
-        .promo-section {
-            margin: 15px 0;
-        }
-
-        .promo-input {
-            display: flex;
-            gap: 10px;
-        }
-
-        .promo-input input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #F0F0F0;
-            border-radius: 12px;
-            font-size: 14px;
-        }
-
-        .promo-input button {
-            padding: 12px 20px;
-            background: #F7F7F7;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .promo-input button:hover {
-            background: #FFD600;
-        }
-
-        .promo-active {
-            background: #FFF9E6;
-            padding: 10px;
-            border-radius: 12px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .promo-active i {
-            color: #00A85C;
-            margin-right: 5px;
-        }
-
-        /* Sections */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 24px 0 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title i {
-            color: #FFD600;
-        }
-
-        .section-title:first-of-type {
-            margin-top: 0;
-        }
-
-        /* Person Form */
-        .person-form {
-            background: #F7F7F7;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .person-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-weight: 700;
-            color: #1A1A1A;
-        }
-
-        .person-header i {
-            color: #FFD600;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        /* Receiver Info */
-        .receiver-info {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #F0F0F0;
-        }
-
-        /* Sender Address Details */
-        .sender-address-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin: 20px 0;
-            background: #F7F7F7;
-            border-radius: 16px;
-            padding: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .package-options {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .navigation-controls {
-                right: 10px;
-            }
-            
-            .nav-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-            
-            .price-value {
-                font-size: 36px;
-            }
-            
-            .address-details-grid,
-            .sender-address-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TojRason - Фармоиш</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:#F1F4FB;color:#1B2B4B;min-height:100vh}
+input,select,button,textarea{font-family:'Inter',sans-serif;outline:none}
+button{cursor:pointer}
+:root{
+  --pr:#E8531F;--prd:#C23F0A;
+  --nv:#1B2B4B;--nv2:#263c67;
+  --gn:#22C55E;--gnb:#DCFCE7;
+  --or:#F59E0B;--orb:#FEF3C7;
+  --bl:#3B82F6;--blb:#EFF6FF;
+  --rd:#EF4444;--rdb:#FEE2E2;
+  --pu:#8B5CF6;--pub:#F5F3FF;
+  --bg:#F1F4FB;--sf:#fff;
+  --tx:#1B2B4B;--mt:#64748B;--bo:#E2E8F0;
+}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;background:var(--nv);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
+#splash.fade{opacity:0;pointer-events:none}
+.sp-logo{font-size:46px;font-weight:900;color:#fff;letter-spacing:-2px}
+.sp-logo b{color:var(--pr)}
+.sp-sub{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px;text-transform:uppercase}
+.sp-spin{width:28px;height:28px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* APP */
+#app{display:none;max-width:480px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative}
+
+/* HEADER */
+.hdr{background:var(--nv);padding:16px 20px;padding-top:max(16px,env(safe-area-inset-top));position:sticky;top:0;z-index:100;box-shadow:0 2px 14px rgba(27,43,75,.2)}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.hdr-logo{font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px}
+.hdr-logo b{color:var(--pr)}
+.hdr-tagline{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+
+/* PAGES */
+.pages{padding:16px;padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+.pg{display:none}.pg.on{display:block}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--sf);border-top:1px solid var(--bo);display:flex;padding:8px 4px;padding-bottom:max(8px,env(safe-area-inset-bottom));z-index:100;box-shadow:0 -4px 20px rgba(27,43,75,.08)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none;color:var(--mt);font-size:10px;font-weight:600;transition:color .2s;position:relative}
+.bn-ico{font-size:22px;transition:transform .2s}
+.bn-item.on{color:var(--pr)}
+.bn-item.on .bn-ico{transform:scale(1.15)}
+.bn-badge{position:absolute;top:0;right:calc(50% - 18px);background:var(--pr);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center;line-height:16px;display:none}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--nv),var(--nv2));border-radius:18px;padding:18px 20px;margin-bottom:14px;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.hero-left h2{font-size:18px;font-weight:800;margin-bottom:3px}
+.hero-left p{font-size:12px;opacity:.55}
+.hero-ico{font-size:44px}
+
+/* CARD */
+.card{background:var(--sf);border-radius:16px;padding:16px;border:1px solid var(--bo);box-shadow:0 2px 12px rgba(27,43,75,.06);margin-bottom:12px}
+.card-title{font-size:14px;font-weight:800;color:var(--tx);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* SENDER */
+.sender-card{background:linear-gradient(135deg,rgba(232,83,31,.06),rgba(232,83,31,.02));border:1.5px solid rgba(232,83,31,.2);border-radius:16px;padding:16px;margin-bottom:12px}
+.sender-card .card-title{color:var(--pr)}
+
+/* FORM */
+.fgi{margin-bottom:12px}
+.fgi:last-child{margin-bottom:0}
+.fli{font-size:11px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;display:block}
+.fii{width:100%;padding:13px 14px;border:1.5px solid var(--bo);border-radius:11px;font-size:14px;color:var(--tx);background:var(--sf);transition:border .2s}
+.fii:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(232,83,31,.08)}
+select.fii{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%2364748B' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+textarea.fii{resize:none;height:72px;line-height:1.5}
+.fi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fi-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* MAP FIELD — суроға + тугмаи харита */
+.map-field{display:flex;gap:8px;align-items:stretch}
+.map-field .fii{flex:1;min-width:0}
+.map-field-btn{width:46px;flex-shrink:0;border:1.5px solid var(--bo);background:var(--sf);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:all .2s;font-size:18px;color:var(--pr)}
+.map-field-btn:active{background:rgba(232,83,31,.08);border-color:var(--pr)}
+.map-field-btn span{font-size:9px;font-weight:700;color:var(--mt)}
+
+/* PREVIEW MAP (mini thumbnail after selection) */
+.addr-preview{display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1.5px solid var(--bo);position:relative}
+.addr-preview-map{height:100px;width:100%}
+.addr-preview-lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(27,43,75,.75);backdrop-filter:blur(4px);padding:5px 10px;font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* PRICE BOX */
+.price-box{background:linear-gradient(135deg,var(--nv),var(--nv2));border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.price-left .lbl{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:4px}
+.price-left .val{font-size:30px;font-weight:900;color:#F5C518;line-height:1}
+.price-right .dist{font-size:12px;color:rgba(255,255,255,.45)}
+.price-right .time{font-size:13px;font-weight:700;color:rgba(255,255,255,.7);margin-top:3px}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:12px;margin-top:6px}
+.fii-range{flex:1;accent-color:var(--pr);height:4px;cursor:pointer}
+.slider-val{font-size:15px;font-weight:800;color:var(--pr);min-width:52px;text-align:right}
+
+/* SUBMIT */
+.btn-submit{width:100%;padding:17px;border:none;border-radius:14px;background:var(--pr);color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;box-shadow:0 6px 20px rgba(232,83,31,.35)}
+.btn-submit:active{transform:scale(.98);background:var(--prd)}
+.btn-submit:disabled{opacity:.55;pointer-events:none}
+
+/* ORDER CARD */
+.order-card{background:var(--sf);border-radius:14px;border:1px solid var(--bo);box-shadow:0 2px 10px rgba(27,43,75,.06);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:all .2s}
+.order-card:active{transform:scale(.99);border-color:var(--pr)}
+.order-head{padding:14px 16px;border-bottom:1px solid var(--bo)}
+.order-id{font-size:10px;font-weight:700;color:var(--mt);margin-bottom:3px;letter-spacing:.4px}
+.order-route{font-size:13px;font-weight:700;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-body{padding:10px 16px 14px}
+.order-foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.order-price{font-size:15px;font-weight:800;color:var(--tx)}
+.order-courier{font-size:11px;color:var(--mt);margin-top:5px}
+
+/* TRACKER */
+.tracker{display:flex;margin:10px 0 4px}
+.tr-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.tr-line{position:absolute;top:10px;left:50%;right:-50%;height:2px;background:var(--bo);z-index:0}
+.tr-line.dn{background:var(--gn)}
+.tr-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--bo);background:var(--sf);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:var(--mt);position:relative;z-index:1}
+.tr-dot.dn{background:var(--gn);border-color:var(--gn);color:#fff}
+.tr-dot.ac{background:var(--pr);border-color:var(--pr);color:#fff}
+.tr-lbl{font-size:8px;font-weight:700;color:var(--mt);margin-top:4px;text-align:center;line-height:1.2}
+.tr-step.dn .tr-lbl{color:var(--gn)}
+.tr-step.ac .tr-lbl{color:var(--pr)}
+
+/* BADGE */
+.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px}
+.b-new{background:var(--blb);color:var(--bl)}
+.b-assigned{background:var(--orb);color:var(--or)}
+.b-picked{background:var(--pub);color:var(--pu)}
+.b-done{background:var(--gnb);color:var(--gn)}
+.b-cancel{background:var(--rdb);color:var(--rd)}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:flex-end;justify-content:center}
+.moverlay.on{display:flex}
+.msheet{background:var(--sf);border-radius:24px 24px 0 0;padding:20px;padding-bottom:max(20px,env(safe-area-inset-bottom));width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:mup .25s ease}
+@keyframes mup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:36px;height:4px;background:var(--bo);border-radius:4px;margin:0 auto 16px}
+.mttl{font-size:18px;font-weight:800;margin-bottom:14px}
+.drow{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--bo)}
+.drow:last-child{border:none}
+.dico{width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.dkey{font-size:10px;color:var(--mt);margin-bottom:2px;text-transform:uppercase;font-weight:700;letter-spacing:.3px}
+.dval{font-size:14px;font-weight:600;color:var(--tx)}
+.courier-box{background:linear-gradient(135deg,#22C55E,#16a34a);border-radius:12px;padding:12px 14px;color:#fff;display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.courier-av{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px}
+
+/* ══════ MAP PICKER MODAL ══════ */
+#mapModal{display:none;position:fixed;inset:0;z-index:800;flex-direction:column;background:#fff}
+#mapModal.on{display:flex}
+.mp-hdr{background:var(--nv);padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));display:flex;align-items:center;gap:12px;flex-shrink:0}
+.mp-back{width:38px;height:38px;background:rgba(255,255,255,.12);border:none;border-radius:10px;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.mp-title{flex:1}
+.mp-title h3{font-size:16px;font-weight:800;color:#fff}
+.mp-title p{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px}
+
+/* Search box inside map modal */
+.mp-search-wrap{padding:10px 12px;background:var(--nv);flex-shrink:0}
+.mp-search-box{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px}
+.mp-search-ico{font-size:16px;flex-shrink:0}
+.mp-search-input{background:none;border:none;color:#fff;font-size:14px;flex:1;font-family:'Inter',sans-serif}
+.mp-search-input::placeholder{color:rgba(255,255,255,.35)}
+.mp-search-clear{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;cursor:pointer;padding:0 2px;flex-shrink:0;display:none}
+.mp-search-results{position:absolute;top:100%;left:0;right:0;background:#fff;border-radius:0 0 14px 14px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:10;max-height:220px;overflow-y:auto;margin:0 12px}
+.mp-search-wrap{position:relative}
+.mp-sr-item{padding:11px 14px;border-bottom:1px solid var(--bo);cursor:pointer;font-size:13px;color:var(--tx);display:flex;align-items:center;gap:10px}
+.mp-sr-item:active{background:var(--bg)}
+.mp-sr-item:last-child{border:none}
+.mp-sr-ico{font-size:16px;flex-shrink:0}
+.mp-sr-name{font-weight:700;line-height:1.3}
+.mp-sr-addr{font-size:11px;color:var(--mt);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Map container */
+#pickerMap{flex:1;position:relative;z-index:0}
+
+/* Center crosshair */
+.mp-crosshair{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;pointer-events:none;display:flex;flex-direction:column;align-items:center}
+.mp-pin{font-size:36px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3));transform:translateY(-50%);animation:bounce .6s ease infinite alternate}
+@keyframes bounce{from{transform:translateY(-50%)}to{transform:translateY(-60%)}}
+.mp-pin-shadow{width:14px;height:6px;background:rgba(0,0,0,.2);border-radius:50%;margin-top:-4px}
+
+/* Bottom confirm panel */
+.mp-footer{background:#fff;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));border-top:1px solid var(--bo);flex-shrink:0}
+.mp-addr-preview{background:var(--bg);border-radius:12px;padding:11px 14px;margin-bottom:10px;min-height:44px;display:flex;align-items:center;gap:10px}
+.mp-addr-ico{font-size:18px;flex-shrink:0}
+.mp-addr-txt{font-size:13px;font-weight:600;color:var(--tx);flex:1;line-height:1.4}
+.mp-addr-sub{font-size:11px;color:var(--mt);margin-top:2px}
+.mp-confirm-row{display:flex;gap:8px}
+.mp-my-loc{width:46px;height:46px;border:1.5px solid var(--bo);background:var(--sf);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;flex-shrink:0;transition:all .2s}
+.mp-my-loc:active{background:var(--bg);border-color:var(--pr)}
+.mp-confirm{flex:1;padding:14px;background:var(--pr);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.mp-confirm:active{background:var(--prd);transform:scale(.98)}
+.mp-confirm:disabled{opacity:.5;pointer-events:none}
+
+/* Geocoding spinner */
+.geo-spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(232,83,31,.2);border-top-color:var(--pr);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+
+/* EMPTY */
+.empty{padding:40px 20px;text-align:center}
+.empty-ico{font-size:48px;margin-bottom:10px;opacity:.3}
+.empty h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.empty p{font-size:12px;color:var(--mt)}
+
+/* TOAST */
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 22px;border-radius:50px;font-size:13px;font-weight:700;color:#fff;z-index:9999;display:none;white-space:nowrap;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+#toast.ok{background:var(--gn)}
+#toast.er{background:var(--rd)}
+#toast.if{background:var(--nv)}
+
+/* UTILS */
+.btn{padding:12px 18px;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn:active{transform:scale(.97)}
+.btn-pr{background:var(--pr);color:#fff}
+.btn-dn{background:var(--rd);color:#fff}
+.btn-ot{background:var(--bg);border:1.5px solid var(--bo);color:var(--mt)}
+.btn-w{width:100%}
+.pg-title{font-size:18px;font-weight:800;margin-bottom:14px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-box{background:var(--sf);border-radius:12px;padding:12px 8px;text-align:center;border:1px solid var(--bo)}
+.stat-n{font-size:22px;font-weight:900}
+.stat-l{font-size:10px;color:var(--mt);font-weight:600;margin-top:2px}
+.saved-chip{background:rgba(34,197,94,.1);border:1.5px solid rgba(34,197,94,.25);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.saved-chip-info{font-size:13px;font-weight:600;color:var(--gn)}
+.saved-chip-sub{font-size:11px;color:var(--mt);margin-top:2px}
+.saved-chip-btn{font-size:12px;font-weight:700;color:var(--rd);background:none;border:none;cursor:pointer;padding:4px 8px}
+
+/* Mini map preview */
+.mini-map-wrap{margin-top:8px;border-radius:11px;overflow:hidden;border:1.5px solid var(--bo);display:none;position:relative;height:110px}
+.mini-map-wrap .mini-map{width:100%;height:100%}
+.mini-map-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(27,43,75,.75));padding:6px 10px 7px;font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.mini-map-pin{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:22px;pointer-events:none}
+</style>
 </head>
 <body>
-    <div class="yandex-app">
-        <!-- Map Container -->
-        <div class="map-container">
-            <div id="map"></div>
-            
-            <!-- Direction Arrow -->
-            <div class="direction-arrow" id="directionArrow" style="display: none;">
-                <i class="fas fa-arrow-up" id="arrowIcon"></i>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-logo">Toj<b>Rason</b></div>
+  <div class="sp-sub">Фармоиши Курьер</div>
+  <div class="sp-spin"></div>
+</div>
+
+<!-- ══════ MAP PICKER MODAL ══════ -->
+<div id="mapModal">
+  <div class="mp-hdr">
+    <button class="mp-back" onclick="closeMapPicker()">‹</button>
+    <div class="mp-title">
+      <h3 id="mpTitle">Нуқтаро интихоб кунед</h3>
+      <p>Нуқтаро лмс кунед ё ҷустуҷӯ кунед</p>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="mp-search-wrap" id="mpSearchWrap">
+    <div class="mp-search-box">
+      <span class="mp-search-ico">🔍</span>
+      <input class="mp-search-input" id="mpSearchInput" placeholder="Ҷустуҷӯи суроға..." autocomplete="off"
+        oninput="onSearchInput(this.value)">
+      <button class="mp-search-clear" id="mpSearchClear" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="mp-search-results" id="mpSearchResults" style="display:none"></div>
+  </div>
+
+  <!-- Map — click to select -->
+  <div id="pickerMap">
+    <div id="mpHint" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:500;background:rgba(27,43,75,.82);color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:50px;pointer-events:none;white-space:nowrap">
+      👆 Нуқтаро лмс кунед
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mp-footer">
+    <div id="mpAddrPreview" style="display:none;background:#dcfce7;border:1.5px solid #22c55e;border-radius:12px;padding:11px 14px;margin-bottom:10px;align-items:center;gap:10px">
+      <span style="font-size:20px">✅</span>
+      <div style="flex:1;min-width:0">
+        <div id="mpAddrTxt" style="font-size:13px;font-weight:700;color:#166534;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+        <div id="mpAddrSub" style="font-size:11px;color:#16a34a;margin-top:2px"></div>
+      </div>
+      <div class="geo-spin" id="mpGeoSpin" style="display:none"></div>
+    </div>
+    <button onclick="goMyLocation()" style="width:100%;padding:14px;background:#1B2B4B;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">
+      🎯 Мавқеи ман нишон деҳ
+    </button>
+  </div>
+</div>
+
+<!-- ══════ APP ══════ -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div>
+        <div class="hdr-logo">Toj<b>Rason</b></div>
+        <div class="hdr-tagline">Хизматрасонии тез</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pages">
+
+    <!-- САҲИФАИ ФАРМОИШ -->
+    <div class="pg on" id="pg-new">
+
+      <div class="hero">
+        <div class="hero-left">
+          <h2>🚀 Фармоиши нав</h2>
+          <p>Бе сабти ном — тез ва осон</p>
+        </div>
+        <div class="hero-ico">📦</div>
+      </div>
+
+      <!-- МАЪЛУМОТИ ФИРИСТАНДА -->
+      <div class="sender-card">
+        <div class="card-title">👤 Маълумоти Шумо</div>
+        <div id="savedChip" style="display:none">
+          <div class="saved-chip">
+            <div>
+              <div class="saved-chip-info" id="savedName">—</div>
+              <div class="saved-chip-sub" id="savedPhone">—</div>
             </div>
+            <button class="saved-chip-btn" onclick="clearSaved()">✕ Иваз</button>
+          </div>
         </div>
-
-        <!-- Navigation Controls -->
-        <div class="navigation-controls">
-            <button class="nav-btn" onclick="navigate('north')" title="Ба боло">
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            <button class="nav-btn" onclick="navigate('west')" title="Ба чап">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <button class="nav-btn" onclick="navigate('east')" title="Ба рост">
-                <i class="fas fa-arrow-right"></i>
-            </button>
-            <button class="nav-btn" onclick="navigate('south')" title="Ба поён">
-                <i class="fas fa-arrow-down"></i>
-            </button>
-            <button class="nav-btn" onclick="zoomIn()" title="Калон кардан">
-                <i class="fas fa-plus"></i>
-            </button>
-            <button class="nav-btn" onclick="zoomOut()" title="Хурд кардан">
-                <i class="fas fa-minus"></i>
-            </button>
-        </div>
-
-        <!-- Zoom Indicator -->
-        <div class="zoom-indicator" id="zoomIndicator">
-            <i class="fas fa-search"></i>
-            <span id="zoomLevel">13</span>x
-        </div>
-
-        <!-- Search Panel -->
-        <div class="search-panel">
-            <div class="location-inputs">
-                <!-- Pickup Address (Точка А) -->
-                <div class="input-wrapper" id="pickupWrapper">
-                    <div class="input-icon pickup">А</div>
-                    <input type="text" class="input-field" id="pickupInput" placeholder="Аз куҷо? (Точка А)" autocomplete="off">
-                    <i class="fas fa-times clear-btn" onclick="clearLocation('pickup')"></i>
-                </div>
-                <!-- Suggestions for pickup -->
-                <div class="suggestions-box" id="pickupSuggestions"></div>
-
-                <!-- Delivery Address (Точка Б) -->
-                <div class="input-wrapper" id="deliveryWrapper">
-                    <div class="input-icon delivery">Б</div>
-                    <input type="text" class="input-field" id="deliveryInput" placeholder="Ба куҷо? (Точка Б)" autocomplete="off">
-                    <i class="fas fa-times clear-btn" onclick="clearLocation('delivery')"></i>
-                </div>
-                <!-- Suggestions for delivery -->
-                <div class="suggestions-box" id="deliverySuggestions"></div>
+        <div id="senderForm">
+          <div class="fgi">
+            <label class="fli">Ном ва насаби шумо</label>
+            <input class="fii" id="sName" placeholder="Масалан: Алишер Каримов" autocomplete="name">
+          </div>
+          <div class="fgi">
+            <label class="fli">Рақами телефон</label>
+            <input class="fii" id="sPhone" placeholder="+992 XX XXX XXXX" type="tel" autocomplete="tel">
+          </div>
+          <div class="fi-row3">
+            <div class="fgi">
+              <label class="fli">Подъезд</label>
+              <input class="fii" id="sPodz" placeholder="№" type="number" min="1">
             </div>
-        </div>
-
-        <!-- Swap Button -->
-        <button class="swap-btn" onclick="swapLocations()">
-            <i class="fas fa-arrow-down-up"></i>
-        </button>
-
-        <!-- My Location Button -->
-        <button class="my-location-btn" onclick="goToMyLocation()">
-            <i class="fas fa-location-dot"></i>
-        </button>
-
-        <!-- Bottom Sheet -->
-        <div class="bottom-sheet" id="bottomSheet">
-            <div class="sheet-handle" onclick="toggleSheet()"></div>
-            <div class="sheet-content">
-                <div class="order-header">
-                    <h2>Фармоиши курьер</h2>
-                    <div class="close-sheet" onclick="minimizeSheet()">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-
-                <!-- Price Card (пеш аз фармоиш) -->
-                <div class="price-card" id="priceCard">
-                    <div class="price-row">
-                        <span class="price-label">Нархи фармоиш</span>
-                        <span class="price-value" id="totalPrice">0<span class="price-currency"> сом</span></span>
-                    </div>
-                    
-                    <div class="price-details" id="priceDetails">
-                        <div class="price-detail-row">
-                            <span>Нархи асосӣ:</span>
-                            <span id="basePrice">10 сом</span>
-                        </div>
-                        <div class="price-detail-row">
-                            <span>Масофа (<span id="distanceKm">0</span> км):</span>
-                            <span id="distancePrice">0 сом</span>
-                        </div>
-                        <div class="price-detail-row">
-                            <span>Вазн (<span id="weightKg">1</span> кг):</span>
-                            <span id="weightPrice">0 сом</span>
-                        </div>
-                        <div class="price-detail-row total">
-                            <span>Ҳамагӣ:</span>
-                            <span id="totalPriceDetails">0 сом</span>
-                        </div>
-                    </div>
-                    
-                    <div class="price-note" id="weightNote">
-                        * Вазн то 10 кг ройгон
-                    </div>
-
-                    <div class="distance-info">
-                        <div class="distance-item">
-                            <i class="fas fa-route"></i>
-                            <span id="distance">0 км</span>
-                        </div>
-                        <div class="distance-item">
-                            <i class="fas fa-clock"></i>
-                            <span id="duration">0 дақ</span>
-                        </div>
-                        <div class="distance-item">
-                            <i class="fas fa-car"></i>
-                            <span>Роҳи мошин</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Order Status Card (пас аз фармоиш) -->
-                <div class="order-status-card" id="orderStatusCard">
-                    <div class="status-header">
-                        <div class="status-icon" id="statusIcon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <div class="status-text">
-                            <h3 id="statusTitle">Ҷустуҷӯи курьер</h3>
-                            <p id="statusMessage">Мо наздиктарин курьерро меҷӯем...</p>
-                        </div>
-                        <div class="status-timer" id="statusTimer">00:00</div>
-                    </div>
-                    
-                    <!-- Courier Info (пас аз пайдо шудани курьер) -->
-                    <div class="courier-info-card" id="courierInfoCard" style="display: none;">
-                        <div class="courier-row">
-                            <div class="courier-avatar-small" id="foundCourierAvatar">А</div>
-                            <div class="courier-info-small">
-                                <h4 id="foundCourierName">Алишер Раҷабов</h4>
-                                <p id="foundCourierStatus">Курьер ба назди шумо омода аст</p>
-                                <div class="rating-stars" id="foundCourierRating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sender Information -->
-                <div class="section-title">
-                    <i class="fas fa-user"></i>
-                    Маълумоти фиристода
-                </div>
-                <div class="person-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Номи шумо *</label>
-                            <input type="text" class="form-control" id="senderName" placeholder="Масалан: Алишер" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Телефони шумо *</label>
-                            <input type="tel" class="form-control" id="senderPhone" placeholder="+992 900 000 000" required>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sender Address Details (барои фиристода) -->
-                <div class="section-title">
-                    <i class="fas fa-home"></i>
-                    Суроғаи фиристода
-                </div>
-                <div class="sender-address-grid">
-                    <div class="detail-item">
-                        <label class="detail-label">Подъезд</label>
-                        <input type="text" class="detail-input" id="senderEntrance" placeholder="№1">
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Этаж</label>
-                        <input type="text" class="detail-input" id="senderFloor" placeholder="5">
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Квартира</label>
-                        <input type="text" class="detail-input" id="senderApartment" placeholder="№42">
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Код домофон</label>
-                        <input type="text" class="detail-input" id="senderIntercom" placeholder="1234">
-                    </div>
-                </div>
-
-                <!-- Receiver Information -->
-                <div class="section-title">
-                    <i class="fas fa-user-check"></i>
-                    Маълумоти қабулкунанда
-                </div>
-                <div class="person-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Номи қабулкунанда *</label>
-                            <input type="text" class="form-control" id="receiverName" placeholder="Масалан: Фаррух" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Телефони қабулкунанда *</label>
-                            <input type="tel" class="form-control" id="receiverPhone" placeholder="+992 901 234 567" required>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Receiver Address Details (барои қабулкунанда) -->
-                <div class="section-title">
-                    <i class="fas fa-location-dot"></i>
-                    Суроғаи қабулкунанда
-                </div>
-                <div class="address-details-grid">
-                    <div class="detail-item">
-                        <label class="detail-label">Подъезд</label>
-                        <input type="text" class="detail-input" id="entrance" placeholder="№1">
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Этаж</label>
-                        <input type="text" class="detail-input" id="floor" placeholder="5">
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Квартира</label>
-                        <input type="text" class="detail-input" id="apartment" placeholder="№42">
-                    </div>
-                    <div class="detail-item">
-                        <label class="detail-label">Код домофон</label>
-                        <input type="text" class="detail-input" id="intercom" placeholder="1234">
-                    </div>
-                </div>
-
-                <!-- Promo Code Section -->
-                <div class="promo-section">
-                    <div class="promo-input">
-                        <input type="text" id="promoCode" placeholder="Коди промо (ихтиёрӣ)">
-                        <button onclick="applyPromo()">Татбиқ</button>
-                    </div>
-                    <div class="promo-active" id="promoActive">
-                        <i class="fas fa-check-circle"></i> <span id="promoMessage"></span>
-                    </div>
-                </div>
-
-                <!-- Order Form -->
-                <form id="orderForm">
-                    <div class="form-group">
-                        <label class="form-label">Намуди бор</label>
-                        <div class="package-options" id="packageOptions">
-                            <div class="package-option active" data-type="document" onclick="selectPackage(this)">
-                                <i class="fas fa-file-alt"></i>
-                                <span>Ҳуҷҷат</span>
-                            </div>
-                            <div class="package-option" data-type="parcel" onclick="selectPackage(this)">
-                                <i class="fas fa-box"></i>
-                                <span>Баста</span>
-                            </div>
-                            <div class="package-option" data-type="food" onclick="selectPackage(this)">
-                                <i class="fas fa-utensils"></i>
-                                <span>Ғизо</span>
-                            </div>
-                            <div class="package-option" data-type="other" onclick="selectPackage(this)">
-                                <i class="fas fa-ellipsis"></i>
-                                <span>Дигар</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">
-                            Вазн: <span id="weightValue" class="weight-value">1 кг</span>
-                        </label>
-                        <input type="range" class="weight-slider" id="weightSlider" min="0.1" max="30" step="0.1" value="1">
-                        <div class="weight-info">
-                            <span class="free-weight">То 10 кг ройгон</span>
-                            <span class="extra-weight" id="extraWeightInfo"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Эзоҳ (ихтиёрӣ)</label>
-                        <textarea class="form-control" id="comment" rows="2" placeholder="Масалан: Дарвозаи дуюм, қуттии 42..."></textarea>
-                    </div>
-
-                    <!-- Courier Card (пеш аз фармоиш) -->
-                    <div class="courier-card" id="courierCard">
-                        <div class="courier-header">
-                            <div class="courier-avatar" id="courierAvatar">A</div>
-                            <div class="courier-details">
-                                <h4 id="courierName">Алишер</h4>
-                                <p>Масофа: <span id="courierDistance">0 км</span></p>
-                                <div class="courier-rating" id="courierRating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="progress-track">
-                            <i class="fas fa-motorcycle"></i>
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                            </div>
-                            <span id="progressText">0%</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                        <i class="fas fa-check-circle"></i>
-                        Сабти фармоиш
-                    </button>
-                </form>
-
-                <!-- Cancel Order Button (пас аз фармоиш) -->
-                <button class="submit-btn" id="cancelOrderBtn" style="display: none; background: #FF3B30;" onclick="cancelOrder()">
-                    <i class="fas fa-times-circle"></i>
-                    Бекор кардани фармоиш
-                </button>
-
-                <!-- Recent Orders -->
-                <div class="recent-orders">
-                    <h6 style="margin: 20px 0 15px; font-weight: 700;">Фармоишҳои охирин</h6>
-                    <div id="recentOrdersList"></div>
-                </div>
+            <div class="fgi">
+              <label class="fli">Ошёна</label>
+              <input class="fii" id="sFloor" placeholder="№" type="number" min="1">
             </div>
+            <div class="fgi">
+              <label class="fli">Хона</label>
+              <input class="fii" id="sApart" placeholder="№" type="number" min="1">
+            </div>
+          </div>
+          <div class="fgi">
+            <label class="fli">Коди домофон (ихтиёрӣ)</label>
+            <input class="fii" id="sIntercom" placeholder="Масалан: 47#, 1234...">
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mt);cursor:pointer;margin-top:4px">
+            <input type="checkbox" id="saveMe" style="width:16px;height:16px;accent-color:var(--pr)" checked>
+            Маълумотро нигоҳ доред
+          </label>
         </div>
+      </div>
+
+      <!-- СУРОҒА БА ХАРИТА -->
+      <div class="card">
+        <div class="card-title">📍 Суроға</div>
+
+        <div class="fgi">
+          <label class="fli">Аз куҷо (нуқтаи гирифтан)</label>
+          <div class="map-field">
+            <input class="fii" id="fromAddr" placeholder="Суроға ё харитаро лмс кунед..." readonly
+              onclick="openMapPicker('from')">
+            <button class="map-field-btn" onclick="openMapPicker('from')">
+              📍<span>Харита</span>
+            </button>
+          </div>
+          <!-- Mini preview map -->
+          <div class="mini-map-wrap" id="fromMiniWrap">
+            <div id="fromMiniMap" class="mini-map"></div>
+            <div class="mini-map-pin">🔴</div>
+            <div class="mini-map-label" id="fromMiniLabel">—</div>
+          </div>
+        </div>
+
+        <div class="fgi">
+          <label class="fli">Ба куҷо (нуқтаи расонидан)</label>
+          <div class="map-field">
+            <input class="fii" id="toAddr" placeholder="Суроға ё харитаро лмс кунед..." readonly
+              onclick="openMapPicker('to')">
+            <button class="map-field-btn" onclick="openMapPicker('to')">
+              📍<span>Харита</span>
+            </button>
+          </div>
+          <div class="mini-map-wrap" id="toMiniWrap">
+            <div id="toMiniMap" class="mini-map"></div>
+            <div class="mini-map-pin">🏁</div>
+            <div class="mini-map-label" id="toMiniLabel">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ХАРИТАИ РОҲ — нишон мешавад вақте ки ҳар ду нуқта интихоб шуданд -->
+      <div id="routeMapCard" style="display:none;margin-bottom:12px;border-radius:16px;overflow:hidden;border:1px solid var(--bo);box-shadow:0 2px 12px rgba(27,43,75,.06)">
+        <div style="background:var(--sf);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bo)">
+          <div style="font-size:13px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:6px">🗺️ Роҳ дар харита</div>
+          <div id="routeInfoChip" style="background:var(--blb);color:var(--bl);font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px">—</div>
+        </div>
+        <div id="routeMap" style="height:220px;width:100%"></div>
+      </div>
+
+      <!-- БАСТА -->
+      <div class="card">
+        <div class="card-title">📦 Маълумоти Баста</div>
+        <div class="fgi">
+          <label class="fli">Тавсифи маҳсулот</label>
+          <textarea class="fii" id="descr" placeholder="Чӣ мефиристед? Масалан: Либос, китоб, хӯрок..."></textarea>
+        </div>
+        <div class="fgi">
+          <label class="fli">Навъи баста</label>
+          <select class="fii" id="pkgType" onchange="calcPrice()">
+            <option value="small">📦 Хурд — то 2 кг</option>
+            <option value="medium">📫 Миёна — 2 то 10 кг</option>
+            <option value="large">🗃️ Калон — 10 кг ва зиёда</option>
+          </select>
+        </div>
+        <div class="fgi">
+          <label class="fli">Вазни тахминӣ</label>
+          <div class="slider-row">
+            <input type="range" class="fii-range" id="weightSlider" min="0.1" max="30" step="0.1" value="1"
+              oninput="onWeight(this.value)">
+            <div class="slider-val" id="wVal">1.0 кг</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ҚАБУЛКУНАНДА -->
+      <div class="card">
+        <div class="card-title">🎯 Қабулкунанда</div>
+        <div class="fi-row">
+          <div class="fgi"><label class="fli">Ном</label><input class="fii" id="recvName" placeholder="Исм насаб"></div>
+          <div class="fgi"><label class="fli">Телефон</label><input class="fii" id="recvPhone" placeholder="+992..." type="tel"></div>
+        </div>
+        <div class="fi-row3">
+          <div class="fgi">
+            <label class="fli">Подъезд</label>
+            <input class="fii" id="rPodz" placeholder="№" type="number" min="1">
+          </div>
+          <div class="fgi">
+            <label class="fli">Ошёна</label>
+            <input class="fii" id="rFloor" placeholder="№" type="number" min="1">
+          </div>
+          <div class="fgi">
+            <label class="fli">Хона</label>
+            <input class="fii" id="rApart" placeholder="№" type="number" min="1">
+          </div>
+        </div>
+        <div class="fgi">
+          <label class="fli">Коди домофон (ихтиёрӣ)</label>
+          <input class="fii" id="rIntercom" placeholder="Масалан: 47#, 1234...">
+        </div>
+        <div class="fgi">
+          <label class="fli">Эзоҳи иловагӣ (ихтиёрӣ)</label>
+          <input class="fii" id="note" placeholder="Дари чап, рӯ ба рӯи мактаб...">
+        </div>
+      </div>
+
+      <!-- НАРХ -->
+      <div class="price-box">
+        <div class="price-left">
+          <div class="lbl">Нархи тахминӣ</div>
+          <div class="val" id="priceShow">10 смн</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:4px" id="priceFormula">То 3 км = 10 смн</div>
+        </div>
+        <div class="price-right" style="text-align:right">
+          <div class="dist" id="distShow">📍 Масофа нест</div>
+          <div class="time">💰 Пардохти нақд</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:3px">+3 смн / ҳар км баъд аз 3</div>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="submitOrder()">
+        🚀 Фиристодани Фармоиш
+      </button>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    <script>
-        // Firebase Configuration (optional)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
-            authDomain: "tojrason.firebaseapp.com",
-            databaseURL: "https://tojrason-default-rtdb.firebaseio.com",
-            projectId: "tojrason",
-            storageBucket: "tojrason.firebasestorage.app",
-            messagingSenderId: "734402668671",
-            appId: "1:734402668671:web:ca983940b6870335d2374a"
-        };
-
-        // Main Application Class
-        class YandexCourierApp {
-            constructor() {
-                this.map = null;
-                this.routingControl = null;
-                this.pickupMarker = null;
-                this.deliveryMarker = null;
-                this.courierMarker = null;
-                this.pickupCoords = null;
-                this.deliveryCoords = null;
-                this.userLocation = null;
-                this.orders = JSON.parse(localStorage.getItem('yandexOrders') || '[]');
-                this.activeOrder = null;
-                this.searchTimeout = null;
-                this.promoDiscount = 0;
-                this.timerInterval = null;
-                this.courierFound = false;
-                this.courierData = null;
-                
-                this.init();
-            }
-
-            init() {
-                this.initMap();
-                this.initEventListeners();
-                this.displayRecentOrders();
-                this.updateZoomIndicator();
-                this.loadSampleData();
-                this.checkActiveOrder();
-            }
-
-            checkActiveOrder() {
-                const activeOrder = JSON.parse(localStorage.getItem('activeOrder'));
-                if (activeOrder) {
-                    this.activeOrder = activeOrder;
-                    this.showActiveOrder();
-                }
-            }
-
-            loadSampleData() {
-                if (this.orders.length === 0) {
-                    const sampleOrders = [
-                        {
-                            id: 1,
-                            senderName: 'Алишер',
-                            senderPhone: '+992 900 123 456',
-                            senderEntrance: '1',
-                            senderFloor: '5',
-                            senderApartment: '42',
-                            senderIntercom: '1234',
-                            receiverName: 'Фаррух',
-                            receiverPhone: '+992 901 234 567',
-                            packageType: 'Ҳуҷҷат',
-                            weight: 0.5,
-                            pickupAddress: 'Хиёбони Неъмат Қаробов, 72/1',
-                            deliveryAddress: 'Кӯчаи Айнӣ, 42',
-                            entrance: '1',
-                            floor: '5',
-                            apartment: '42',
-                            intercom: '1234',
-                            status: 'completed',
-                            time: new Date().toLocaleString('tg-TJ')
-                        },
-                        {
-                            id: 2,
-                            senderName: 'Фаррух',
-                            senderPhone: '+992 901 234 567',
-                            senderEntrance: '2',
-                            senderFloor: '3',
-                            senderApartment: '15',
-                            senderIntercom: '4321',
-                            receiverName: 'Саид',
-                            receiverPhone: '+992 902 345 678',
-                            packageType: 'Баста',
-                            weight: 12.5,
-                            pickupAddress: 'Маркази савдои "Садбарг"',
-                            deliveryAddress: 'Микрорайони 82, хонаи 15',
-                            entrance: '2',
-                            floor: '3',
-                            apartment: '15',
-                            intercom: '4321',
-                            status: 'searching',
-                            time: new Date().toLocaleString('tg-TJ')
-                        }
-                    ];
-                    this.orders = sampleOrders;
-                    localStorage.setItem('yandexOrders', JSON.stringify(sampleOrders));
-                }
-            }
-
-            initMap() {
-                this.map = L.map('map').setView([38.5737, 68.7864], 13);
-                
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap'
-                }).addTo(this.map);
-
-                this.map.on('click', (e) => {
-                    this.handleMapClick(e.latlng);
-                });
-
-                this.map.on('zoomend', () => {
-                    this.updateZoomIndicator();
-                });
-
-                this.getUserLocation();
-            }
-
-            updateZoomIndicator() {
-                const zoom = this.map.getZoom();
-                document.getElementById('zoomLevel').textContent = zoom;
-            }
-
-            navigate(direction) {
-                const center = this.map.getCenter();
-                const zoom = this.map.getZoom();
-                
-                const moveDistance = 0.01 * (15 / zoom);
-                
-                let newLat = center.lat;
-                let newLng = center.lng;
-                
-                switch(direction) {
-                    case 'north':
-                        newLat += moveDistance;
-                        break;
-                    case 'south':
-                        newLat -= moveDistance;
-                        break;
-                    case 'east':
-                        newLng += moveDistance;
-                        break;
-                    case 'west':
-                        newLng -= moveDistance;
-                        break;
-                }
-                
-                this.map.setView([newLat, newLng], zoom);
-                this.showDirectionArrow(direction);
-            }
-
-            showDirectionArrow(direction) {
-                const arrow = document.getElementById('directionArrow');
-                const arrowIcon = document.getElementById('arrowIcon');
-                
-                arrowIcon.className = 'fas';
-                
-                switch(direction) {
-                    case 'north':
-                        arrowIcon.className = 'fas fa-arrow-up';
-                        break;
-                    case 'south':
-                        arrowIcon.className = 'fas fa-arrow-down';
-                        break;
-                    case 'east':
-                        arrowIcon.className = 'fas fa-arrow-right';
-                        break;
-                    case 'west':
-                        arrowIcon.className = 'fas fa-arrow-left';
-                        break;
-                }
-                
-                arrow.style.display = 'flex';
-                
-                setTimeout(() => {
-                    arrow.style.display = 'none';
-                }, 1500);
-            }
-
-            zoomIn() {
-                this.map.zoomIn();
-            }
-
-            zoomOut() {
-                this.map.zoomOut();
-            }
-
-            getUserLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            this.userLocation = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            };
-                            
-                            L.circleMarker([this.userLocation.lat, this.userLocation.lng], {
-                                radius: 8,
-                                color: '#FFD600',
-                                fillColor: '#FFD600',
-                                fillOpacity: 0.3,
-                                weight: 2
-                            }).addTo(this.map).bindPopup('Шумо дар ин ҷо');
-                        },
-                        (error) => {
-                            console.log('Location error:', error);
-                        }
-                    );
-                }
-            }
-
-            handleMapClick(latlng) {
-                const activeInput = document.querySelector('.input-wrapper.active input');
-                if (activeInput && !this.activeOrder) {
-                    this.getAddressFromCoords(latlng.lat, latlng.lng, activeInput.id);
-                }
-            }
-
-            async getAddressFromCoords(lat, lng, inputId) {
-                try {
-                    const response = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=tg`
-                    );
-                    const data = await response.json();
-                    const address = data.display_name || 'Адрес номаълум';
-
-                    document.getElementById(inputId).value = address;
-                    
-                    if (inputId === 'pickupInput') {
-                        this.setPickupLocation(lat, lng, address);
-                    } else {
-                        this.setDeliveryLocation(lat, lng, address);
-                    }
-
-                    if (this.pickupCoords && this.deliveryCoords) {
-                        this.calculateRoute();
-                        this.calculatePrice();
-                    }
-                } catch (error) {
-                    console.error('Error getting address:', error);
-                }
-            }
-
-            async searchAddress(query, inputId) {
-                if (!query || query.length < 3) {
-                    document.getElementById(inputId + 'Suggestions').style.display = 'none';
-                    return;
-                }
-
-                try {
-                    const response = await fetch(
-                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=tg`
-                    );
-                    const data = await response.json();
-                    this.showSuggestions(data, inputId);
-                } catch (error) {
-                    console.error('Search error:', error);
-                }
-            }
-
-            showSuggestions(suggestions, inputId) {
-                const box = document.getElementById(inputId + 'Suggestions');
-                
-                if (!suggestions || suggestions.length === 0) {
-                    box.style.display = 'none';
-                    return;
-                }
-
-                let html = '';
-                suggestions.forEach(item => {
-                    html += `
-                        <div class="suggestion-item" onclick="selectSuggestion('${inputId}', '${item.lat}', '${item.lon}', '${item.display_name.replace(/'/g, "\\'")}')">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <div class="main-text">${item.display_name.split(',')[0]}</div>
-                                <div class="sub-text">${item.display_name.substring(0, 50)}...</div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                box.innerHTML = html;
-                box.style.display = 'block';
-            }
-
-            selectSuggestion(inputId, lat, lon, address) {
-                document.getElementById(inputId).value = address;
-                document.getElementById(inputId + 'Suggestions').style.display = 'none';
-                
-                if (inputId === 'pickupInput') {
-                    this.setPickupLocation(parseFloat(lat), parseFloat(lon), address);
-                } else {
-                    this.setDeliveryLocation(parseFloat(lat), parseFloat(lon), address);
-                }
-
-                if (this.pickupCoords && this.deliveryCoords) {
-                    this.calculateRoute();
-                    this.calculatePrice();
-                }
-
-                this.map.setView([parseFloat(lat), parseFloat(lon)], 15);
-            }
-
-            setPickupLocation(lat, lng, address) {
-                if (this.pickupMarker) {
-                    this.map.removeLayer(this.pickupMarker);
-                }
-
-                this.pickupCoords = { lat, lng };
-
-                const icon = L.divIcon({
-                    className: 'custom-pickup-marker',
-                    html: `<div style="background:#FFD600; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border:3px solid white;">А</div>`,
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20]
-                });
-
-                this.pickupMarker = L.marker([lat, lng], { icon }).addTo(this.map);
-                
-                document.getElementById('pickupWrapper').classList.add('active');
-                document.getElementById('deliveryWrapper').classList.remove('active');
-                
-                this.checkSubmitButton();
-            }
-
-            setDeliveryLocation(lat, lng, address) {
-                if (this.deliveryMarker) {
-                    this.map.removeLayer(this.deliveryMarker);
-                }
-
-                this.deliveryCoords = { lat, lng };
-
-                const icon = L.divIcon({
-                    className: 'custom-delivery-marker',
-                    html: `<div style="background:#00A85C; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border:3px solid white;">Б</div>`,
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20]
-                });
-
-                this.deliveryMarker = L.marker([lat, lng], { icon }).addTo(this.map);
-                
-                document.getElementById('deliveryWrapper').classList.add('active');
-                
-                this.checkSubmitButton();
-
-                if (this.pickupMarker) {
-                    const group = L.featureGroup([this.pickupMarker, this.deliveryMarker]);
-                    this.map.fitBounds(group.getBounds(), { padding: [50, 50] });
-                }
-            }
-
-            setCourierLocation(lat, lng) {
-                if (this.courierMarker) {
-                    this.map.removeLayer(this.courierMarker);
-                }
-
-                const icon = L.divIcon({
-                    className: 'custom-courier-marker',
-                    html: `<div style="background:#007AFF; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:20px; border:3px solid white;"><i class="fas fa-motorcycle"></i></div>`,
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 20]
-                });
-
-                this.courierMarker = L.marker([lat, lng], { icon }).addTo(this.map);
-            }
-
-            calculateRoute() {
-                if (this.routingControl) {
-                    this.map.removeControl(this.routingControl);
-                }
-
-                this.routingControl = L.Routing.control({
-                    waypoints: [
-                        L.latLng(this.pickupCoords.lat, this.pickupCoords.lng),
-                        L.latLng(this.deliveryCoords.lat, this.deliveryCoords.lng)
-                    ],
-                    routeWhileDragging: false,
-                    showAlternatives: false,
-                    lineOptions: {
-                        styles: [{color: '#FFD600', weight: 6}]
-                    },
-                    router: L.Routing.osrmv1({
-                        serviceUrl: 'https://router.project-osrm.org/route/v1',
-                        profile: 'driving'
-                    }),
-                    createMarker: function() { return null; }
-                }).addTo(this.map);
-
-                this.routingControl.on('routesfound', (e) => {
-                    const routes = e.routes;
-                    const summary = routes[0].summary;
-                    
-                    const distanceKm = (summary.totalDistance / 1000).toFixed(1);
-                    const durationMin = Math.round(summary.totalTime / 60);
-                    
-                    document.getElementById('distance').textContent = distanceKm + ' км';
-                    document.getElementById('duration').textContent = durationMin + ' дақ';
-                    document.getElementById('distanceKm').textContent = distanceKm;
-                    
-                    this.calculatePrice(distanceKm);
-                });
-
-                this.routingControl.on('routingerror', (e) => {
-                    console.error('Routing error:', e.error);
-                    // Agar routing кор накунад, масофаи ростхаттаро ҳисоб мекунем
-                    const distance = this.calculateDistance(
-                        this.pickupCoords.lat, this.pickupCoords.lng,
-                        this.deliveryCoords.lat, this.deliveryCoords.lng
-                    );
-                    document.getElementById('distance').textContent = distance.toFixed(1) + ' км';
-                    document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
-                    document.getElementById('distanceKm').textContent = distance.toFixed(1);
-                    this.calculatePrice(distance);
-                });
-            }
-
-            calculateWeightPrice(weight) {
-                if (weight <= 10) return 0;
-                const extraWeight = weight - 10;
-                return Math.ceil(extraWeight / 2);
-            }
-
-            calculatePrice(routeDistance = null) {
-                if (!this.pickupCoords || !this.deliveryCoords) return;
-
-                let distance;
-                if (routeDistance) {
-                    distance = parseFloat(routeDistance);
-                } else {
-                    distance = this.calculateDistance(
-                        this.pickupCoords.lat, this.pickupCoords.lng,
-                        this.deliveryCoords.lat, this.deliveryCoords.lng
-                    );
-                }
-
-                const weight = parseFloat(document.getElementById('weightSlider').value);
-                
-                const basePrice = 10;
-                const pricePerKm = 10 / 3;
-                const weightPrice = this.calculateWeightPrice(weight);
-                
-                const distancePrice = Math.round(distance * pricePerKm);
-                const totalPrice = basePrice + distancePrice + weightPrice;
-                const finalPrice = Math.round(totalPrice * (1 - this.promoDiscount));
-
-                if (weight > 10) {
-                    const extraWeight = weight - 10;
-                    const extraPrice = Math.ceil(extraWeight / 2);
-                    document.getElementById('extraWeightInfo').textContent = 
-                        `+${extraWeight.toFixed(1)} кг иловагӣ: +${extraPrice} сом`;
-                    document.getElementById('weightNote').textContent = 
-                        `* То 10 кг ройгон, барои ҳар 2 кг иловагӣ 1 сом (иловагӣ: ${extraPrice} сом)`;
-                } else {
-                    document.getElementById('extraWeightInfo').textContent = '';
-                    document.getElementById('weightNote').textContent = '* Вазн то 10 кг ройгон';
-                }
-
-                document.getElementById('priceCard').style.display = 'block';
-                document.getElementById('basePrice').textContent = basePrice + ' сом';
-                document.getElementById('distanceKm').textContent = distance.toFixed(1);
-                document.getElementById('distancePrice').textContent = distancePrice + ' сом';
-                document.getElementById('weightKg').textContent = weight.toFixed(1);
-                document.getElementById('weightPrice').textContent = weightPrice + ' сом';
-                document.getElementById('totalPriceDetails').textContent = totalPrice + ' сом';
-                
-                document.getElementById('totalPrice').innerHTML = finalPrice + '<span class="price-currency"> сом</span>';
-                
-                if (!routeDistance) {
-                    document.getElementById('distance').textContent = distance.toFixed(1) + ' км';
-                    document.getElementById('duration').textContent = Math.round(distance * 3) + ' дақ';
-                }
-
-                this.showAvailableCourier(distance);
-            }
-
-            calculateDistance(lat1, lon1, lat2, lon2) {
-                const R = 6371;
-                const dLat = this.deg2rad(lat2 - lat1);
-                const dLon = this.deg2rad(lon2 - lon1);
-                const a = 
-                    Math.sin(dLat/2) * Math.sin(dLat/2) +
-                    Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
-                    Math.sin(dLon/2) * Math.sin(dLon/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                return R * c;
-            }
-
-            deg2rad(deg) {
-                return deg * (Math.PI/180);
-            }
-
-            showAvailableCourier(distance) {
-                const couriers = [
-                    { name: 'Алишер', rating: 4.8, trips: 1250, phone: '+992 900 123 456' },
-                    { name: 'Фаррух', rating: 4.9, trips: 2300, phone: '+992 901 234 567' },
-                    { name: 'Саид', rating: 4.7, trips: 890, phone: '+992 902 345 678' },
-                    { name: 'Умед', rating: 5.0, trips: 3120, phone: '+992 903 456 789' },
-                    { name: 'Давлат', rating: 4.8, trips: 1670, phone: '+992 904 567 890' }
-                ];
-                
-                const randomCourier = couriers[Math.floor(Math.random() * couriers.length)];
-                this.courierData = randomCourier;
-                
-                document.getElementById('courierName').textContent = randomCourier.name;
-                document.getElementById('courierDistance').textContent = distance.toFixed(1) + ' км';
-                document.getElementById('courierAvatar').textContent = randomCourier.name[0];
-                
-                const rating = randomCourier.rating;
-                const fullStars = Math.floor(rating);
-                const hasHalfStar = rating % 1 >= 0.5;
-                let starsHtml = '';
-                
-                for (let i = 0; i < fullStars; i++) {
-                    starsHtml += '<i class="fas fa-star"></i>';
-                }
-                if (hasHalfStar) {
-                    starsHtml += '<i class="fas fa-star-half-alt"></i>';
-                }
-                
-                document.getElementById('courierRating').innerHTML = starsHtml;
-                document.getElementById('courierCard').style.display = 'block';
-            }
-
-            checkSubmitButton() {
-                const submitBtn = document.getElementById('submitBtn');
-                const senderName = document.getElementById('senderName').value;
-                const senderPhone = document.getElementById('senderPhone').value;
-                const receiverName = document.getElementById('receiverName').value;
-                const receiverPhone = document.getElementById('receiverPhone').value;
-                
-                if (this.pickupCoords && this.deliveryCoords && senderName && senderPhone && receiverName && receiverPhone && !this.activeOrder) {
-                    submitBtn.disabled = false;
-                } else {
-                    submitBtn.disabled = true;
-                }
-            }
-
-            applyPromo() {
-                const promoInput = document.getElementById('promoCode');
-                const code = promoInput.value.toUpperCase();
-                
-                const promos = {
-                    'YANDEX10': 0.1,
-                    'YANDEX20': 0.2,
-                    'YANDEX30': 0.3,
-                    'NEWUSER': 0.15,
-                    'WELCOME': 0.1,
-                    'COURIER': 0.1
-                };
-                
-                if (promos[code]) {
-                    this.promoDiscount = promos[code];
-                    document.getElementById('promoActive').style.display = 'block';
-                    document.getElementById('promoMessage').textContent = 
-                        'Промо код татбиқ шуд: ' + (this.promoDiscount * 100) + '%';
-                    
-                    if (this.pickupCoords && this.deliveryCoords) {
-                        this.calculatePrice();
-                    }
-                    
-                    promoInput.value = '';
-                } else {
-                    alert('Коди промо нодуруст аст');
-                }
-            }
-
-            clearLocation(type) {
-                if (this.activeOrder) return;
-                
-                if (type === 'pickup') {
-                    if (this.pickupMarker) {
-                        this.map.removeLayer(this.pickupMarker);
-                        this.pickupMarker = null;
-                        this.pickupCoords = null;
-                    }
-                    document.getElementById('pickupInput').value = '';
-                    document.getElementById('pickupWrapper').classList.remove('active');
-                } else {
-                    if (this.deliveryMarker) {
-                        this.map.removeLayer(this.deliveryMarker);
-                        this.deliveryMarker = null;
-                        this.deliveryCoords = null;
-                    }
-                    document.getElementById('deliveryInput').value = '';
-                    document.getElementById('deliveryWrapper').classList.remove('active');
-                }
-                
-                if (this.routingControl) {
-                    this.map.removeControl(this.routingControl);
-                    this.routingControl = null;
-                }
-                
-                document.getElementById('priceCard').style.display = 'none';
-                document.getElementById('courierCard').style.display = 'none';
-                this.checkSubmitButton();
-            }
-
-            swapLocations() {
-                if (this.activeOrder) return;
-                
-                const pickupInput = document.getElementById('pickupInput');
-                const deliveryInput = document.getElementById('deliveryInput');
-                
-                const pickupVal = pickupInput.value;
-                const deliveryVal = deliveryInput.value;
-                
-                const pickupCoords = this.pickupCoords;
-                const deliveryCoords = this.deliveryCoords;
-
-                pickupInput.value = deliveryVal;
-                deliveryInput.value = pickupVal;
-
-                if (deliveryCoords) {
-                    this.setPickupLocation(deliveryCoords.lat, deliveryCoords.lng, deliveryVal);
-                }
-                if (pickupCoords) {
-                    this.setDeliveryLocation(pickupCoords.lat, pickupCoords.lng, pickupVal);
-                }
-            }
-
-            goToMyLocation() {
-                if (this.userLocation) {
-                    this.map.setView([this.userLocation.lat, this.userLocation.lng], 16);
-                } else {
-                    alert('Ҷойгиршавии шумо дастрас нест');
-                }
-            }
-
-            minimizeSheet() {
-                const sheet = document.getElementById('bottomSheet');
-                sheet.style.transform = 'translateY(70%)';
-            }
-
-            toggleSheet() {
-                const sheet = document.getElementById('bottomSheet');
-                if (sheet.style.transform === 'translateY(70%)') {
-                    sheet.style.transform = 'translateY(0)';
-                } else {
-                    sheet.style.transform = 'translateY(70%)';
-                }
-            }
-
-            selectPackage(element) {
-                document.querySelectorAll('.package-option').forEach(opt => {
-                    opt.classList.remove('active');
-                });
-                element.classList.add('active');
-            }
-
-            initEventListeners() {
-                // Pickup input
-                const pickupInput = document.getElementById('pickupInput');
-                pickupInput.addEventListener('input', (e) => {
-                    clearTimeout(this.searchTimeout);
-                    this.searchTimeout = setTimeout(() => {
-                        this.searchAddress(e.target.value, 'pickup');
-                    }, 500);
-                });
-
-                pickupInput.addEventListener('focus', () => {
-                    document.getElementById('pickupWrapper').classList.add('active');
-                    document.getElementById('deliveryWrapper').classList.remove('active');
-                });
-
-                // Delivery input
-                const deliveryInput = document.getElementById('deliveryInput');
-                deliveryInput.addEventListener('input', (e) => {
-                    clearTimeout(this.searchTimeout);
-                    this.searchTimeout = setTimeout(() => {
-                        this.searchAddress(e.target.value, 'delivery');
-                    }, 500);
-                });
-
-                deliveryInput.addEventListener('focus', () => {
-                    document.getElementById('deliveryWrapper').classList.add('active');
-                    document.getElementById('pickupWrapper').classList.remove('active');
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.input-wrapper') && !e.target.closest('.suggestions-box')) {
-                        document.getElementById('pickupSuggestions').style.display = 'none';
-                        document.getElementById('deliverySuggestions').style.display = 'none';
-                    }
-                });
-
-                // Weight slider
-                document.getElementById('weightSlider').addEventListener('input', (e) => {
-                    const weight = parseFloat(e.target.value);
-                    document.getElementById('weightValue').textContent = weight.toFixed(1) + ' кг';
-                    
-                    if (this.pickupCoords && this.deliveryCoords) {
-                        this.calculatePrice();
-                    }
-                });
-
-                // Input validation
-                document.getElementById('senderName').addEventListener('input', () => this.checkSubmitButton());
-                document.getElementById('senderPhone').addEventListener('input', () => this.checkSubmitButton());
-                document.getElementById('receiverName').addEventListener('input', () => this.checkSubmitButton());
-                document.getElementById('receiverPhone').addEventListener('input', () => this.checkSubmitButton());
-
-                // Keyboard navigation
-                document.addEventListener('keydown', (e) => {
-                    if (e.key.startsWith('Arrow')) {
-                        e.preventDefault();
-                        switch(e.key) {
-                            case 'ArrowUp': this.navigate('north'); break;
-                            case 'ArrowDown': this.navigate('south'); break;
-                            case 'ArrowLeft': this.navigate('west'); break;
-                            case 'ArrowRight': this.navigate('east'); break;
-                        }
-                    }
-                });
-
-                // Order form submit
-                document.getElementById('orderForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    
-                    const order = {
-                        id: Date.now(),
-                        senderName: document.getElementById('senderName').value,
-                        senderPhone: document.getElementById('senderPhone').value,
-                        senderEntrance: document.getElementById('senderEntrance').value,
-                        senderFloor: document.getElementById('senderFloor').value,
-                        senderApartment: document.getElementById('senderApartment').value,
-                        senderIntercom: document.getElementById('senderIntercom').value,
-                        receiverName: document.getElementById('receiverName').value,
-                        receiverPhone: document.getElementById('receiverPhone').value,
-                        packageType: document.querySelector('.package-option.active span').textContent,
-                        weight: document.getElementById('weightSlider').value,
-                        pickupAddress: document.getElementById('pickupInput').value,
-                        deliveryAddress: document.getElementById('deliveryInput').value,
-                        entrance: document.getElementById('entrance').value,
-                        floor: document.getElementById('floor').value,
-                        apartment: document.getElementById('apartment').value,
-                        intercom: document.getElementById('intercom').value,
-                        comment: document.getElementById('comment').value,
-                        distance: document.getElementById('distance').textContent,
-                        duration: document.getElementById('duration').textContent,
-                        price: document.getElementById('totalPrice').textContent,
-                        status: 'Ҷустуҷӯи курьер',
-                        time: new Date().toLocaleString('tg-TJ')
-                    };
-
-                    this.saveOrder(order);
-                    this.activeOrder = order;
-                    localStorage.setItem('activeOrder', JSON.stringify(order));
-                    
-                    this.showOrderStatus();
-                    this.startOrderTimer();
-                    this.simulateCourierSearch();
-                    
-                    e.target.reset();
-                    document.getElementById('weightSlider').value = 1;
-                    document.getElementById('weightValue').textContent = '1.0 кг';
-                    
-                    this.displayRecentOrders();
-                });
-
-                // Promo code enter key
-                document.getElementById('promoCode').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.applyPromo();
-                    }
-                });
-            }
-
-            showOrderStatus() {
-                document.getElementById('priceCard').style.display = 'none';
-                document.getElementById('courierCard').style.display = 'none';
-                document.getElementById('orderStatusCard').style.display = 'block';
-                document.getElementById('submitBtn').style.display = 'none';
-                document.getElementById('cancelOrderBtn').style.display = 'block';
-                
-                document.getElementById('statusIcon').innerHTML = '<i class="fas fa-search"></i>';
-                document.getElementById('statusTitle').textContent = 'Ҷустуҷӯи курьер';
-                document.getElementById('statusMessage').textContent = 'Мо наздиктарин курьерро меҷӯем...';
-            }
-
-            startOrderTimer() {
-                let seconds = 0;
-                this.timerInterval = setInterval(() => {
-                    seconds++;
-                    const mins = Math.floor(seconds / 60);
-                    const secs = seconds % 60;
-                    document.getElementById('statusTimer').textContent = 
-                        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                }, 1000);
-            }
-
-            simulateCourierSearch() {
-                // После 8 секунд находим курьера
-                setTimeout(() => {
-                    if (!this.activeOrder) return;
-                    
-                    this.courierFound = true;
-                    
-                    document.getElementById('statusIcon').innerHTML = '<i class="fas fa-user-check"></i>';
-                    document.getElementById('statusTitle').textContent = 'Курьер ёфт шуд!';
-                    document.getElementById('statusMessage').textContent = 'Курьер ба назди шумо омода аст';
-                    
-                    document.getElementById('foundCourierAvatar').textContent = this.courierData.name[0];
-                    document.getElementById('foundCourierName').textContent = this.courierData.name + ' ' + this.courierData.phone;
-                    
-                    const fullStars = Math.floor(this.courierData.rating);
-                    const hasHalfStar = this.courierData.rating % 1 >= 0.5;
-                    let starsHtml = '';
-                    for (let i = 0; i < fullStars; i++) starsHtml += '<i class="fas fa-star"></i>';
-                    if (hasHalfStar) starsHtml += '<i class="fas fa-star-half-alt"></i>';
-                    document.getElementById('foundCourierRating').innerHTML = starsHtml;
-                    
-                    document.getElementById('courierInfoCard').style.display = 'block';
-                    
-                    // Симуляция движения курьера
-                    this.simulateCourierMovement();
-                    
-                }, 8000);
-            }
-
-            simulateCourierMovement() {
-                if (!this.pickupCoords) return;
-                
-                // Ставим курьера рядом с точкой А
-                const courierLat = this.pickupCoords.lat + 0.01;
-                const courierLng = this.pickupCoords.lng + 0.01;
-                this.setCourierLocation(courierLat, courierLng);
-                
-                // Анимация движения
-                let progress = 0;
-                const moveInterval = setInterval(() => {
-                    if (!this.activeOrder) {
-                        clearInterval(moveInterval);
-                        return;
-                    }
-                    
-                    progress += 5;
-                    
-                    // Двигаем курьера ближе к точке А
-                    const newLat = this.pickupCoords.lat + (0.01 * (1 - progress/100));
-                    const newLng = this.pickupCoords.lng + (0.01 * (1 - progress/100));
-                    this.setCourierLocation(newLat, newLng);
-                    
-                    if (progress >= 100) {
-                        clearInterval(moveInterval);
-                        
-                        document.getElementById('statusIcon').innerHTML = '<i class="fas fa-box"></i>';
-                        document.getElementById('statusTitle').textContent = 'Курьер борро гирифт';
-                        document.getElementById('statusMessage').textContent = 'Ба сӯи қабулкунанда равона шуд';
-                    }
-                }, 1000);
-            }
-
-            cancelOrder() {
-                if (confirm('Шумо боварӣ доред, ки фармоишро бекор кардан мехоҳед?')) {
-                    clearInterval(this.timerInterval);
-                    this.activeOrder = null;
-                    this.courierFound = false;
-                    localStorage.removeItem('activeOrder');
-                    
-                    if (this.courierMarker) {
-                        this.map.removeLayer(this.courierMarker);
-                    }
-                    
-                    document.getElementById('orderStatusCard').style.display = 'none';
-                    document.getElementById('priceCard').style.display = 'block';
-                    document.getElementById('submitBtn').style.display = 'block';
-                    document.getElementById('cancelOrderBtn').style.display = 'none';
-                    document.getElementById('courierInfoCard').style.display = 'none';
-                    
-                    alert('Фармоиш бекор карда шуд');
-                }
-            }
-
-            saveOrder(order) {
-                this.orders.unshift(order);
-                localStorage.setItem('yandexOrders', JSON.stringify(this.orders));
-            }
-
-            displayRecentOrders() {
-                const list = document.getElementById('recentOrdersList');
-                
-                if (this.orders.length === 0) {
-                    list.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">Ҳеҷ фармоише нест</p>';
-                    return;
-                }
-
-                let html = '';
-                this.orders.slice(0, 3).forEach(order => {
-                    let statusClass = 'searching';
-                    if (order.status === 'completed') statusClass = 'completed';
-                    else if (order.status === 'accepted') statusClass = 'accepted';
-                    
-                    html += `
-                        <div class="recent-order-item" onclick="loadOrder('${order.id}')">
-                            <div class="order-icon">
-                                <i class="fas fa-box"></i>
-                            </div>
-                            <div class="order-info">
-                                <h6>${order.senderName} → ${order.receiverName}</h6>
-                                <p>Под.${order.senderEntrance || '?'} Эт.${order.senderFloor || '?'} Кв.${order.senderApartment || '?'}</p>
-                                <small>Қабулкунанда: Под.${order.entrance || '?'} Эт.${order.floor || '?'} Кв.${order.apartment || '?'}</small>
-                            </div>
-                            <div class="order-status-badge ${statusClass}">${order.status}</div>
-                        </div>
-                    `;
-                });
-                
-                list.innerHTML = html;
-            }
-
-            showActiveOrder() {
-                if (this.activeOrder) {
-                    this.showOrderStatus();
-                    this.startOrderTimer();
-                }
-            }
-        }
-
-        // Global variables and functions
-        let app;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            app = new YandexCourierApp();
-        });
-
-        function navigate(direction) {
-            if (app) app.navigate(direction);
-        }
-
-        function zoomIn() {
-            if (app) app.zoomIn();
-        }
-
-        function zoomOut() {
-            if (app) app.zoomOut();
-        }
-
-        function clearLocation(type) {
-            if (app) app.clearLocation(type);
-        }
-
-        function swapLocations() {
-            if (app) app.swapLocations();
-        }
-
-        function goToMyLocation() {
-            if (app) app.goToMyLocation();
-        }
-
-        function minimizeSheet() {
-            if (app) app.minimizeSheet();
-        }
-
-        function toggleSheet() {
-            if (app) app.toggleSheet();
-        }
-
-        function selectPackage(element) {
-            if (app) app.selectPackage(element);
-        }
-
-        function selectSuggestion(inputId, lat, lon, address) {
-            if (app) app.selectSuggestion(inputId, lat, lon, address);
-        }
-
-        function applyPromo() {
-            if (app) app.applyPromo();
-        }
-
-        function cancelOrder() {
-            if (app) app.cancelOrder();
-        }
-
-        function loadOrder(orderId) {
-            console.log('Loading order:', orderId);
-            alert('Тафсилоти фармоиш №' + orderId);
-        }
-    </script>
+    <!-- САҲИФАИ ФАРМОИШҲО -->
+    <div class="pg" id="pg-orders">
+      <div class="pg-title">📋 Фармоишҳои ман</div>
+      <div id="noDeviceNote" style="display:none">
+        <div class="card" style="background:var(--orb);border-color:var(--or);margin-bottom:12px">
+          <div style="font-size:13px;color:#92400e;font-weight:600">ℹ️ Фармоишҳо дар ин браузер нигоҳ мешаванд.</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-n" id="myTotal">0</div><div class="stat-l">Ҳамагӣ</div></div>
+        <div class="stat-box"><div class="stat-n" id="myActive">0</div><div class="stat-l">Фаъол</div></div>
+        <div class="stat-box"><div class="stat-n" id="myDone">0</div><div class="stat-l">Расид</div></div>
+      </div>
+      <div id="ordersList">
+        <div class="empty"><div class="empty-ico">📭</div><h4>Фармоише нест</h4><p>Фармоиши аввалатонро диҳед!</p></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav">
+    <button class="bn-item on" id="bn0" onclick="showPg('new')"><div class="bn-ico">➕</div><span>Фармоиш</span></button>
+    <button class="bn-item" id="bn1" onclick="showPg('orders')">
+      <div class="bn-ico">📋</div><span>Фармоишҳо</span>
+      <div class="bn-badge" id="bnBadge">0</div>
+    </button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="moverlay" id="mDetail">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mttl" id="mDttl">Фармоиш</div>
+    <div id="mDbody"></div>
+    <div style="margin-top:16px"><button class="btn btn-ot btn-w" onclick="closeM('mDetail')">Бастан</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════ FIREBASE ══════
+const FB_CFG={
+  apiKey:"AIzaSyAZvhOjhwt_4ZruHP3IuVtQf_FSMf31uhQ",
+  authDomain:"tojrason.firebaseapp.com",
+  databaseURL:"https://tojrason-default-rtdb.firebaseio.com",
+  projectId:"tojrason",
+  storageBucket:"tojrason.firebasestorage.app",
+  messagingSenderId:"734402668671",
+  appId:"1:734402668671:web:ca983940b6870335d2374a"
+};
+let db=null;
+function lds(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);})}
+function ldcss(href){const l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l);}
+
+async function initFB(){
+  // Load Leaflet CSS + JS
+  ldcss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+  try{await lds('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');}catch(e){
+    try{await lds('https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js');}catch(e2){}
+  }
+
+  // Load Firebase
+  const cdns=[
+    ['https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js'],
+    ['https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-app-compat.min.js','https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-database-compat.min.js'],
+  ];
+  for(const[a,b]of cdns){try{await lds(a);await lds(b);break;}catch(e){}}
+  if(typeof firebase==='undefined')throw new Error('no firebase');
+  if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+  db=firebase.database();
+}
+
+// ══════ STATE ══════
+let deviceId=null, myOrders=[], ordersListener=null;
+let _detailMap=null, _courierLocListener=null, _detailCourierId=null;
+const DEF_LAT=38.5590, DEF_LNG=68.7738; // Душанбе
+
+// Coordinates saved for orders
+let coords={from:{lat:null,lng:null}, to:{lat:null,lng:null}};
+
+// ══════ MAP PICKER STATE ══════
+let pickerMap=null, pickerMode=null; // 'from' | 'to'
+let pickerLat=DEF_LAT, pickerLng=DEF_LNG;
+let geoDebounce=null, searchDebounce=null;
+let miniMaps={from:null, to:null};
+
+// ══════ DEVICE ID ══════
+function getDeviceId(){
+  let id=localStorage.getItem('trDeviceId');
+  if(!id){id='d_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);localStorage.setItem('trDeviceId',id);}
+  return id;
+}
+
+// ══════ SAVED SENDER ══════
+function loadSavedSender(){
+  const s=JSON.parse(localStorage.getItem('trSenderInfo')||'{}');
+  if(s.name&&s.phone){
+    document.getElementById('savedName').textContent=s.name;
+    document.getElementById('savedPhone').textContent=s.phone;
+    document.getElementById('savedChip').style.display='block';
+    document.getElementById('senderForm').style.display='none';
+  }
+}
+function getSenderInfo(){
+  // Always read building fields from form (not saved)
+  const podz=gv('sPodz'), floor=gv('sFloor'), apart=gv('sApart'), intercom=gv('sIntercom');
+  const s=JSON.parse(localStorage.getItem('trSenderInfo')||'{}');
+  if(s.name&&s.phone)return{...s, podz, floor, apart, intercom};
+  return{name:gv('sName'),phone:gv('sPhone'), podz, floor, apart, intercom};
+}
+window.clearSaved=function(){
+  localStorage.removeItem('trSenderInfo');
+  document.getElementById('savedChip').style.display='none';
+  document.getElementById('senderForm').style.display='block';
+};
+
+// ══════ INIT ══════
+window.onload=async()=>{
+  const splash=document.getElementById('splash');
+  try{
+    await Promise.race([initFB(),new Promise((_,r)=>setTimeout(()=>r(),9000))]);
+    if(!db)throw new Error('timeout');
+  }catch(e){
+    splash.innerHTML=`<div class="sp-logo">Toj<b>Rason</b></div><div style="color:#ef4444;font-size:13px;text-align:center;padding:0 24px;margin-top:8px">⚠️ Интернет нест</div><button onclick="location.reload()" style="background:#E8531F;color:#fff;border:none;padding:13px 28px;border-radius:14px;font-weight:700;cursor:pointer;margin-top:8px">🔄 Аз нав</button>`;
+    return;
+  }
+  deviceId=getDeviceId();
+  loadSavedSender();
+  calcPrice();
+  splash.classList.add('fade');
+  setTimeout(()=>{splash.style.display='none';document.getElementById('app').style.display='block';},350);
+  listenOrders();
+};
+
+// ══════ MAP PICKER ══════
+let clickMarker=null;
+
+window.openMapPicker=function(mode){
+  pickerMode=mode;
+  const isFrom=mode==='from';
+  document.getElementById('mpTitle').textContent=isFrom?'Нуқтаи гирифтан':'Нуқтаи расонидан';
+  document.getElementById('mpSearchInput').value='';
+  document.getElementById('mpSearchClear').style.display='none';
+  document.getElementById('mpSearchResults').style.display='none';
+  // Reset address preview
+  const prev=document.getElementById('mpAddrPreview');
+  prev.style.display='none';
+  document.getElementById('mpHint').style.display='block';
+  document.getElementById('mapModal').classList.add('on');
+
+  setTimeout(()=>{
+    if(!pickerMap){
+      pickerMap=L.map('pickerMap',{zoomControl:true,attributionControl:false});
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(pickerMap);
+      // CLICK = select point immediately
+      pickerMap.on('click',function(e){
+        placePin(e.latlng.lat, e.latlng.lng);
+      });
+    }
+
+    const c=coords[mode];
+    const lat=c.lat||DEF_LAT, lng=c.lng||DEF_LNG;
+    pickerMap.setView([lat,lng],15);
+    setTimeout(()=>pickerMap.invalidateSize(),100);
+
+    // If returning to already-selected point, show pin
+    if(c.lat){
+      placePin(c.lat,c.lng,c.addr);
+    } else if(clickMarker){
+      pickerMap.removeLayer(clickMarker);
+      clickMarker=null;
+    }
+  },50);
+};
+
+// Place pin on map + reverse geocode + auto-confirm after address loaded
+function placePin(lat,lng,knownAddr){
+  pickerLat=lat; pickerLng=lng;
+  document.getElementById('mpHint').style.display='none';
+
+  // Remove old marker
+  if(clickMarker)pickerMap.removeLayer(clickMarker);
+
+  const isFrom=pickerMode==='from';
+  const emoji=isFrom?'🔴':'🏁';
+  clickMarker=L.marker([lat,lng],{
+    icon:L.divIcon({html:`<div style="font-size:32px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));margin-top:-32px;margin-left:-12px">${emoji}</div>`,className:'',iconSize:[24,32],iconAnchor:[12,32]})
+  }).addTo(pickerMap);
+
+  // Show spinner in footer
+  const prev=document.getElementById('mpAddrPreview');
+  prev.style.display='flex';
+  document.getElementById('mpAddrTxt').textContent=knownAddr||'Суроға дар ҷустуҷӯ...';
+  document.getElementById('mpAddrSub').textContent='';
+  document.getElementById('mpGeoSpin').style.display=knownAddr?'none':'block';
+
+  if(knownAddr){
+    // Already know address — confirm right away
+    applySelection(lat,lng,knownAddr);
+    return;
+  }
+
+  // Reverse geocode then auto-confirm
+  reverseGeocode(lat,lng).then(addr=>{
+    applySelection(lat,lng,addr);
+  });
+}
+
+function applySelection(lat,lng,addr){
+  coords[pickerMode]={lat,lng,addr};
+  if(pickerMode==='from'){
+    document.getElementById('fromAddr').value=addr;
+    showMiniMap('from',lat,lng,addr);
+  }else{
+    document.getElementById('toAddr').value=addr;
+    showMiniMap('to',lat,lng,addr);
+  }
+  calcPrice(); // Recalculate price with new coordinates
+  // Brief flash then close
+  document.getElementById('mpAddrTxt').textContent=addr;
+  document.getElementById('mpGeoSpin').style.display='none';
+  setTimeout(()=>{
+    closeMapPicker();
+    toast('✅ Нуқта интихоб шуд','ok');
+  },600);
+}
+
+window.closeMapPicker=function(){
+  document.getElementById('mapModal').classList.remove('on');
+  document.getElementById('mpSearchResults').style.display='none';
+};
+
+async function reverseGeocode(lat,lng){
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,{headers:{'Accept-Language':'ru,tg,en'}});
+    const d=await r.json();
+    return formatAddr(d.address,d.display_name);
+  }catch(e){
+    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+  }
+}
+
+function formatAddr(a,display){
+  if(!a)return display||'Нуқтаи интихобшуда';
+  const parts=[];
+  if(a.road)parts.push(a.road);
+  if(a.house_number)parts[0]=(parts[0]||'')+' '+a.house_number;
+  if(a.neighbourhood||a.suburb)parts.push(a.neighbourhood||a.suburb);
+  if(a.city||a.town||a.village)parts.push(a.city||a.town||a.village);
+  return parts.filter(Boolean).join(', ')||display?.split(',')[0]||'Нуқтаи интихобшуда';
+}
+
+// GPS — go to my location AND place pin there
+window.goMyLocation=function(){
+  if(!navigator.geolocation)return toast('GPS дастрас нест','er');
+  toast('📡 Ҷустуҷӯи мавқеи шумо...','if');
+  navigator.geolocation.getCurrentPosition(p=>{
+    const{latitude:lat,longitude:lng}=p.coords;
+    pickerMap.setView([lat,lng],17);
+    placePin(lat,lng);
+  },err=>{
+    toast('GPS иҷозат надод — танзимотро тафтиш кунед','er');
+  },{timeout:10000,enableHighAccuracy:true});
+};
+
+// ── Search ──
+let searchController=null, searchDebounce2=null;
+window.onSearchInput=function(q){
+  document.getElementById('mpSearchClear').style.display=q?'block':'none';
+  clearTimeout(searchDebounce2);
+  if(!q.trim()){document.getElementById('mpSearchResults').style.display='none';return;}
+  searchDebounce2=setTimeout(()=>doSearch(q),500);
+};
+window.clearSearch=function(){
+  document.getElementById('mpSearchInput').value='';
+  document.getElementById('mpSearchClear').style.display='none';
+  document.getElementById('mpSearchResults').style.display='none';
+};
+async function doSearch(q){
+  if(searchController)searchController.abort();
+  searchController=new AbortController();
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+' Tajikistan')}&format=json&limit=5`,{signal:searchController.signal,headers:{'Accept-Language':'ru,tg,en'}});
+    const data=await r.json();
+    const el=document.getElementById('mpSearchResults');
+    if(!data.length){el.innerHTML='<div class="mp-sr-item">Ёфт нашуд</div>';el.style.display='block';return;}
+    el.innerHTML=data.map(i=>`<div class="mp-sr-item" onclick="selectSearchResult(${i.lat},${i.lon},'${(i.display_name||'').replace(/'/g,'\u2019').substring(0,80)}')">
+      <span class="mp-sr-ico">📍</span>
+      <div style="min-width:0;flex:1">
+        <div class="mp-sr-name">${(i.display_name||'').split(',')[0]}</div>
+        <div class="mp-sr-addr">${(i.display_name||'').split(',').slice(1,3).join(',')}</div>
+      </div></div>`).join('');
+    el.style.display='block';
+  }catch(e){if(e.name!=='AbortError')console.warn(e);}
+}
+// Tap on search result = go there + place pin
+window.selectSearchResult=function(lat,lng,name){
+  const la=parseFloat(lat),lo=parseFloat(lng);
+  document.getElementById('mpSearchResults').style.display='none';
+  document.getElementById('mpSearchInput').value='';
+  pickerMap.setView([la,lo],16);
+  setTimeout(()=>placePin(la,lo,name.split(',')[0]),300);
+};
+
+// ── Mini map preview ──
+function showMiniMap(mode, lat, lng, label){
+  const wrap=document.getElementById(mode+'MiniWrap');
+  const mapDiv=document.getElementById(mode+'MiniMap');
+  const labelEl=document.getElementById(mode+'MiniLabel');
+  wrap.style.display='block';
+  labelEl.textContent=label;
+
+  if(miniMaps[mode]){
+    miniMaps[mode].setView([lat,lng],14);
+    miniMaps[mode].invalidateSize();
+    return;
+  }
+  setTimeout(()=>{
+    const m=L.map(mapDiv,{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false,touchZoom:false,doubleClickZoom:false});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
+    m.setView([lat,lng],14);
+    miniMaps[mode]=m;
+    // Click on mini map opens picker again
+    mapDiv.addEventListener('click',()=>openMapPicker(mode));
+    wrap.style.cursor='pointer';
+    wrap.onclick=()=>openMapPicker(mode);
+  },50);
+}
+
+// ══════ PRICE ══════
+// Price: 10 somoni first 3km, +3 per km after
+function calcDistPrice(km){
+  if(km<=0)return 10;
+  if(km<=3)return 10;
+  return 10+Math.ceil(km-3)*3;
+}
+
+// Route state
+let routeLayer=null, routeMap=null, currentRouteKm=0;
+
+// Fetch OSRM driving route, draw polyline, update price
+async function calcRouteAndPrice(){
+  const hasFrom=coords.from.lat&&coords.from.lng;
+  const hasTo=coords.to.lat&&coords.to.lng;
+  const card=document.getElementById('routeMapCard');
+
+  if(!hasFrom||!hasTo){
+    card.style.display='none';
+    document.getElementById('priceShow').textContent='10 смн';
+    document.getElementById('distShow').textContent='📍 Масофа нест';
+    document.getElementById('priceFormula').textContent='То 3 км = 10 смн';
+    currentRouteKm=0;
+    return;
+  }
+
+  // Show card, show spinner
+  card.style.display='block';
+  document.getElementById('routeInfoChip').textContent='⏳ Ҳисоб мешавад...';
+  document.getElementById('distShow').textContent='📡 Ҷустуҷӯ...';
+
+  // Init route map if needed
+  if(!routeMap){
+    routeMap=L.map('routeMap',{zoomControl:false,attributionControl:false,scrollWheelZoom:false});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(routeMap);
+  }
+  setTimeout(()=>routeMap.invalidateSize(),50);
+
+  try{
+    // OSRM public API — driving route
+    const url=`https://router.project-osrm.org/route/v1/driving/`+
+      `${coords.from.lng},${coords.from.lat};${coords.to.lng},${coords.to.lat}`+
+      `?overview=full&geometries=geojson`;
+    const r=await fetch(url);
+    const data=await r.json();
+
+    if(data.code!=='Ok'||!data.routes?.length)throw new Error('route not found');
+
+    const route=data.routes[0];
+    const km=route.distance/1000; // metres → km
+    const mins=Math.round(route.duration/60);
+    currentRouteKm=km;
+
+    // Draw route polyline
+    if(routeLayer)routeMap.removeLayer(routeLayer);
+    const latlngs=route.geometry.coordinates.map(c=>[c[1],c[0]]);
+    routeLayer=L.polyline(latlngs,{color:'#E8531F',weight:5,opacity:.85}).addTo(routeMap);
+
+    // Add start/end markers
+    routeMap.eachLayer(l=>{if(l instanceof L.Marker)routeMap.removeLayer(l);});
+    L.marker([coords.from.lat,coords.from.lng],{
+      icon:L.divIcon({html:'<div style="font-size:22px;margin:-11px 0 0 -6px">🔴</div>',className:'',iconSize:[24,24]})
+    }).addTo(routeMap).bindPopup('📍 Нуқтаи гирифтан');
+    L.marker([coords.to.lat,coords.to.lng],{
+      icon:L.divIcon({html:'<div style="font-size:22px;margin:-11px 0 0 -6px">🏁</div>',className:'',iconSize:[24,24]})
+    }).addTo(routeMap).bindPopup('🏁 Нуқтаи расонидан');
+
+    // Fit map to route
+    routeMap.fitBounds(latlngs,{padding:[20,20]});
+
+    // Update price
+    const price=calcDistPrice(km);
+    const formula=km<=3?'То 3 км = 10 смн':`10 + ${Math.ceil(km-3)} × 3 смн`;
+    document.getElementById('priceShow').textContent=price+' смн';
+    document.getElementById('distShow').textContent=`📏 ${km.toFixed(1)} км`;
+    document.getElementById('priceFormula').textContent=formula;
+    document.getElementById('routeInfoChip').textContent=`${km.toFixed(1)} км · ~${mins} дақ`;
+
+  }catch(e){
+    // Fallback to haversine if OSRM fails
+    const R=6371, f=coords.from, t=coords.to;
+    const dLat=(t.lat-f.lat)*Math.PI/180, dLng=(t.lng-f.lng)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(f.lat*Math.PI/180)*Math.cos(t.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+    const km=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    currentRouteKm=km;
+    const price=calcDistPrice(km);
+    document.getElementById('priceShow').textContent=price+' смн';
+    document.getElementById('distShow').textContent=`📏 ~${km.toFixed(1)} км`;
+    document.getElementById('priceFormula').textContent=km<=3?'То 3 км = 10 смн':`10 + ${Math.ceil(km-3)} × 3 смн`;
+    document.getElementById('routeInfoChip').textContent=`~${km.toFixed(1)} км`;
+    // Still show simple line on map
+    if(routeLayer)routeMap.removeLayer(routeLayer);
+    routeLayer=L.polyline([[coords.from.lat,coords.from.lng],[coords.to.lat,coords.to.lng]],
+      {color:'#E8531F',weight:4,dashArray:'8,6',opacity:.7}).addTo(routeMap);
+    routeMap.fitBounds([[coords.from.lat,coords.from.lng],[coords.to.lat,coords.to.lng]],{padding:[30,30]});
+  }
+}
+
+// Keep calcPrice as wrapper for backward compat
+function calcPrice(){calcRouteAndPrice();}
+
+function onWeight(v){document.getElementById('wVal').textContent=parseFloat(v).toFixed(1)+' кг';}
+
+// ══════ SUBMIT ══════
+window.submitOrder=async function(){
+  const sender=getSenderInfo();
+  const from=gv('fromAddr'),to=gv('toAddr');
+  const recvName=gv('recvName'),recvPhone=gv('recvPhone');
+
+  if(!sender.name)return toast('Номи худро ворид кунед','er');
+  if(!sender.phone)return toast('Телефони худро ворид кунед','er');
+  if(!from)return toast('Нуқтаи гирифтанро харитадан интихоб кунед','er');
+  if(!to)return toast('Нуқтаи расонидан интихоб кунед','er');
+  if(!recvName)return toast('Номи қабулкунандаро ворид кунед','er');
+  if(!recvPhone)return toast('Телефони қабулкунандаро ворид кунед','er');
+
+  const w=parseFloat(document.getElementById('weightSlider').value)||1;
+  const t=document.getElementById('pkgType').value;
+  // Use already-calculated driving distance
+  const distKm=currentRouteKm||0;
+  const price=calcDistPrice(distKm);
+
+  if(document.getElementById('saveMe').checked){
+    localStorage.setItem('trSenderInfo',JSON.stringify({name:sender.name,phone:sender.phone}));
+    loadSavedSender();
+  }
+
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;btn.textContent='⏳ Фиристода мешавад...';
+
+  try{
+    const id=db.ref('orders').push().key;
+    const order={
+      id,deviceId,
+      customerName:sender.name, customerPhone:sender.phone,
+      senderPodz:sender.podz||'', senderFloor:sender.floor||'',
+      senderApart:sender.apart||'', senderIntercom:sender.intercom||'',
+      fromAddress:from, toAddress:to,
+      distanceKm:distKm?Math.round(distKm*10)/10:null,
+      fromLat:coords.from.lat||null, fromLng:coords.from.lng||null,
+      toLat:coords.to.lat||null, toLng:coords.to.lng||null,
+      description:gv('descr')||'—',
+      weight:w, packageType:t, price,
+      receiverName:recvName, receiverPhone:recvPhone,
+      receiverPodz:gv('rPodz')||'', receiverFloor:gv('rFloor')||'',
+      receiverApart:gv('rApart')||'', receiverIntercom:gv('rIntercom')||'',
+      note:gv('note')||'',
+      status:'new', createdAt:Date.now()
+    };
+    await db.ref('orders/'+id).set(order);
+    toast('✅ Фармоиш қабул шуд! Курьер тез меояд.','ok');
+    // Reset
+    ['fromAddr','toAddr','descr','recvName','recvPhone','rPodz','rFloor','rApart','rIntercom','note','sPodz','sFloor','sApart','sIntercom'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+    document.getElementById('weightSlider').value=1;
+    document.getElementById('wVal').textContent='1.0 кг';
+    document.getElementById('pkgType').value='small';
+    calcPrice();
+    coords={from:{lat:null,lng:null},to:{lat:null,lng:null}};
+    currentRouteKm=0;
+    ['from','to'].forEach(m=>{
+      document.getElementById(m+'MiniWrap').style.display='none';
+      if(miniMaps[m]){miniMaps[m].remove();miniMaps[m]=null;}
+    });
+    document.getElementById('routeMapCard').style.display='none';
+    if(routeLayer&&routeMap){routeMap.removeLayer(routeLayer);routeLayer=null;}
+    showPg('orders');
+  }catch(e){toast('Хато: '+e.message,'er');}
+  btn.disabled=false;btn.innerHTML='🚀 Фиристодани Фармоиш';
+};
+
+// ══════ LISTEN ORDERS ══════
+function listenOrders(){
+  if(ordersListener)db.ref('orders').off('value',ordersListener);
+  ordersListener=db.ref('orders').on('value',snap=>{
+    myOrders=[];
+    const d=snap.val()||{};
+    Object.entries(d).forEach(([k,v])=>{if(v.deviceId===deviceId)myOrders.push({id:k,...v});});
+    myOrders.sort((a,b)=>b.createdAt-a.createdAt);
+    updStats();renderOrders();updBadge();
+  });
+}
+
+// ══════ STATS ══════
+function updStats(){
+  document.getElementById('myTotal').textContent=myOrders.length;
+  document.getElementById('myActive').textContent=myOrders.filter(o=>!['delivered','cancelled'].includes(o.status)).length;
+  document.getElementById('myDone').textContent=myOrders.filter(o=>o.status==='delivered').length;
+}
+function updBadge(){
+  const a=myOrders.filter(o=>!['delivered','cancelled'].includes(o.status)).length;
+  const b=document.getElementById('bnBadge');
+  b.style.display=a>0?'block':'none';b.textContent=a;
+}
+
+// ══════ RENDER ══════
+function renderOrders(){
+  const el=document.getElementById('ordersList');
+  document.getElementById('noDeviceNote').style.display=myOrders.length?'block':'none';
+  if(!myOrders.length){el.innerHTML=`<div class="empty"><div class="empty-ico">📭</div><h4>Фармоише нест</h4><p>Фармоиши аввалатонро диҳед!</p></div>`;return;}
+  const sm={new:['b-new','🆕','Курьер ҷустуҷӯ мешавад'],assigned:['b-assigned','🔄','Курьер дар роҳ'],picked_up:['b-picked','📤','Борро гирифт'],delivered:['b-done','✅','Расид'],cancelled:['b-cancel','❌','Бекор']};
+  el.innerHTML=myOrders.map(o=>{
+    const[sc,si,st]=sm[o.status]||['b-new','🆕','Нав'];
+    const d=new Date(o.createdAt).toLocaleString('ru',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    return `<div class="order-card" onclick="openDetail('${o.id}')">
+      <div class="order-head">
+        <div class="order-id">#${o.id.slice(-8).toUpperCase()} · ${d}</div>
+        <div class="order-route">${o.fromAddress} → ${o.toAddress}</div>
+      </div>
+      <div class="order-body">
+        ${buildTracker(o.status)}
+        <div class="order-foot">
+          <span class="badge ${sc}">${si} ${st}</span>
+          <span class="order-price">${o.price} смн</span>
+        </div>
+        ${o.courierName?`<div class="order-courier">🏍️ Курьер: ${o.courierName}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildTracker(status){
+  const steps=['new','assigned','picked_up','delivered'];
+  const labels=['Нав','Дар роҳ','Гирифта','Расид'];
+  const cur=status==='cancelled'?-1:steps.indexOf(status);
+  return `<div class="tracker">${steps.map((s,i)=>`
+    <div class="tr-step ${i<cur?'dn':i===cur?'ac':''}">
+      ${i>0?`<div class="tr-line ${i<=cur?'dn':''}"></div>`:''}
+      <div class="tr-dot ${i<cur?'dn':i===cur?'ac':''}">${i<cur?'✓':i+1}</div>
+      <div class="tr-lbl">${labels[i]}</div>
+    </div>`).join('')}</div>`;
+}
+
+// ══════ DETAIL ══════
+function _closeDetailMap(){
+  // Stop courier location listener
+  if(_courierLocListener&&_detailCourierId){
+    db.ref('couriers/'+_detailCourierId).off('value',_courierLocListener);
+    _courierLocListener=null; _detailCourierId=null;
+  }
+  // Destroy map to avoid "already initialized" error
+  if(_detailMap){_detailMap.remove();_detailMap=null;}
+}
+
+window.openDetail=function(oid){
+  _closeDetailMap(); // cleanup previous
+  const o=myOrders.find(x=>x.id===oid);if(!o)return;
+  const sm={new:['b-new','🆕 Нав'],assigned:['b-assigned','🔄 Дар роҳ'],picked_up:['b-picked','📤 Гирифта'],delivered:['b-done','✅ Расид'],cancelled:['b-cancel','❌ Бекор']};
+  const[sc,st]=sm[o.status]||['b-new','🆕 Нав'];
+  document.getElementById('mDttl').innerHTML=`#${o.id.slice(-8).toUpperCase()} <span class="badge ${sc}">${st}</span>`;
+
+  const hasFromCoord=o.fromLat&&o.fromLng;
+  const hasToCoord=o.toLat&&o.toLng;
+  const hasMap=hasFromCoord||hasToCoord;
+  const isActive=['assigned','picked_up'].includes(o.status)&&o.courierId;
+
+  // Map height bigger when courier is active (more info to show)
+  const mapH=isActive?'240px':'190px';
+
+  document.getElementById('mDbody').innerHTML=`
+    ${buildTracker(o.status)}
+    ${o.courierName?`<div class="courier-box">
+      <div class="courier-av">🏍️</div>
+      <div style="flex:1;color:#fff">
+        <div style="font-size:15px;font-weight:800">${o.courierName}</div>
+        <div style="font-size:12px;opacity:.7;margin-top:2px">${isActive?'🟢 Дар роҳ — мавқеъ дар харита':'✅ Расонида шуд'}</div>
+      </div>
+      ${isActive?`<div id="courierDistBadge" style="background:rgba(255,255,255,.15);padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;color:#fff">📡</div>`:''}
+    </div>`:''}
+    ${hasMap?`<div id="detailMap" style="height:${mapH};border-radius:14px;overflow:hidden;margin-bottom:14px;border:1.5px solid var(--bo);position:relative">
+      ${isActive?`<div id="liveChip" style="position:absolute;top:8px;right:8px;z-index:500;background:rgba(34,197,94,.9);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;background:#fff;border-radius:50%;display:inline-block;animation:blink 1s infinite"></span>LIVE</div>`:''}
+    </div>`:''}
+    <div class="drow"><div class="dico">👤</div><div><div class="dkey">Фиристанда</div><div class="dval">${o.customerName} · ${o.customerPhone}</div></div></div>
+    <div class="drow"><div class="dico">📍</div><div><div class="dkey">Аз куҷо</div><div class="dval">${o.fromAddress}</div></div></div>
+    <div class="drow"><div class="dico">🏁</div><div><div class="dkey">Ба куҷо</div><div class="dval">${o.toAddress}</div></div></div>
+    <div class="drow"><div class="dico">📝</div><div><div class="dkey">Тавсиф</div><div class="dval">${o.description||'—'}</div></div></div>
+    <div class="drow"><div class="dico">⚖️</div><div><div class="dkey">Вазн</div><div class="dval">${o.weight||1} кг</div></div></div>
+    ${o.distanceKm?`<div class="drow"><div class="dico">📏</div><div><div class="dkey">Масофа</div><div class="dval">${o.distanceKm} км</div></div></div>`:''}
+    <div class="drow"><div class="dico">💰</div><div><div class="dkey">Нарх</div><div class="dval">${o.price} смн</div></div></div>
+    <div class="drow"><div class="dico">🎯</div><div><div class="dkey">Қабулкунанда</div><div class="dval">${o.receiverName} · ${o.receiverPhone}</div></div></div>
+    ${(o.receiverPodz||o.receiverFloor||o.receiverApart)?`<div class="drow"><div class="dico">🏢</div><div><div class="dkey">Подъезд / Ошёна / Хона</div><div class="dval">${[o.receiverPodz?'Подъезд '+o.receiverPodz:'',o.receiverFloor?'Ошёна '+o.receiverFloor:'',o.receiverApart?'Хона '+o.receiverApart:''].filter(Boolean).join(' · ')}</div></div></div>`:''}
+    ${o.receiverIntercom?`<div class="drow"><div class="dico">🔑</div><div><div class="dkey">Код домофон (гиранда)</div><div class="dval">${o.receiverIntercom}</div></div></div>`:''}
+    ${(o.senderPodz||o.senderFloor||o.senderApart)?`<div class="drow"><div class="dico">🏠</div><div><div class="dkey">Подъезд / Ошёна / Хона (фиристанда)</div><div class="dval">${[o.senderPodz?'Подъезд '+o.senderPodz:'',o.senderFloor?'Ошёна '+o.senderFloor:'',o.senderApart?'Хона '+o.senderApart:''].filter(Boolean).join(' · ')}</div></div></div>`:''}
+    ${o.senderIntercom?`<div class="drow"><div class="dico">🔑</div><div><div class="dkey">Код домофон (фиристанда)</div><div class="dval">${o.senderIntercom}</div></div></div>`:''}
+    ${o.note?`<div class="drow"><div class="dico">💬</div><div><div class="dkey">Эзоҳ</div><div class="dval">${o.note}</div></div></div>`:''}
+    ${o.status==='new'?`<button class="btn btn-dn btn-w" onclick="cancelOrder('${o.id}');closeM('mDetail')" style="margin-top:14px">❌ Бекор кардан</button>`:''}`;
+
+  openM('mDetail');
+
+  // ── Init map ──
+  if(!hasMap)return;
+  setTimeout(async()=>{
+    const dm=L.map('detailMap',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,tap:false});
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(dm);
+    _detailMap=dm;
+
+    const makePin=(lat,lng,emoji,popup)=>L.marker([lat,lng],{
+      icon:L.divIcon({html:`<div style="font-size:26px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))">${emoji}</div>`,className:'',iconSize:[26,26],iconAnchor:[13,26]})
+    }).addTo(dm).bindPopup(popup);
+
+    if(hasFromCoord) makePin(o.fromLat,o.fromLng,'🔴','📍 Нуқтаи гирифтан');
+    if(hasToCoord)   makePin(o.toLat,o.toLng,'🏁','🏁 Нуқтаи расонидан');
+
+    // Draw route if both coords exist
+    if(hasFromCoord&&hasToCoord){
+      try{
+        const url=`https://router.project-osrm.org/route/v1/driving/${o.fromLng},${o.fromLat};${o.toLng},${o.toLat}?overview=full&geometries=geojson`;
+        const r=await fetch(url);
+        const data=await r.json();
+        if(data.code==='Ok'&&data.routes?.length){
+          const pts=data.routes[0].geometry.coordinates.map(c=>[c[1],c[0]]);
+          L.polyline(pts,{color:'#E8531F',weight:5,opacity:.75}).addTo(dm);
+          dm.fitBounds(pts,{padding:[24,24]});
+        }else throw '';
+      }catch(e){
+        L.polyline([[o.fromLat,o.fromLng],[o.toLat,o.toLng]],{color:'#E8531F',weight:4,dashArray:'8,6',opacity:.6}).addTo(dm);
+        dm.fitBounds([[o.fromLat,o.fromLng],[o.toLat,o.toLng]],{padding:[30,30]});
+      }
+    }else{
+      dm.setView(hasFromCoord?[o.fromLat,o.fromLng]:[o.toLat,o.toLng],15);
+    }
+
+    // ── LIVE COURIER TRACKING ──
+    if(!isActive)return;
+    _detailCourierId=o.courierId;
+    let courierMark=null;
+
+    const courierIcon=L.divIcon({
+      html:`<div style="background:#4361ee;width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 3px 10px rgba(67,97,238,.6);display:flex;align-items:center;justify-content:center;font-size:18px">🏍️</div>`,
+      className:'',iconSize:[34,34],iconAnchor:[17,17]
+    });
+
+    _courierLocListener=db.ref('couriers/'+o.courierId).on('value',snap=>{
+      const c=snap.val();
+      if(!c||!c.lat||!c.lng)return;
+      const pos=[c.lat,c.lng];
+
+      if(!courierMark){
+        courierMark=L.marker(pos,{icon:courierIcon,zIndexOffset:2000}).addTo(dm).bindPopup('🏍️ '+o.courierName);
+      }else{
+        courierMark.setLatLng(pos);
+      }
+
+      // Show distance from courier to destination
+      if(o.toLat&&o.toLng){
+        const R=6371,dLat=(o.toLat-c.lat)*Math.PI/180,dLng=(o.toLng-c.lng)*Math.PI/180;
+        const a=Math.sin(dLat/2)**2+Math.cos(c.lat*Math.PI/180)*Math.cos(o.toLat*Math.PI/180)*Math.sin(dLng/2)**2;
+        const km=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+        const badge=document.getElementById('courierDistBadge');
+        if(badge)badge.textContent=km<1?Math.round(km*1000)+'м':`${km.toFixed(1)}км`;
+      }
+
+      // Pan map to show both courier and destination
+      if(o.toLat&&o.toLng){
+        dm.fitBounds([[c.lat,c.lng],[o.toLat,o.toLng]],{padding:[40,40],maxZoom:15});
+      }else{
+        dm.setView(pos,15);
+      }
+    });
+  },120);
+};
+
+window.cancelOrder=async function(oid){
+  if(!confirm('Фармоишро бекор кунед?'))return;
+  await db.ref('orders/'+oid).update({status:'cancelled',updatedAt:Date.now()});
+  toast('Фармоиш бекор шуд','if');
+};
+
+// ══════ NAV ══════
+window.showPg=function(pg){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pg-'+pg)?.classList.add('on');
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('on'));
+  ({new:0,orders:1})[pg]!==undefined&&document.querySelectorAll('.bn-item')[({new:0,orders:1})[pg]]?.classList.add('on');
+};
+window.openM=id=>document.getElementById(id).classList.add('on');
+window.closeM=function(id){document.getElementById(id).classList.remove('on');if(id==='mDetail')_closeDetailMap();};
+document.querySelectorAll('.moverlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on');});});
+
+function gv(id){return document.getElementById(id)?.value.trim()||'';}
+let tT;
+function toast(msg,type='if'){const t=document.getElementById('toast');t.textContent=msg;t.className=type;t.style.display='block';clearTimeout(tT);tT=setTimeout(()=>t.style.display='none',3800);}
+</script>
 </body>
 </html>
