@@ -1,0 +1,59 @@
+<!-- 
+  =======================================================
+  ДАСТУРУЛ АМАЛ: index.html-ро навсозӣ кунед
+  =======================================================
+  
+  Дар index.html, ин тағйиротро анҷом диҳед:
+
+  1) Firebase скриптҳоро ХАЛ КУНЕД (тамоми <script> теги бо Firebase):
+     - firebase-app-compat.js
+     - firebase-database-compat.js
+     - Blob service worker скрипт
+
+  2) Пеш аз </head> ин скриптҳоро ИЛОВА КУНЕД:
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/socket.io/client-dist/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  3) Пеш аз </body> ин скриптҳоро ИЛОВА КУНЕД (тартиб муҳим):
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+
+  4) Тамоми JavaScript дар <script>...</script> дар поёни
+     index.html-ро ХАЛ КУНЕД — акнун дар js/app.js аст.
+
+  =======================================================
+  Мисол (тамоми structure):
+  =======================================================
+-->
+
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TojRason - Фармоиш</title>
+  
+  <!-- Шумо CSS-и худро нигоҳ доред -->
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Шумо style-и дохили худро нигоҳ доред -->
+</head>
+<body>
+
+  <!-- Тамоми HTML-и худро нигоҳ доред -->
+
+  <!-- ПОЁНИ BODY — танҳо ин скриптҳо -->
+  <script src="https://unpkg.com/socket.io/client-dist/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
