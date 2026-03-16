@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="application-name" content="TojRason — Курьер">
+<meta name="theme-color" content="#4361ee">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Курьер">
+<title>TojRason - Курьер</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
+input,select,button,textarea{font-family:'Inter',sans-serif;outline:none}
+button{cursor:pointer}
+:root{
+  --primary:#4361ee;--primary-dark:#3a56d4;
+  --secondary:#ffd600;
+  --success:#10b981;--danger:#ef4444;--warning:#f59e0b;
+  --dark:#1e293b;--light:#f8fafc;--gray:#64748b;
+  --border:#e2e8f0;--shadow:0 8px 24px rgba(0,0,0,.08);
+  --r:20px;--rs:14px;
+}
+#splash{position:fixed;inset:0;background:var(--primary-dark);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .4s}
+#splash.fade{opacity:0;pointer-events:none}
+.sp-logo{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px}
+.sp-sub{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px;text-transform:uppercase}
+.sp-spin{width:28px;height:28px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scr{display:none;min-height:100vh}
+.scr.on{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hdr{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:40px 20px 28px;border-radius:0 0 32px 32px;text-align:center;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.06) 0%,transparent 70%);animation:rot 20s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.hdr-ico{font-size:56px;display:block;margin-bottom:10px;position:relative;z-index:1}
+.hdr h1{font-size:24px;font-weight:900;position:relative;z-index:1}
+.hdr p{font-size:14px;opacity:.85;position:relative;z-index:1;margin-top:5px}
+.content{padding:20px}
+.fg{margin-bottom:18px}
+.flabel{display:block;font-size:14px;font-weight:600;color:var(--dark);margin-bottom:7px}
+.finput{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--rs);font-size:15px;background:#fff;transition:.3s}
+.finput:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.08)}
+select.finput{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%2364748B' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.err-box{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.3);color:#dc2626;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;display:none}
+.btn{width:100%;padding:16px;border:none;border-radius:var(--r);font-weight:700;font-size:16px;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 6px 20px rgba(67,97,238,.3)}
+.btn-outline{background:#fff;border:2px solid var(--primary)!important;color:var(--primary)}
+.btn-success{background:linear-gradient(135deg,var(--success),#0d9488);color:#fff}
+.btn-danger{background:#fff;border:2px solid var(--danger)!important;color:var(--danger)}
+.photo-section{background:#f8fafc;border-radius:var(--rs);padding:14px;margin-top:8px}
+.photo-btns{display:flex;flex-direction:column;gap:8px}
+.btn-cam{width:100%;padding:13px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-gallery{width:100%;padding:11px;border:2px solid var(--border);border-radius:var(--rs);background:#fff;color:var(--gray);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.file-inp{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;z-index:-1}
+.preview-wrap{display:none;position:relative;margin-top:10px;border-radius:var(--rs);overflow:hidden;border:2px solid var(--success)}
+.preview-wrap img{width:100%;height:160px;object-fit:cover;display:block}
+.preview-ok{position:absolute;top:8px;left:8px;background:var(--success);color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.btn-remove{position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+.status-bar{background:rgba(255,255,255,.95);padding:12px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.toggle-wrap{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
+.toggle{width:52px;height:26px;background:var(--border);border-radius:28px;position:relative;cursor:pointer;transition:.3s}
+.toggle.on{background:var(--success)}
+.toggle-dot{width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.15)}
+.toggle.on .toggle-dot{left:28px}
+.profile-btn{width:40px;height:40px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;cursor:pointer;border:none;box-shadow:var(--shadow)}
+.bal-chip{background:#f1f5f9;padding:7px 14px;border-radius:28px;font-size:15px;font-weight:800;color:var(--primary);border:none;cursor:pointer}
+.map-wrap{height:280px;position:relative}
+#map{width:100%;height:100%}
+.map-btns{position:absolute;bottom:14px;right:14px;z-index:10;display:flex;flex-direction:column;gap:8px}
+.map-btn{width:42px;height:42px;background:#fff;border:none;border-radius:50%;box-shadow:var(--shadow);cursor:pointer;font-size:16px;color:var(--primary);display:flex;align-items:center;justify-content:center}
+.order-card{background:#fff;border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--border);animation:slideUp .35s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.order-head{display:flex;align-items:center;gap:14px;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--border)}
+.order-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;flex-shrink:0}
+.order-info h3{font-weight:700;font-size:17px;margin-bottom:3px}
+.order-info p{color:var(--gray);font-size:13px}
+.route-box{background:#f8fafc;border-radius:var(--rs);padding:14px;margin-bottom:14px}
+.route-pt{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;position:relative}
+.route-pt:last-child{margin-bottom:0}
+.route-pt:not(:last-child)::after{content:'';position:absolute;left:7px;top:18px;width:2px;height:20px;background:var(--border)}
+.pt-dot{width:16px;height:16px;border-radius:50%;z-index:1;flex-shrink:0;margin-top:2px}
+.pt-dot.pick{background:var(--primary);box-shadow:0 0 0 4px rgba(67,97,238,.15)}
+.pt-dot.drop{background:var(--success);box-shadow:0 0 0 4px rgba(16,185,129,.15)}
+.pt-addr{font-size:14px;font-weight:600}
+.pt-sub{font-size:12px;color:var(--gray)}
+.order-meta{display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.meta-item{font-size:13px;color:var(--gray);display:flex;align-items:center;gap:5px}
+.meta-item strong{color:var(--dark);font-weight:700}
+.order-actions{display:flex;gap:10px}
+.order-actions button{flex:1;padding:14px;border:none;border-radius:var(--rs);font-weight:700;font-size:14px;cursor:pointer;transition:.25s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-accept{background:linear-gradient(135deg,var(--success),#0d9488);color:#fff}
+.btn-pickup{background:linear-gradient(135deg,var(--warning),#d97706);color:#fff}
+.btn-deliver{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+.btn-decline{background:#fff;border:2px solid var(--danger)!important;color:var(--danger);font-size:13px;max-width:80px;flex:0 0 80px}
+.wait-card{background:#fff;border-radius:var(--r);padding:36px 20px;text-align:center;box-shadow:var(--shadow);margin:20px 0}
+.wait-icon{font-size:60px;display:block;margin-bottom:16px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.wait-card h3{font-weight:800;margin-bottom:8px;font-size:20px}
+.wait-card p{color:var(--gray);font-size:14px;margin-bottom:20px;line-height:1.6}
+.wait-id{background:#f1f5f9;border-radius:12px;padding:12px;font-family:monospace;font-size:18px;font-weight:800;color:var(--primary);margin-bottom:20px;letter-spacing:2px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);display:flex;justify-content:space-around;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));box-shadow:0 -4px 24px rgba(0,0,0,.06);border-top:1px solid var(--border);z-index:100;backdrop-filter:blur(8px)}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--gray);font-size:11px;cursor:pointer;padding:5px 16px;border-radius:24px;transition:.25s;border:none;background:none;font-family:'Inter',sans-serif}
+.nav-item i{font-size:20px}
+.nav-item.active{color:var(--primary);background:rgba(67,97,238,.1)}
+.bal-card{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:20px;border-radius:var(--r);margin-bottom:16px}
+.bal-title{font-size:13px;opacity:.85;margin-bottom:4px}
+.bal-amt{font-size:32px;font-weight:900;color:var(--secondary)}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:#fff;padding:16px;border-radius:var(--rs);box-shadow:var(--shadow);text-align:center;border:1px solid var(--border)}
+.stat-val{font-size:26px;font-weight:900;color:var(--primary)}
+.stat-lbl{font-size:12px;color:var(--gray);margin-top:3px;font-weight:600}
+.hist-item{background:#fff;padding:14px;border-radius:var(--rs);margin-bottom:10px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.hist-info h4{font-weight:700;margin-bottom:4px;font-size:14px}
+.hist-info p{font-size:12px;color:var(--gray);margin-bottom:2px}
+.hist-badge{padding:5px 12px;border-radius:28px;font-size:12px;font-weight:700}
+.hb-ok{background:rgba(16,185,129,.12);color:var(--success)}
+.hb-no{background:rgba(239,68,68,.1);color:var(--danger)}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal.active{display:flex}
+.modal-box{background:#fff;border-radius:var(--r);width:100%;max-width:400px;max-height:88vh;overflow-y:auto;animation:slideUp .3s ease}
+.modal-head{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:26px 20px;text-align:center}
+.modal-ava{width:80px;height:80px;background:var(--secondary);border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--primary-dark);border:4px solid #fff;box-shadow:var(--shadow)}
+.modal-name{font-size:20px;font-weight:800;margin-bottom:4px}
+.modal-sub{font-size:14px;opacity:.9}
+.modal-body{padding:16px}
+.modal-row{padding:13px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;font-size:14px}
+.modal-row i{width:24px;color:var(--primary);font-size:16px}
+.modal-row .lbl{flex:1;color:var(--gray)}
+.modal-row .val{font-weight:700;color:var(--dark)}
+.modal-foot{padding:16px;display:flex;flex-direction:column;gap:8px}
+.btn-logout{padding:14px;background:var(--danger);border:none;border-radius:var(--rs);color:#fff;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px}
+.btn-close-m{padding:12px;background:#f1f5f9;border:none;border-radius:var(--rs);color:var(--gray);font-weight:600;cursor:pointer;font-size:14px}
+.notif{position:fixed;top:14px;left:14px;right:14px;background:#fff;padding:14px 16px;border-radius:var(--rs);box-shadow:0 8px 32px rgba(0,0,0,.15);display:flex;align-items:center;gap:12px;z-index:2000;transform:translateY(-130%);transition:transform .35s ease;max-width:460px;margin:0 auto;border-left:4px solid var(--primary)}
+.notif.show{transform:translateY(0)}
+.notif-ico{font-size:20px}
+.notif-title{font-weight:700;font-size:14px;margin-bottom:2px}
+.notif-text{font-size:12px;color:var(--gray)}
+.empty{text-align:center;padding:40px 20px}
+.empty-ico{font-size:52px;margin-bottom:12px;opacity:.3;display:block}
+.empty h3{color:var(--gray);font-weight:700;margin-bottom:6px}
+.empty p{color:var(--gray);font-size:13px}
+.ln-tabs{display:flex;background:#f1f5f9;border-radius:12px;padding:3px;margin-bottom:20px;gap:3px}
+.ln-tab{flex:1;padding:9px;text-align:center;border-radius:10px;font-weight:700;font-size:13px;color:var(--gray);cursor:pointer;border:none;background:none;transition:all .2s}
+.ln-tab.on{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="sp-logo">🏍️ TojRason</div>
+  <div class="sp-sub">Барои Курьерҳо</div>
+  <div class="sp-spin"></div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div class="scr on" id="scrAuth">
+  <div class="hdr">
+    <span class="hdr-ico">🏍️</span>
+    <h1>TojRason Курьер</h1>
+    <p>Барномаи курьерони касбӣ</p>
+  </div>
+  <div class="content">
+    <div class="ln-tabs">
+      <button class="ln-tab on" id="at1" onclick="aTab(0)">Ворид шудан</button>
+      <button class="ln-tab" id="at2" onclick="aTab(1)">Сабти ном</button>
+    </div>
+    <div id="af1">
+      <div class="err-box" id="lerr">Хато</div>
+      <div class="fg"><label class="flabel">Номи корбар (username)</label><input class="finput" id="lUser" placeholder="Масалан: courier_ali"></div>
+      <div class="fg"><label class="flabel">Парол</label><input class="finput" type="password" id="lPass" placeholder="Паролатонро ворид кунед"></div>
+      <button class="btn btn-primary" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Ворид шудан</button>
+    </div>
+    <div id="af2" style="display:none">
+      <div class="err-box" id="rerr">Хато</div>
+      <div class="fg"><label class="flabel">Ном ва насаб</label><input class="finput" id="rName" placeholder="Масалан: Алишер Каримов"></div>
+      <div class="fg"><label class="flabel">Телефон</label><input class="finput" type="tel" id="rPhone" placeholder="+992 XX XXX XXXX"></div>
+      <div class="fg"><label class="flabel">Номи корбар (username)</label><input class="finput" id="rUser" placeholder="Ҳарфҳо ва рақамҳо, бе фосила"></div>
+      <div class="fg"><label class="flabel">Парол</label><input class="finput" type="password" id="rPass" placeholder="камаш 6 символ"></div>
+      <div class="fg"><label class="flabel">Воситаи нақлиёт</label>
+        <select class="finput" id="rVeh">
+          <option value="motorcycle">🏍️ Мотосикл</option>
+          <option value="bicycle">🚲 Велосипед</option>
+          <option value="car">🚗 Мошин</option>
+          <option value="foot">🚶 Пиёда</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="flabel"><i class="fas fa-user"></i> Акси рӯй (selfie)</label>
+        <div class="photo-section">
+          <div class="photo-btns">
+            <button class="btn-cam" onclick="pickPhoto('face','cam')"><i class="fas fa-camera"></i> Аз камера</button>
+            <button class="btn-gallery" onclick="pickPhoto('face','gal')"><i class="fas fa-images"></i> Аз галерея</button>
+          </div>
+          <div class="preview-wrap" id="prevFace"><img id="imgFace" src="" alt=""><span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span><button class="btn-remove" onclick="removePhoto('face')"><i class="fas fa-times"></i></button></div>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="flabel"><i class="fas fa-id-card"></i> Акси паспорт</label>
+        <div class="photo-section">
+          <div class="photo-btns">
+            <button class="btn-cam" onclick="pickPhoto('passport','cam')"><i class="fas fa-camera"></i> Аз камера</button>
+            <button class="btn-gallery" onclick="pickPhoto('passport','gal')"><i class="fas fa-images"></i> Аз галерея</button>
+          </div>
+          <div class="preview-wrap" id="prevPassport"><img id="imgPassport" src="" alt=""><span class="preview-ok"><i class="fas fa-check"></i> Гирифта шуд</span><button class="btn-remove" onclick="removePhoto('passport')"><i class="fas fa-times"></i></button></div>
+        </div>
+      </div>
+      <input type="file" id="inCamFace" class="file-inp" accept="image/*" capture="user">
+      <input type="file" id="inGalFace" class="file-inp" accept="image/*">
+      <input type="file" id="inCamPassport" class="file-inp" accept="image/*" capture="environment">
+      <input type="file" id="inGalPassport" class="file-inp" accept="image/*">
+      <button class="btn btn-primary" onclick="doRegister()"><i class="fas fa-user-plus"></i> Фиристодани ариза</button>
+    </div>
+  </div>
+</div>
+
+<!-- WAIT SCREEN -->
+<div class="scr" id="scrWait">
+  <div class="hdr"><span class="hdr-ico">⏳</span><h1>Интизори тасдиқ</h1><p>Аризаи шумо барраси мешавад</p></div>
+  <div class="content">
+    <div class="wait-card">
+      <span class="wait-icon">🕐</span>
+      <h3>Дар ҳоли баррасӣ</h3>
+      <p>Маълумоти шумо ба Admin фиристода шуд.<br>Одатан то 24 соат давом мекунад.</p>
+      <div class="wait-id" id="waitId">—</div>
+      <div style="font-size:13px;color:var(--gray);margin-bottom:16px">Ин ID-и курьерии шумо аст</div>
+    </div>
+    <button class="btn btn-outline" onclick="checkApproval()"><i class="fas fa-sync"></i> Санҷидани ҳолат</button>
+    <button class="btn btn-outline" onclick="doLogout()" style="margin-top:0;border-color:var(--danger)!important;color:var(--danger)"><i class="fas fa-sign-out-alt"></i> Баромад</button>
+  </div>
+</div>
+
+<!-- MAIN SCREEN -->
+<div class="scr" id="scrMain">
+  <div class="status-bar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="profile-btn" onclick="openProfile()"><i class="fas fa-user"></i></button>
+      <div class="toggle-wrap">
+        <span style="font-size:13px">Ҳолат:</span>
+        <div class="toggle" id="toggle" onclick="toggleOnline()"><div class="toggle-dot"></div></div>
+        <span id="statusTxt" style="font-size:13px">Офлайн</span>
+      </div>
+    </div>
+    <button class="bal-chip" id="balDisp" onclick="openProfile()">0 смн</button>
+  </div>
+  <div class="map-wrap">
+    <div id="map"></div>
+    <div class="map-btns"><button class="map-btn" onclick="centerMe()"><i class="fas fa-location-dot"></i></button></div>
+  </div>
+  <div style="padding:16px;padding-bottom:calc(72px + env(safe-area-inset-bottom))" id="mainContent"></div>
+  <div class="bottom-nav">
+    <button class="nav-item active" id="navOrders" onclick="switchTab('orders')"><i class="fas fa-box"></i><span>Заказҳо</span></button>
+    <button class="nav-item" id="navHistory" onclick="switchTab('history')"><i class="fas fa-clock"></i><span>Таърих</span></button>
+    <button class="nav-item" id="navStats" onclick="switchTab('stats')"><i class="fas fa-chart-line"></i><span>Статистика</span></button>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="modal" id="profileModal">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <div class="modal-ava"><i class="fas fa-user"></i></div>
+      <div class="modal-name" id="pName">—</div>
+      <div class="modal-sub" id="pPhone">—</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row"><i class="fas fa-id-badge"></i><span class="lbl">Username:</span><span class="val" id="pUser">—</span></div>
+      <div class="modal-row"><i class="fas fa-motorcycle"></i><span class="lbl">Нақлиёт:</span><span class="val" id="pVeh">—</span></div>
+      <div class="modal-row"><i class="fas fa-box"></i><span class="lbl">Заказҳо:</span><span class="val" id="pOrders">0</span></div>
+      <div class="modal-row"><i class="fas fa-check-circle"></i><span class="lbl">Иҷрошуда:</span><span class="val" id="pComp">0</span></div>
+      <div class="modal-row"><i class="fas fa-wallet"></i><span class="lbl">Баланс:</span><span class="val" id="pBal">0 смн</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Баромад</button>
+      <button class="btn-close-m" onclick="closeProfile()">Пӯшидан</button>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif">
+  <div class="notif-ico" id="notifIco">🔔</div>
+  <div><div class="notif-title" id="notifTitle">Огоҳӣ</div><div class="notif-text" id="notifText"></div></div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/socket.io/client-dist/socket.io.min.js"></script>
+<script src="src/Config.js"></script>
+<script src="src/Courier.js"></script>
+</body>
+</html>
