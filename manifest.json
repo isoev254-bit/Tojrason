@@ -1,9 +1,0 @@
-{
-  "name": "TojRason",
-  "short_name": "TojRason",
-  "start_url": "/index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#E8531F",
-  "icons": []
-}
