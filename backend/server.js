@@ -16,6 +16,7 @@ const sanitizeHtml= require('sanitize-html');
 const multer      = require('multer');
 const path        = require('path');
 const fs          = require('fs');
+const bcrypt      = require('bcryptjs'); // ✅ FIX: moved to top
 
 const { User, Courier, Order, Admin, Rating } = require('./models');
 const { signAccess, signRefresh, requireAuth, socketAuth } = require('./middleware/auth');
@@ -47,11 +48,16 @@ app.use(morgan('combined', { stream: { write: msg => logger.info(msg.trim()) } }
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 app.use(rateLimit({
-  windowMs: 60000, max: 120, standardHeaders: true,
+  windowMs: 60000, max: 120,
+  standardHeaders: true, legacyHeaders: false,
   message: { ok: false, msg: 'Хеле зиёд дархост.' }
 }));
 
-const authLimiter = rateLimit({ windowMs: 60000, max: 10, message: { ok: false, msg: 'Хеле зиёд.' } });
+const authLimiter = rateLimit({
+  windowMs: 60000, max: 10,
+  standardHeaders: true, legacyHeaders: false,
+  message: { ok: false, msg: 'Хеле зиёд.' }
+});
 const s = str => typeof str === 'string' ? sanitizeHtml(str, { allowedTags: [], allowedAttributes: {} }).trim() : str;
 
 // ── AUTH ──────────────────────────────────────────────────────
@@ -128,7 +134,8 @@ app.post('/api/v1/auth/courier/register', authLimiter,
 app.post('/api/v1/auth/admin/login', authLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
-    const admin = await Admin.findOne({ username: username?.toLowerCase(), isActive: true }).select('+password');
+    if (!username || !password) return res.status(400).json({ ok: false, msg: 'Логин ва парол лозим' });
+    const admin = await Admin.findOne({ username: username.toLowerCase(), isActive: true }).select('+password');
     if (!admin || !(await admin.comparePassword(password)))
       return res.status(401).json({ ok: false, msg: 'Логин ё парол нодуруст' });
     await Admin.findByIdAndUpdate(admin._id, { lastLogin: new Date() });
@@ -316,10 +323,12 @@ app.get('/api/v1/admin/admins', requireAuth(['super_admin']), async (req, res) =
 app.patch('/api/v1/admin/orders/:id/assign', requireAuth(['admin','super_admin','moderator']), async (req, res) => {
   try {
     const { courierId } = req.body;
+    if (!courierId) return res.status(400).json({ ok: false, msg: 'courierId лозим аст' });
     const courier = await Courier.findById(courierId).lean();
     if (!courier) return res.status(404).json({ ok: false, msg: 'Курьер ёфт нашуд' });
     const order = await Order.findByIdAndUpdate(req.params.id,
       { status: 'assigned', courierId, courierName: courier.name, assignedAt: new Date() }, { new: true });
+    if (!order) return res.status(404).json({ ok: false, msg: 'Фармоиш ёфт нашуд' });
     dispatch?.cancelTimer(order._id);
     io.to(`courier:${courierId}`).emit('order_assigned', order);
     io.to('admins').emit('order_updated', order);
@@ -355,11 +364,16 @@ io.on('connection', async (socket) => {
   const { userId, role } = socket.data;
   logger.info(`[Socket] Connected: ${role} ${userId}`);
 
-  if (['admin','super_admin','moderator'].includes(role)) socket.join('admins');
-  else if (role === 'courier') {
+  if (['admin','super_admin','moderator'].includes(role)) {
+    socket.join('admins');
+  } else if (role === 'courier') {
     socket.join(`courier:${userId}`);
     await Courier.findByIdAndUpdate(userId, { socketId: socket.id });
-  } else if (role === 'customer') socket.join(`customer:${userId}`);
+  } else if (role === 'customer') {
+    // ✅ FIX: join both userId AND deviceId rooms for compatibility
+    socket.join(`customer:${userId}`);
+    if (socket.data.deviceId) socket.join(`customer:${socket.data.deviceId}`);
+  }
 
   socket.on('accept_order', async ({ orderId }) => {
     try {
@@ -367,8 +381,10 @@ io.on('connection', async (socket) => {
       if (!order || order.status !== 'new') return;
       dispatch?.cancelTimer(orderId);
       const courier = await Courier.findById(userId).lean();
+      if (!courier) return;
       const updated = await Order.findByIdAndUpdate(orderId,
         { status: 'assigned', courierId: userId, courierName: courier.name, assignedAt: new Date() }, { new: true });
+      // ✅ FIX: emit to both deviceId and userId rooms
       io.to(`customer:${order.deviceId}`).emit('order_accepted', { orderId, courierName: courier.name });
       io.to('admins').emit('order_updated', updated);
       socket.emit('accept_ack', { ok: true, order: updated });
@@ -380,7 +396,7 @@ io.on('connection', async (socket) => {
       await Order.findByIdAndUpdate(orderId, { $push: { declinedBy: userId } });
       dispatch?.cancelTimer(orderId);
       await dispatch?.redispatch(orderId);
-    } catch (e) { logger.error('decline_order', e); }
+    } catch (e) { logger.error('decline_order error:', e); }
   });
 
   socket.on('pickup_order', async ({ orderId }) => {
@@ -391,7 +407,7 @@ io.on('connection', async (socket) => {
         { status: 'picked_up', pickedUpAt: new Date() }, { new: true });
       io.to(`customer:${order.deviceId}`).emit('order_picked_up', { orderId });
       io.to('admins').emit('order_updated', updated);
-    } catch (e) { logger.error('pickup', e); }
+    } catch (e) { logger.error('pickup_order error:', e); }
   });
 
   socket.on('deliver_order', async ({ orderId }) => {
@@ -405,39 +421,45 @@ io.on('connection', async (socket) => {
       io.to(`customer:${order.deviceId}`).emit('order_delivered', { orderId, price: order.price });
       io.to('admins').emit('order_updated', updated);
       socket.emit('deliver_ack', { ok: true, earned: order.price });
-    } catch (e) { logger.error('deliver', e); }
+    } catch (e) { logger.error('deliver_order error:', e); }
   });
 
   socket.on('location_update', async ({ lat, lng }) => {
     if (role !== 'courier' || typeof lat !== 'number' || typeof lng !== 'number') return;
-    await Courier.findByIdAndUpdate(userId,
-      { location: { type: 'Point', coordinates: [lng, lat] }, locationUpdatedAt: new Date() });
-    io.to('admins').emit('courier_location', { courierId: userId, lat, lng });
-    const activeOrder = await Order.findOne({ courierId: userId, status: { $in: ['assigned','picked_up'] } }).lean();
-    if (activeOrder?.deviceId)
-      io.to(`customer:${activeOrder.deviceId}`).emit('courier_location', { courierId: userId, lat, lng, orderId: activeOrder._id });
+    try {
+      await Courier.findByIdAndUpdate(userId,
+        { location: { type: 'Point', coordinates: [lng, lat] }, locationUpdatedAt: new Date() });
+      io.to('admins').emit('courier_location', { courierId: userId, lat, lng });
+      const activeOrder = await Order.findOne({ courierId: userId, status: { $in: ['assigned','picked_up'] } }).lean();
+      if (activeOrder?.deviceId)
+        io.to(`customer:${activeOrder.deviceId}`).emit('courier_location', { courierId: userId, lat, lng, orderId: activeOrder._id });
+    } catch (e) { logger.error('location_update error:', e); }
   });
 
   socket.on('set_online', async ({ isOnline }) => {
     if (role !== 'courier') return;
-    await Courier.findByIdAndUpdate(userId, { isOnline: !!isOnline });
-    io.to('admins').emit('courier_status', { courierId: userId, isOnline });
+    try {
+      await Courier.findByIdAndUpdate(userId, { isOnline: !!isOnline });
+      io.to('admins').emit('courier_status', { courierId: userId, isOnline });
+    } catch (e) { logger.error('set_online error:', e); }
   });
 
   socket.on('disconnect', async () => {
     logger.info(`[Socket] Disconnected: ${role} ${userId}`);
     if (role === 'courier') {
-      await Courier.findByIdAndUpdate(userId, { socketId: null, isOnline: false });
-      io.to('admins').emit('courier_status', { courierId: userId, isOnline: false });
+      try {
+        await Courier.findByIdAndUpdate(userId, { socketId: null, isOnline: false });
+        io.to('admins').emit('courier_status', { courierId: userId, isOnline: false });
+      } catch (e) { logger.error('disconnect error:', e); }
     }
   });
 });
 
 // ── HEALTH & 404 ──────────────────────────────────────────────
 
-app.get('/health', (_, res) => res.json({ ok: true, uptime: process.uptime(), ts: Date.now() }));
-app.use((_, res) => res.status(404).json({ ok: false, msg: 'Маршрут ёфт нашуд' }));
-app.use((err, _, res, __) => { logger.error(err); res.status(500).json({ ok: false, msg: err.message }); });
+app.get('/health', (_req, res) => res.json({ ok: true, uptime: process.uptime(), ts: Date.now() }));
+app.use((_req, res, _next) => res.status(404).json({ ok: false, msg: 'Маршрут ёфт нашуд' }));
+app.use((err, _req, res, _next) => { logger.error(err); res.status(500).json({ ok: false, msg: err.message }); });
 
 // ── START ─────────────────────────────────────────────────────
 
@@ -450,7 +472,6 @@ async function start() {
 
     const adminCount = await Admin.countDocuments();
     if (adminCount === 0) {
-      const bcrypt = require('bcryptjs');
       await Admin.create({
         name: 'Super Admin', username: 'admin',
         password: await bcrypt.hash('admin123', 12), role: 'super_admin'
