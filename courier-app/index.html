@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Express Courier</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--s1:#161b22;--s2:#1c2333;
+  --bd:#30363d;--bd2:#3d4654;
+  --blue:#4493f8;--blue-d:#1c4a9e;--blue-g:rgba(68,147,248,.2);
+  --green:#3fb950;--green-g:rgba(63,185,80,.18);
+  --red:#f85149;--red-g:rgba(248,81,73,.18);
+  --amber:#d29922;--amber-g:rgba(210,153,34,.18);
+  --txt:#e6edf3;--txt2:#8b949e;--txt3:#484f58;
+  --r:14px;--r2:9px;--pw:370px;
+  --panel-trans: all 0.4s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%;overflow:hidden;font-family:'Sora',sans-serif;background:var(--bg);color:var(--txt)}
+
+/* ── MAP ── */
+#map{position:absolute;inset:0;z-index:1;transition:filter .4s}
+body.offline #map{filter:grayscale(.5) brightness(.88)}
+/* White map mode */
+body.mapwhite #map{filter:none}
+
+/* ── PANEL ── */
+#panel{
+  position:absolute;top:0;left:0;bottom:0;width:var(--pw);
+  background:var(--s1);border-right:1px solid var(--bd);
+  z-index:500;display:flex;flex-direction:column;
+  box-shadow:6px 0 30px rgba(0,0,0,.5);
+  transition:var(--panel-trans);
+}
+/* Expanded map mode → slide panel off screen */
+body.mapfull #panel{
+  transform:translateX(calc(-1 * var(--pw)));
+  box-shadow:none;
+}
+
+/* ── EXPAND BUTTON (arrow on edge of panel) ── */
+#expandBtn{
+  position:absolute;top:50%;left:var(--pw);
+  transform:translate(-50%,-50%);z-index:600;
+  width:28px;height:56px;
+  background:#fff;border:1px solid #e2e8f0;
+  border-radius:0 12px 12px 0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:4px 0 10px rgba(0,0,0,.1);
+  transition:var(--panel-trans);color:#334155;font-size:13px;
+}
+#expandBtn:hover{background:#f8fafc;color:var(--blue);}
+body.mapfull #expandBtn{
+  left:0;transform:translate(0,-50%);
+  border-radius:0 12px 12px 0;
+  background:var(--blue);color:#fff;border-color:var(--blue);
+  box-shadow:4px 0 18px var(--blue-g);
+}
+#expandBtn i{transition:transform .35s}
+body.mapfull #expandBtn i{transform:rotate(180deg)}
+
+/* ── HEADER ── */
+.ph{padding:16px 16px 0;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.brand-ico{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--blue-d),var(--blue));display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px var(--blue-g);flex-shrink:0}
+.brand-ico i{color:#fff;font-size:17px}
+.brand-txt h1{font-size:13px;font-weight:800;letter-spacing:-.2px}
+.brand-txt p{font-size:10px;color:var(--txt2);font-family:'IBM Plex Mono',monospace;margin-top:1px}
+.cbadge{margin-top:12px;background:var(--s2);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.cav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1c4a9e,var(--blue));display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex-shrink:0}
+.cinfo{flex:1;min-width:0}
+.cinfo strong{font-size:11px;font-weight:700;display:block}
+.cinfo span{font-size:10px;color:var(--txt2);font-family:'IBM Plex Mono',monospace}
+
+/* ── TOGGLE ── */
+.toggle-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.toggle-label{font-size:10px;font-weight:700;transition:color .3s;white-space:nowrap}
+.toggle-label.on{color:var(--green)}.toggle-label.off{color:var(--txt3)}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:12px;background:var(--s2);border:1px solid var(--bd2);transition:.3s}
+.toggle input:checked~.toggle-track{background:var(--green);border-color:var(--green);box-shadow:0 0 10px var(--green-g)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.toggle input:checked~.toggle-thumb{left:23px}
+
+/* ── STATUS BAR ── */
+.sbar{margin-top:10px;border-radius:var(--r2);padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;transition:.3s}
+.sbar.online{background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.25);color:var(--green)}
+.sbar.offline{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.2);color:var(--red)}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:blink 2s infinite}
+.sdot.online{background:var(--green);box-shadow:0 0 7px var(--green)}
+.sdot.offline{background:var(--red);box-shadow:0 0 7px var(--red);animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:5px;padding:12px 16px 0;flex-shrink:0}
+.tbtn{flex:1;background:none;border:1px solid var(--bd);border-radius:var(--r2);padding:8px 4px;color:var(--txt2);font-size:10px;font-weight:700;cursor:pointer;transition:.18s;font-family:'Sora',sans-serif}
+.tbtn.active{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 12px var(--blue-g)}
+.cnt{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.22);border-radius:20px;min-width:15px;height:15px;padding:0 4px;font-size:9px;margin-left:3px}
+.sep{height:1px;background:var(--bd);margin:12px 16px 0;flex-shrink:0}
+
+/* ── LIST ── */
+.olist{flex:1;overflow-y:auto;padding:10px 16px 20px}
+.olist::-webkit-scrollbar{width:3px}
+.olist::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+.pane{display:none;flex-direction:column;gap:9px}
+.pane.active{display:flex}
+.empty{text-align:center;padding:36px 10px;color:var(--txt3);font-size:11px;line-height:1.7}
+.empty i{font-size:28px;display:block;margin-bottom:10px;opacity:.3}
+.offline-msg{text-align:center;padding:28px 16px;background:rgba(248,81,73,.06);border:1px solid rgba(248,81,73,.15);border-radius:var(--r);margin:6px 0}
+.offline-msg i{font-size:26px;color:var(--red);display:block;margin-bottom:8px;opacity:.7}
+.offline-msg p{font-size:11px;color:var(--txt2);line-height:1.6}
+.offline-msg strong{color:var(--red)}
+
+/* ── CARDS ── */
+.card{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:13px;cursor:pointer;transition:border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
+.card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:opacity .18s}
+.card:hover{border-color:var(--bd2);box-shadow:0 4px 18px rgba(0,0,0,.35)}
+.card:hover::after,.card.on::after{opacity:1}
+.card.on{border-color:var(--blue);box-shadow:0 0 18px var(--blue-g)}
+.ctop{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cnum{font-size:12px;font-weight:800;font-family:'IBM Plex Mono',monospace}
+.pill{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px}
+.pill-p{background:var(--amber-g);color:var(--amber);border:1px solid rgba(210,153,34,.28)}
+.pill-a{background:var(--blue-g);color:var(--blue);border:1px solid rgba(68,147,248,.3)}
+.rb{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r2);padding:10px 11px;margin-bottom:9px}
+.rrow{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--txt2)}
+.rrow+.rrow{margin-top:7px}
+.rdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:1px}
+.rdot.from{background:var(--green);box-shadow:0 0 6px var(--green)}
+.rdot.to{background:var(--red);box-shadow:0 0 6px var(--red)}
+.rdash{width:1px;height:13px;margin:2px 4px;background:repeating-linear-gradient(to bottom,var(--bd2) 0,var(--bd2) 3px,transparent 3px,transparent 7px)}
+.radr{color:var(--txt);font-size:11px;line-height:1.4}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.chip{background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:3px 7px;font-size:10px;color:var(--txt2);display:flex;align-items:center;gap:4px}
+.chip i{font-size:9px;color:var(--blue)}
+.tel{display:flex;align-items:center;gap:7px;background:rgba(68,147,248,.07);border:1px solid rgba(68,147,248,.15);border-radius:var(--r2);padding:6px 10px;margin-bottom:7px;font-size:10px;color:var(--txt2)}
+.tel a{color:var(--blue);text-decoration:none;font-weight:700;font-family:'IBM Plex Mono',monospace}
+.tel a:hover{text-decoration:underline}
+.pbar{height:3px;border-radius:10px;background:var(--bd);margin:8px 0;overflow:hidden}
+.pfill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .6s}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:var(--r2);font-size:10px;font-weight:700;border:none;cursor:pointer;transition:.15s;font-family:'Sora',sans-serif}
+.btn-g{background:var(--green);color:#fff;box-shadow:0 0 10px var(--green-g)}.btn-g:hover{filter:brightness(1.1)}
+.btn-b{background:rgba(68,147,248,.12);color:var(--blue);border:1px solid rgba(68,147,248,.28)}.btn-b:hover{background:rgba(68,147,248,.22)}
+.btn-r{background:var(--red);color:#fff;box-shadow:0 0 10px var(--red-g)}.btn-r:hover{filter:brightness(1.1)}
+
+/* ── MAP CONTROLS ── */
+.mctrl{position:absolute;top:14px;right:14px;z-index:600;display:flex;flex-direction:column;gap:7px}
+.mbtn{background:#fff;border:1px solid #e2e8f0;border-radius:var(--r2);padding:8px 13px;color:#334155;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.18s;font-family:'Sora',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.mbtn:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ── ROUTE STRIP (top of map) ── */
+#rstrip{
+  position:absolute;top:14px;z-index:600;
+  left:calc(var(--pw) + 44px);right:190px;
+  background:#fff;border:1px solid #e2e8f0;
+  border-radius:30px;padding:8px 16px;
+  display:none;align-items:center;gap:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.1);font-size:11px;overflow:hidden;
+  transition:left .4s cubic-bezier(.4,0,.2,1);
+}
+#rstrip.show{display:flex}
+body.mapfull #rstrip{left:44px}
+.rs-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.rs-txt{color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.rs-arrow{color:var(--blue);font-size:13px;flex-shrink:0}
+
+/* ── MAP LEGEND ── */
+#mapleg{
+  position:absolute;bottom:20px;right:14px;z-index:600;
+  background:#fff;border:1px solid #e2e8f0;
+  border-radius:var(--r2);padding:10px 14px;font-size:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+  transition:.4s;
+}
+.lr{display:flex;align-items:center;gap:7px;color:#64748b}
+.lr+.lr{margin-top:5px}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ── MAP CONTROLS white mode ── */
+body.mapfull #expandBtn{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* ── OFFLINE OVERLAY ── */
+#off-ov{position:absolute;z-index:600;background:#fff;border:1px solid #fecaca;border-radius:var(--r);padding:18px 24px;text-align:center;display:none;box-shadow:0 4px 20px rgba(0,0,0,.12);
+  top:50%;left:calc(var(--pw)/2 + var(--pw));transform:translate(-50%,-50%);
+  transition:left .4s cubic-bezier(.4,0,.2,1);
+}
+body.offline #off-ov{display:block}
+body.mapfull #off-ov{left:50%}
+#off-ov i{font-size:30px;color:var(--red);display:block;margin-bottom:8px}
+#off-ov p{font-size:12px;color:#64748b;line-height:1.6}
+#off-ov strong{color:var(--red)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;left:calc(var(--pw) + 20px);background:#fff;border:1px solid #e2e8f0;color:#334155;padding:9px 18px;border-radius:30px;font-size:11px;font-weight:600;z-index:900;box-shadow:0 4px 16px rgba(0,0,0,.12);opacity:0;pointer-events:none;transition:opacity .25s,left .4s;white-space:nowrap}
+body.mapfull #toast{left:20px}
+
+/* ── LEAFLET POPUP ── */
+.leaflet-popup-content-wrapper{background:#fff!important;color:#1e293b!important;border:1px solid #e2e8f0!important;border-radius:12px!important;box-shadow:0 4px 20px rgba(0,0,0,.15)!important}
+.leaflet-popup-tip{background:#fff!important}
+.leaflet-popup-content{font-size:11px!important;line-height:1.6!important;font-family:'Sora',sans-serif!important;color:#334155!important}
+.leaflet-popup-content a{color:var(--blue)}
+.leaflet-popup-content b{display:block;margin-bottom:3px}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  :root{--pw:100%}
+  #panel{top:auto;left:0;right:0;bottom:0;width:100%;height:55vh;border-right:none;border-top:1px solid var(--bd);transform:none!important}
+  body.mapfull #panel{transform:translateY(100%)!important}
+  #expandBtn{top:auto;bottom:55vh;left:50%!important;transform:translate(-50%,50%)!important;width:56px;height:28px;border-radius:12px 12px 0 0;flex-direction:column}
+  body.mapfull #expandBtn{bottom:0;border-radius:12px 12px 0 0}
+  #rstrip,#mapleg,#off-ov{display:none!important}
+  .mctrl{top:10px;right:10px}
+  #toast{left:50%;transform:translateX(-50%);bottom:calc(55vh + 10px)}
+  body.mapfull #toast{bottom:10px}
+}
+</style>
+</head>
+<body class="offline">
+
+<div id="map"></div>
+
+<!-- ── EXPAND ARROW BUTTON ── -->
+<button id="expandBtn" title="Харитаро калон кун">
+  <i class="fas fa-chevron-left"></i>
+</button>
+
+<!-- Route strip -->
+<div id="rstrip">
+  <div class="rs-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+  <span class="rs-txt" id="rs-from">—</span>
+  <i class="fas fa-arrow-right rs-arrow"></i>
+  <div class="rs-dot" style="background:var(--red);box-shadow:0 0 6px var(--red)"></div>
+  <span class="rs-txt" id="rs-to">—</span>
+</div>
+
+<!-- Offline overlay -->
+<div id="off-ov">
+  <i class="fas fa-wifi-slash"></i>
+  <p><strong>Шумо офлайн ҳастед</strong><br>Барои қабули фармоиш<br>онлайн шавед</p>
+</div>
+
+<!-- Legend -->
+<div id="mapleg">
+  <div class="lr"><div class="ld" style="background:var(--green);box-shadow:0 0 5px var(--green)"></div>Гирифтан</div>
+  <div class="lr"><div class="ld" style="background:var(--red);box-shadow:0 0 5px var(--red)"></div>Расонидан</div>
+  <div class="lr"><div class="ld" style="background:var(--blue);box-shadow:0 0 5px var(--blue)"></div>Курьер</div>
+  <div class="lr"><div class="ld" style="background:var(--amber);box-shadow:0 0 5px var(--amber)"></div>Фармоиши нав</div>
+</div>
+
+<!-- PANEL -->
+<div id="panel">
+  <div class="ph">
+    <div class="brand">
+      <div class="brand-ico"><i class="fas fa-motorcycle"></i></div>
+      <div class="brand-txt" style="flex:1;min-width:0">
+        <h1>Express Courier</h1>
+        <p>Душанбе, Тоҷикистон</p>
+      </div>
+    </div>
+    <div class="cbadge">
+      <div class="cav"><i class="fas fa-user"></i></div>
+      <div class="cinfo">
+        <strong>Алишер Раҳимов</strong>
+        <span>+992 90 123 45 67</span>
+      </div>
+      <div class="toggle-wrap">
+        <span class="toggle-label off" id="tlbl">Офлайн</span>
+        <label class="toggle">
+          <input type="checkbox" id="onlineToggle">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+    <div class="sbar offline" id="sbar">
+      <div class="sdot offline" id="sdot"></div>
+      <i class="fas fa-wifi-slash" id="sicon"></i>
+      <span id="stxt">Шумо офлайн — фармоишҳо намоиш нест</span>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tbtn active" data-tab="av"><i class="fas fa-inbox"></i> Дастрас</button>
+    <button class="tbtn" data-tab="ac"><i class="fas fa-motorcycle"></i> Фаъол <span class="cnt" id="acnt">0</span></button>
+  </div>
+  <div class="sep"></div>
+  <div class="olist">
+    <div class="pane active" id="pane-av"></div>
+    <div class="pane" id="pane-ac"></div>
+  </div>
+</div>
+
+<!-- Map controls -->
+<div class="mctrl">
+  <button class="mbtn" id="showAllBtn"><i class="fas fa-layer-group"></i> Ҳама</button>
+  <button class="mbtn" id="resetBtn"><i class="fas fa-compress-arrows-alt"></i> Марказ</button>
+  <button class="mbtn" id="clearBtn"><i class="fas fa-times"></i> Тоза</button>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var ME = {id:1, name:"Алишер Раҳимов", phone:"+992 90 123 45 67"};
+var CENTER = [38.560, 68.785];
+var isOnline = false;
+var isExpanded = false;
+
+// ── TILE LAYERS ──
+var darkTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'© OSM © CartoDB', subdomains:'abcd', maxZoom:19
+});
+var lightTile = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'© OSM © CartoDB', subdomains:'abcd', maxZoom:19
+});
+
+var map = L.map('map',{zoomControl:false}).setView(CENTER,13);
+darkTile.addTo(map);
+L.control.zoom({position:'bottomright'}).addTo(map);
+
+// ── STATE ──
+var ORDERS = [
+  {id:1, from:"Бозори Баракат, Душанбе", to:"кӯч. Сомонӣ 15", fC:[38.568,68.772], tC:[38.545,68.777], wt:5, cargo:"📦 Баста", dist:"2.3 км", price:"10 сомонӣ", fP:"+992 90 111 22 33", tP:"+992 90 445 66 77", status:"pending", cid:null, geom:null, step:0},
+  {id:2, from:"Истгоҳи Айнӣ, Душанбе", to:"хиёб. Рӯдакӣ 45", fC:[38.562,68.790], tC:[38.575,68.805], wt:12, cargo:"🏋️ Вазнин", dist:"4.1 км", price:"19 сомонӣ", fP:"+992 92 765 43 21", tP:"+992 98 765 43 21", status:"pending", cid:null, geom:null, step:0},
+  {id:3, from:"Душанбе Молл, Сомонӣ", to:"мкр. Зарнисор 12а", fC:[38.582,68.762], tC:[38.553,68.748], wt:3, cargo:"🛒 Хариди хурд", dist:"3.7 км", price:"15 сомонӣ", fP:"+992 93 321 65 54", tP:"+992 77 654 32 10", status:"pending", cid:null, geom:null, step:0}
+];
+
+var rLayer=null, fMark=null, tMark=null;
+var cMarks={}, cTimers={};
+var pendingMarks={};
+var activeId=null;
+
+// ── ICONS ──
+function mkIcon(color,fa,size){
+  size=size||36;
+  return L.divIcon({
+    html:'<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;border:3px solid rgba(255,255,255,.9);box-shadow:0 2px 10px rgba(0,0,0,.4),0 0 14px '+color+'66"><i class="fas '+fa+'" style="color:#fff;font-size:'+(size*0.38)+'px"></i></div>',
+    iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-(size/2+4)]
+  });
+}
+// White-map icons (darker shadow for light background)
+function mkIconLight(color,fa,size){
+  size=size||36;
+  return L.divIcon({
+    html:'<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+color+';display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.25),0 0 10px '+color+'88"><i class="fas '+fa+'" style="color:#fff;font-size:'+(size*0.38)+'px"></i></div>',
+    iconSize:[size,size],iconAnchor:[size/2,size/2],popupAnchor:[0,-(size/2+4)]
+  });
+}
+function icon(color,fa,size){
+  return isExpanded ? mkIconLight(color,fa,size) : mkIcon(color,fa,size);
+}
+
+// ── EXPAND TOGGLE ──
+document.getElementById('expandBtn').addEventListener('click', function(){
+  isExpanded = !isExpanded;
+  document.body.classList.toggle('mapfull', isExpanded);
+  document.body.classList.toggle('mapwhite', isExpanded);
+
+  if(isExpanded){
+    // Switch to light tile
+    map.removeLayer(darkTile);
+    lightTile.addTo(map);
+    toast('🗺️ Харитаи калон — сафед','blue');
+  } else {
+    // Switch back to dark tile
+    map.removeLayer(lightTile);
+    darkTile.addTo(map);
+    toast('Панел баргашт','blue');
+  }
+
+  setTimeout(function(){ map.invalidateSize(); }, 420);
+});
+
+// ── ONLINE/OFFLINE ──
+var tog = document.getElementById('onlineToggle');
+tog.addEventListener('change', function(){
+  isOnline = tog.checked;
+  document.body.classList.toggle('offline', !isOnline);
+  updateStatusUI();
+  if(isOnline){ showAllOnMap(); toast('🟢 Шумо онлайн — фармоишҳо дастрасанд','green'); }
+  else { clearAllPendingMarks(); clearMap(); toast('🔴 Шумо офлайн шудед','red'); }
+  render();
+});
+
+function updateStatusUI(){
+  var lbl=document.getElementById('tlbl');
+  var bar=document.getElementById('sbar');
+  var dot=document.getElementById('sdot');
+  var ico=document.getElementById('sicon');
+  var txt=document.getElementById('stxt');
+  if(isOnline){
+    lbl.textContent='Онлайн';lbl.className='toggle-label on';
+    bar.className='sbar online';dot.className='sdot online';
+    ico.className='fas fa-wifi';txt.textContent='Шумо онлайн — фармоишҳо нишон дода мешаванд';
+  } else {
+    lbl.textContent='Офлайн';lbl.className='toggle-label off';
+    bar.className='sbar offline';dot.className='sdot offline';
+    ico.className='fas fa-wifi-slash';txt.textContent='Шумо офлайн — фармоишҳо намоиш нест';
+  }
+}
+
+// ── SHOW ALL ON MAP ──
+function showAllOnMap(){
+  clearAllPendingMarks();
+  var pending=ORDERS.filter(function(o){return o.status==='pending';});
+  var bounds=[];
+  pending.forEach(function(o){
+    var m=L.marker(o.fC,{icon:icon('#d29922','fa-box',30)}).addTo(map);
+    m.bindPopup(
+      '<b style="color:#d29922">📦 ФАРМОИШИ НАВ №'+pad(o.id)+'</b><br>'+
+      '<b>Аз:</b> '+o.from+'<br><b>Ба:</b> '+o.to+'<br>'+
+      o.cargo+' · '+o.wt+' кг<br>'+
+      '<b style="color:#3fb950">'+o.price+'</b><br>'+
+      '<small style="color:#8b949e">'+o.fP+'</small>'
+    );
+    pendingMarks[o.id]=m;
+    bounds.push(o.fC); bounds.push(o.tC);
+  });
+  var mine=ORDERS.filter(function(o){return o.cid===ME.id&&o.status==='accepted';});
+  mine.forEach(function(o){bounds.push(o.fC);bounds.push(o.tC);});
+  if(bounds.length) map.fitBounds(L.latLngBounds(bounds),{padding:[55,55]});
+}
+
+function clearAllPendingMarks(){
+  Object.keys(pendingMarks).forEach(function(id){map.removeLayer(pendingMarks[id]);});
+  pendingMarks={};
+}
+
+// ── CLEAR MAP ──
+function clearMap(){
+  if(rLayer){map.removeLayer(rLayer);rLayer=null;}
+  if(fMark){map.removeLayer(fMark);fMark=null;}
+  if(tMark){map.removeLayer(tMark);tMark=null;}
+  document.getElementById('rstrip').classList.remove('show');
+  activeId=null; render();
+}
+
+// ── SHOW ROUTE ──
+async function showRoute(o){
+  if(pendingMarks[o.id]){map.removeLayer(pendingMarks[o.id]);delete pendingMarks[o.id];}
+  if(rLayer){map.removeLayer(rLayer);rLayer=null;}
+  if(fMark){map.removeLayer(fMark);fMark=null;}
+  if(tMark){map.removeLayer(tMark);tMark=null;}
+  activeId=o.id;
+  document.getElementById('rs-from').textContent=o.from;
+  document.getElementById('rs-to').textContent=o.to;
+  document.getElementById('rstrip').classList.add('show');
+
+  if(!o.geom){
+    try{
+      var url='https://router.project-osrm.org/route/v1/driving/'+o.fC[1]+','+o.fC[0]+';'+o.tC[1]+','+o.tC[0]+'?overview=full&geometries=geojson';
+      var r=await fetch(url);
+      if(r.ok){var d=await r.json();if(d.routes&&d.routes[0])o.geom=d.routes[0].geometry;}
+    }catch(e){}
+  }
+
+  var lineColor = isExpanded ? '#2563eb' : '#4493f8';
+  if(o.geom){
+    rLayer=L.geoJSON(o.geom,{style:{color:lineColor,weight:5,opacity:.9,lineCap:'round',lineJoin:'round'}}).addTo(map);
+  } else {
+    rLayer=L.polyline([o.fC,o.tC],{color:lineColor,weight:4,dashArray:'8 8',opacity:.8}).addTo(map);
+  }
+
+  fMark=L.marker(o.fC,{icon:icon('#3fb950','fa-store')}).addTo(map);
+  fMark.bindPopup('<b style="color:#3fb950">🟢 АЗ КУҶО</b><br>'+o.from+'<br><a href="tel:'+o.fP+'">'+o.fP+'</a>').openPopup();
+  tMark=L.marker(o.tC,{icon:icon('#f85149','fa-flag-checkered')}).addTo(map);
+  tMark.bindPopup('<b style="color:#f85149">🔴 БА КУҶО</b><br>'+o.to+'<br><a href="tel:'+o.tP+'">'+o.tP+'</a>');
+  map.fitBounds(L.latLngBounds([o.fC,o.tC]),{padding:[55,55]});
+  if(o.status==='accepted'&&o.cid===ME.id&&!cTimers[o.id])startAnim(o);
+  render();
+}
+
+// ── ANIMATION ──
+function startAnim(o){
+  if(cTimers[o.id])clearInterval(cTimers[o.id]);
+  if(!o.geom)return;
+  var coords=o.geom.type==='LineString'?o.geom.coordinates.map(function(c){return[c[1],c[0]];}): [o.fC,o.tC];
+  if(coords.length<2)return;
+  var step=o.step||0;
+  if(step>=coords.length-1)step=0;
+  if(cMarks[o.id])map.removeLayer(cMarks[o.id]);
+  var cm=L.marker(coords[step],{icon:icon('#4493f8','fa-motorcycle'),zIndexOffset:1000}).addTo(map);
+  cm.bindPopup('<b>🏍️ '+ME.name+'</b><br>'+ME.phone);
+  cMarks[o.id]=cm;
+  cTimers[o.id]=setInterval(function(){
+    if(o.status!=='accepted'){clearInterval(cTimers[o.id]);delete cTimers[o.id];return;}
+    if(step<coords.length-1){
+      step++;o.step=step;
+      cm.setLatLng(coords[step]);
+      var pct=Math.round((step/(coords.length-1))*100);
+      var pb=document.getElementById('pb-'+o.id);
+      if(pb)pb.style.width=pct+'%';
+      if(step===coords.length-1){
+        clearInterval(cTimers[o.id]);delete cTimers[o.id];
+        o.status='delivered';o.step=0;
+        map.removeLayer(cm);delete cMarks[o.id];
+        if(activeId===o.id)clearMap();
+        render();
+        toast('🎉 Фармоиш №'+o.id+' расонида шуд!','green');
+      }
+    }
+  },1300);
+}
+
+// ── ACCEPT / DELIVER ──
+function accept(id){
+  if(!isOnline){toast('⚠️ Аввал онлайн шавед!','red');return;}
+  var o=ORDERS.find(function(x){return x.id===id;});
+  if(!o||o.status!=='pending')return;
+  o.status='accepted';o.cid=ME.id;o.step=0;
+  if(pendingMarks[id]){map.removeLayer(pendingMarks[id]);delete pendingMarks[id];}
+  toast('✅ Фармоиш №'+id+' қабул карда шуд!','green');
+  setTab('ac'); showRoute(o);
+}
+function deliver(id){
+  var o=ORDERS.find(function(x){return x.id===id;});
+  if(!o||o.status!=='accepted')return;
+  o.status='delivered';o.step=0;
+  if(cTimers[id]){clearInterval(cTimers[id]);delete cTimers[id];}
+  if(cMarks[id]){map.removeLayer(cMarks[id]);delete cMarks[id];}
+  if(activeId===id)clearMap();
+  render();
+  toast('✅ Фармоиш №'+id+' расонида шуд!','green');
+}
+function viewMap(id){var o=ORDERS.find(function(x){return x.id===id;});if(o)showRoute(o);}
+function trackOrder(id){var o=ORDERS.find(function(x){return x.id===id;});if(o)showRoute(o);}
+
+// ── RENDER ──
+function render(){
+  var pending=ORDERS.filter(function(o){return o.status==='pending';});
+  var mine=ORDERS.filter(function(o){return o.cid===ME.id&&o.status==='accepted';});
+  document.getElementById('acnt').textContent=mine.length;
+
+  var av=document.getElementById('pane-av');
+  if(!isOnline){
+    av.innerHTML='<div class="offline-msg"><i class="fas fa-wifi-slash"></i><p>Барои дидани фармоишҳо<br><strong>онлайн шавед</strong></p></div>';
+  } else if(!pending.length){
+    av.innerHTML='<div class="empty"><i class="fas fa-box-open"></i>Ҳоло фармоиши нав нест</div>';
+  } else {
+    var h='';
+    pending.forEach(function(o){
+      h+='<div class="card'+(activeId===o.id?' on':'')+'" onclick="viewMap('+o.id+')">'+
+        '<div class="ctop"><span class="cnum">№'+pad(o.id)+'</span><span class="pill pill-p">Интизори курьер</span></div>'+
+        '<div class="rb">'+
+          '<div class="rrow"><div class="rdot from"></div><span class="radr">'+o.from+'</span></div>'+
+          '<div style="display:flex;padding:0 4px"><div class="rdash"></div></div>'+
+          '<div class="rrow"><div class="rdot to"></div><span class="radr">'+o.to+'</span></div>'+
+        '</div>'+
+        '<div class="chips">'+
+          '<div class="chip"><i class="fas fa-box"></i>'+o.cargo+'</div>'+
+          '<div class="chip"><i class="fas fa-weight-hanging"></i>'+o.wt+' кг</div>'+
+          '<div class="chip"><i class="fas fa-road"></i>'+o.dist+'</div>'+
+          '<div class="chip"><i class="fas fa-coins"></i>'+o.price+'</div>'+
+        '</div>'+
+        '<div class="tel"><i class="fas fa-phone" style="color:var(--blue);font-size:9px"></i>Фиристанда: <a href="tel:'+o.fP+'" onclick="event.stopPropagation()">'+o.fP+'</a></div>'+
+        '<div class="acts">'+
+          '<button class="btn btn-g" onclick="event.stopPropagation();accept('+o.id+')"><i class="fas fa-check-circle"></i> Қабул</button>'+
+          '<button class="btn btn-b" onclick="event.stopPropagation();viewMap('+o.id+')"><i class="fas fa-map-marked-alt"></i> Харита</button>'+
+        '</div></div>';
+    });
+    av.innerHTML=h;
+  }
+
+  var ac=document.getElementById('pane-ac');
+  if(!mine.length){
+    ac.innerHTML='<div class="empty"><i class="fas fa-motorcycle"></i>Фармоиши фаъол нест</div>';
+  } else {
+    var h2='';
+    mine.forEach(function(o){
+      var maxS=o.geom&&o.geom.coordinates?o.geom.coordinates.length-1:1;
+      var pct=maxS>0?Math.round((o.step/maxS)*100):0;
+      h2+='<div class="card'+(activeId===o.id?' on':'')+'" onclick="trackOrder('+o.id+')">'+
+        '<div class="ctop"><span class="cnum">№'+pad(o.id)+'</span><span class="pill pill-a">Дар роҳ — '+pct+'%</span></div>'+
+        '<div class="rb">'+
+          '<div class="rrow"><div class="rdot from"></div><span class="radr">'+o.from+'</span></div>'+
+          '<div style="display:flex;padding:0 4px"><div class="rdash"></div></div>'+
+          '<div class="rrow"><div class="rdot to"></div><span class="radr">'+o.to+'</span></div>'+
+        '</div>'+
+        '<div class="chips"><div class="chip"><i class="fas fa-road"></i>'+o.dist+'</div><div class="chip"><i class="fas fa-coins"></i>'+o.price+'</div></div>'+
+        '<div class="tel"><i class="fas fa-user" style="color:var(--blue);font-size:9px"></i>Фиристанда: <a href="tel:'+o.fP+'" onclick="event.stopPropagation()">'+o.fP+'</a></div>'+
+        '<div class="tel" style="margin-top:-3px"><i class="fas fa-user-check" style="color:var(--green);font-size:9px"></i>Қабулкунанда: <a href="tel:'+o.tP+'" onclick="event.stopPropagation()">'+o.tP+'</a></div>'+
+        '<div class="pbar"><div class="pfill" id="pb-'+o.id+'" style="width:'+pct+'%"></div></div>'+
+        '<div class="acts">'+
+          '<button class="btn btn-b" onclick="event.stopPropagation();trackOrder('+o.id+')"><i class="fas fa-location-dot"></i> Пайгирӣ</button>'+
+          '<button class="btn btn-r" onclick="event.stopPropagation();deliver('+o.id+')"><i class="fas fa-check-double"></i> Расонида шуд</button>'+
+        '</div></div>';
+    });
+    ac.innerHTML=h2;
+  }
+}
+
+function pad(n){return String(n).padStart(3,'0');}
+
+// ── TABS ──
+function setTab(id){
+  document.querySelectorAll('.tbtn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===id);});
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('active',p.id==='pane-'+id);});
+}
+document.querySelectorAll('.tbtn').forEach(function(b){
+  b.addEventListener('click',function(){setTab(b.dataset.tab);});
+});
+
+// ── MAP BUTTONS ──
+document.getElementById('showAllBtn').addEventListener('click',function(){
+  if(!isOnline){toast('⚠️ Онлайн шавед!','red');return;}
+  showAllOnMap(); toast('Ҳама фармоишҳо дар харита','blue');
+});
+document.getElementById('resetBtn').addEventListener('click',function(){
+  map.flyTo(CENTER,13,{duration:1.2}); toast('Харита ба марказ баргашт','blue');
+});
+document.getElementById('clearBtn').addEventListener('click',function(){
+  clearMap(); if(isOnline)showAllOnMap(); toast('Харита тоза шуд','blue');
+});
+
+// ── TOAST ──
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  var c={green:'rgba(63,185,80,.08)',blue:'rgba(68,147,248,.08)',red:'rgba(248,81,73,.08)'};
+  var b={green:'#86efac',blue:'#bfdbfe',red:'#fca5a5'};
+  var t={green:'#15803d',blue:'#1d4ed8',red:'#dc2626'};
+  el.style.background=c[type]||c.blue;
+  el.style.borderColor=b[type]||b.blue;
+  el.style.color=t[type]||t.blue;
+  el.textContent=msg; el.style.opacity='1';
+  clearTimeout(window._tt);
+  window._tt=setTimeout(function(){el.style.opacity='0';},3000);
+}
+
+window.addEventListener('resize',function(){map.invalidateSize();});
+
+// ── INIT ──
+render();
+toast('Хуш омадед! Онлайн шавед ва фармоиш қабул кунед 👋','blue');
+</script>
+</body>
+</html>
