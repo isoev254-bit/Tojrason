@@ -1,1 +1,232 @@
-пвап
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+  <meta charset="UTF-8">
+  <title>Админ Панел - Tojrason</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      display: flex;
+      height: 100vh;
+    }
+
+    #map {
+      flex: 3;
+    }
+
+    #sidebar {
+      flex: 1;
+      background: #111;
+      color: white;
+      padding: 10px;
+      overflow: auto;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .courier, .order {
+      padding: 8px;
+      border-bottom: 1px solid #333;
+    }
+
+    button {
+      padding: 5px 10px;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+
+    input {
+      width: 100%;
+      padding: 5px;
+      margin-top: 5px;
+    }
+
+    #chat {
+      margin-top: 20px;
+    }
+
+    #messages {
+      height: 150px;
+      overflow: auto;
+      background: #222;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="sidebar">
+  <h2>Админ Панел</h2>
+
+  <h3>🚴 Курьерҳо</h3>
+  <div id="couriers"></div>
+
+  <h3>📦 Заказҳо</h3>
+  <div id="orders"></div>
+
+  <div id="chat">
+    <h3>💬 Чат</h3>
+    <div id="messages"></div>
+    <input id="msgInput" placeholder="Паём навис...">
+    <button onclick="sendMessage()">Фиристодан</button>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+/* =========================
+   MAP INIT
+========================= */
+const map = L.map('map').setView([38.5598, 68.7870], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+}).addTo(map);
+
+/* =========================
+   DATA (TEMP)
+========================= */
+let couriers = [
+  {id: 1, name: "Ali", lat: 38.56, lng: 68.78, online: true},
+  {id: 2, name: "Ahmad", lat: 38.57, lng: 68.79, online: true}
+];
+
+let orders = [
+  {id: 101, lat: 38.558, lng: 68.785},
+  {id: 102, lat: 38.565, lng: 68.790}
+];
+
+let courierMarkers = {};
+let orderMarkers = {};
+
+/* =========================
+   RENDER COURIERS
+========================= */
+function renderCouriers() {
+  const div = document.getElementById("couriers");
+  div.innerHTML = "";
+
+  couriers.forEach(c => {
+    div.innerHTML += `
+      <div class="courier">
+        🚴 ${c.name} ${c.online ? "🟢" : "🔴"}<br>
+        <button onclick="callCourier('${c.name}')">📞 Занг</button>
+        <button onclick="removeCourier(${c.id})">❌ Хориҷ</button>
+      </div>
+    `;
+
+    if (!courierMarkers[c.id]) {
+      courierMarkers[c.id] = L.marker([c.lat, c.lng])
+        .addTo(map)
+        .bindPopup("🚴 " + c.name);
+    } else {
+      courierMarkers[c.id].setLatLng([c.lat, c.lng]);
+    }
+  });
+}
+
+/* =========================
+   RENDER ORDERS
+========================= */
+function renderOrders() {
+  const div = document.getElementById("orders");
+  div.innerHTML = "";
+
+  orders.forEach(o => {
+    div.innerHTML += `
+      <div class="order">
+        📦 Заказ #${o.id}
+      </div>
+    `;
+
+    if (!orderMarkers[o.id]) {
+      orderMarkers[o.id] = L.marker([o.lat, o.lng])
+        .addTo(map)
+        .bindPopup("📦 #" + o.id);
+    }
+  });
+}
+
+/* =========================
+   AUTO ASSIGN ORDER
+========================= */
+function assignOrders() {
+  orders.forEach(order => {
+    let nearest = couriers[0];
+
+    couriers.forEach(c => {
+      if (distance(c, order) < distance(nearest, order)) {
+        nearest = c;
+      }
+    });
+
+    console.log("Заказ", order.id, "→ Курьер", nearest.name);
+  });
+}
+
+function distance(a, b) {
+  return Math.sqrt(
+    Math.pow(a.lat - b.lat, 2) +
+    Math.pow(a.lng - b.lng, 2)
+  );
+}
+
+/* =========================
+   ACTIONS
+========================= */
+function callCourier(name) {
+  alert("Занг ба " + name);
+}
+
+function removeCourier(id) {
+  couriers = couriers.filter(c => c.id !== id);
+  map.removeLayer(courierMarkers[id]);
+  renderCouriers();
+}
+
+/* =========================
+   CHAT
+========================= */
+function sendMessage() {
+  const input = document.getElementById("msgInput");
+  const messages = document.getElementById("messages");
+
+  if (input.value.trim() === "") return;
+
+  messages.innerHTML += "<div>👤: " + input.value + "</div>";
+  input.value = "";
+}
+
+/* =========================
+   REAL-TIME SIMULATION
+========================= */
+setInterval(() => {
+  couriers.forEach(c => {
+    c.lat += (Math.random() - 0.5) * 0.001;
+    c.lng += (Math.random() - 0.5) * 0.001;
+  });
+
+  renderCouriers();
+}, 2000);
+
+/* =========================
+   INIT
+========================= */
+renderCouriers();
+renderOrders();
+assignOrders();
+
+</script>
+
+</body>
+</html>
