@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Tojrason \u2014 \u0410\u0434\u043c\u0438\u043d \u041f\u0430\u043d\u0435\u043b</title>
+<title>Tojrason — Админ Панел</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -34,125 +34,55 @@ input::placeholder,textarea::placeholder{color:var(--text-3)}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:10px}
 
-/* ========= APP SHELL ========= */
 .app{display:flex;flex-direction:column;height:100%;overflow:hidden}
 
-/* ===== TOP BAR ===== */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  height:56px;padding:0 16px;
-  background:var(--bg-1);border-bottom:1px solid var(--border-1);
-  flex-shrink:0;z-index:100;gap:12px;
-}
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 16px;background:var(--bg-1);border-bottom:1px solid var(--border-1);flex-shrink:0;z-index:100;gap:12px}
 .topbar-brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo{
-  width:34px;height:34px;border-radius:10px;
-  background:linear-gradient(135deg,var(--blue),#7c3aed);
-  display:grid;place-items:center;font-size:16px;font-weight:800;color:#fff;
-}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),#7c3aed);display:grid;place-items:center;font-size:16px;font-weight:800;color:#fff}
 .brand-text{font-size:17px;font-weight:700;letter-spacing:-.3px}
 .brand-text b{color:var(--blue)}
-
 .topbar-clock{font-family:var(--mono);font-size:12px;color:var(--text-2)}
-
 .topbar-actions{display:flex;align-items:center;gap:8px}
-.icon-btn{
-  width:36px;height:36px;border-radius:var(--r-xs);
-  border:1px solid var(--border-1);background:var(--bg-2);
-  color:var(--text-2);cursor:pointer;font-size:15px;
-  display:grid;place-items:center;position:relative;
-  transition:.2s var(--ease);
-}
+.icon-btn{width:36px;height:36px;border-radius:var(--r-xs);border:1px solid var(--border-1);background:var(--bg-2);color:var(--text-2);cursor:pointer;font-size:15px;display:grid;place-items:center;position:relative;transition:.2s var(--ease)}
 .icon-btn:hover{background:var(--bg-3);color:var(--text-0);border-color:var(--border-2)}
-.icon-btn .badge{
-  position:absolute;top:-4px;right:-4px;
-  min-width:16px;height:16px;border-radius:50%;
-  background:var(--red);font-size:9px;font-weight:700;color:#fff;
-  display:grid;place-items:center;border:2px solid var(--bg-1);
-}
-.avatar-sm{
-  width:34px;height:34px;border-radius:var(--r-xs);
-  background:linear-gradient(135deg,#6366f1,#ec4899);
-  display:grid;place-items:center;font-size:13px;font-weight:700;cursor:pointer;
-}
+.icon-btn .badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:50%;background:var(--red);font-size:9px;font-weight:700;color:#fff;display:grid;place-items:center;border:2px solid var(--bg-1)}
+.avatar-sm{width:34px;height:34px;border-radius:var(--r-xs);background:linear-gradient(135deg,#6366f1,#ec4899);display:grid;place-items:center;font-size:13px;font-weight:700;cursor:pointer}
 
-/* ===== BOTTOM NAV (mobile) ===== */
-.bottom-nav{
-  display:none;
-  flex-shrink:0;height:64px;
-  background:var(--bg-1);border-top:1px solid var(--border-1);
-  z-index:100;
-}
-.bottom-nav-inner{
-  display:flex;height:100%;
-}
-.bnav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;cursor:pointer;color:var(--text-3);
-  font-size:10px;font-weight:500;transition:.2s var(--ease);
-  border:none;background:none;
-  -webkit-tap-highlight-color:transparent;
-}
-.bnav-item .bi{font-size:20px;transition:.2s var(--ease)}
+/* BOTTOM NAV */
+.bottom-nav{display:none;flex-shrink:0;height:62px;background:var(--bg-1);border-top:1px solid var(--border-1);z-index:100}
+.bottom-nav-inner{display:flex;height:100%}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:var(--text-3);font-size:9px;font-weight:600;transition:.2s var(--ease);border:none;background:none;-webkit-tap-highlight-color:transparent}
+.bnav-item .bi{font-size:19px;transition:.2s var(--ease)}
 .bnav-item.active{color:var(--blue)}
-.bnav-item.active .bi{transform:scale(1.1)}
+.bnav-item.active .bi{transform:scale(1.15)}
 
-/* ===== MAIN CONTENT AREA ===== */
 .content-area{display:flex;flex:1;overflow:hidden}
 
-/* ===== SIDEBAR (desktop) ===== */
-.sidebar{
-  width:260px;flex-shrink:0;
-  background:var(--bg-1);border-right:1px solid var(--border-1);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-.sidebar-nav{padding:12px;display:flex;flex-direction:column;gap:2px}
-.snav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;border-radius:var(--r-xs);
-  font-size:13.5px;font-weight:500;color:var(--text-2);
-  cursor:pointer;border:none;background:none;width:100%;text-align:left;
-  transition:.15s var(--ease);
-}
+/* SIDEBAR */
+.sidebar{width:240px;flex-shrink:0;background:var(--bg-1);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-nav{padding:10px;display:flex;flex-direction:column;gap:2px}
+.snav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-xs);font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:.15s var(--ease)}
 .snav-item:hover{background:var(--bg-3);color:var(--text-0)}
 .snav-item.active{background:var(--blue-dim);color:var(--blue)}
-.snav-item .si{font-size:18px;width:24px;text-align:center}
-.snav-item .snav-badge{
-  margin-left:auto;font-size:11px;font-weight:600;
-  padding:1px 8px;border-radius:20px;
-}
+.snav-item .si{font-size:17px;width:22px;text-align:center}
+.snav-item .snav-badge{margin-left:auto;font-size:10px;font-weight:600;padding:1px 7px;border-radius:20px}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid var(--border-1)}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:9px;border-radius:var(--r-sm);background:var(--bg-2)}
+.sidebar-user-name{font-size:12px;font-weight:600}
+.sidebar-user-role{font-size:10px;color:var(--text-3)}
 
-.sidebar-footer{
-  margin-top:auto;padding:14px;border-top:1px solid var(--border-1);
-}
-.sidebar-user{
-  display:flex;align-items:center;gap:10px;
-  padding:10px;border-radius:var(--r-sm);background:var(--bg-2);
-}
-.sidebar-user-info{flex:1;min-width:0}
-.sidebar-user-name{font-size:13px;font-weight:600}
-.sidebar-user-role{font-size:11px;color:var(--text-3)}
-
-/* ===== PAGES ===== */
+/* PAGES */
 .page{display:none;flex:1;flex-direction:column;overflow:hidden}
 .page.active{display:flex}
-
 .page-scroll{flex:1;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch}
-
-/* Page Headers */
-.page-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:20px;gap:12px;flex-wrap:wrap;
-}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
 .page-title{font-size:22px;font-weight:700;letter-spacing:-.3px}
 .page-subtitle{font-size:13px;color:var(--text-2);margin-top:2px}
 
-/* ===== STAT GRID ===== */
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
-.stat-card{
-  background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-sm);
-  padding:16px;transition:.2s var(--ease);
-}
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:16px;transition:.2s var(--ease)}
 .stat-card:hover{border-color:var(--border-2);background:var(--bg-3)}
 .stat-icon{font-size:22px;margin-bottom:8px}
 .stat-label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:4px}
@@ -161,38 +91,21 @@ input::placeholder,textarea::placeholder{color:var(--text-3)}
 .stat-chg.up{background:var(--green-dim);color:var(--green)}
 .stat-chg.dn{background:var(--red-dim);color:var(--red)}
 
-/* ===== CARDS, TABLES ===== */
-.card{
-  background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r);
-  overflow:hidden;margin-bottom:16px;
-}
-.card-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 18px;border-bottom:1px solid var(--border-1);gap:10px;flex-wrap:wrap;
-}
-.card-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
-.card-body{padding:16px 18px}
+/* CARD */
+.card{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border-1);gap:10px;flex-wrap:wrap}
+.card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.card-body{padding:14px 16px}
 .card-body.np{padding:0}
 
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{
-  text-align:left;padding:10px 14px;font-size:11px;font-weight:600;
-  text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);
-  background:var(--bg-3);border-bottom:1px solid var(--border-1);
-  white-space:nowrap;
-}
-td{
-  padding:12px 14px;border-bottom:1px solid rgba(30,41,64,.5);
-  vertical-align:middle;white-space:nowrap;
-}
+th{text-align:left;padding:9px 12px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);background:var(--bg-3);border-bottom:1px solid var(--border-1);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid rgba(30,41,64,.5);vertical-align:middle;white-space:nowrap}
 tr:hover td{background:rgba(74,144,255,.03)}
 tr:last-child td{border-bottom:none}
 
-.tag{
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;
-}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
 .tag.green{background:var(--green-dim);color:var(--green)}
 .tag.orange{background:var(--orange-dim);color:var(--orange)}
 .tag.red{background:var(--red-dim);color:var(--red)}
@@ -200,1014 +113,414 @@ tr:last-child td{border-bottom:none}
 .tag.purple{background:var(--purple-dim);color:var(--purple)}
 .tag.gray{background:rgba(90,106,142,.15);color:var(--text-2)}
 
-/* ===== BUTTONS ===== */
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 18px;border-radius:var(--r-xs);
-  font-size:13px;font-weight:600;cursor:pointer;
-  border:1px solid var(--border-2);transition:.2s var(--ease);
-  white-space:nowrap;
-}
-.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-xs);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border-2);transition:.2s var(--ease);white-space:nowrap}
+.btn-sm{padding:6px 10px;font-size:11px;border-radius:6px}
 .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
 .btn-primary:hover{background:#3a7ef0}
 .btn-ghost{background:transparent;color:var(--text-1)}
 .btn-ghost:hover{background:var(--bg-3)}
 .btn-danger{background:var(--red);color:#fff;border-color:var(--red)}
-.btn-danger:hover{background:#e04545}
 .btn-success{background:var(--green);color:#000;border-color:var(--green)}
-.btn-success:hover{background:#1bc282}
 
-/* ===== FORMS ===== */
+/* FORMS */
 .fg{margin-bottom:14px}
 .fl{display:block;font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:5px}
-.fi,.fs{
-  width:100%;height:42px;padding:0 12px;
-  background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r-xs);
-  color:var(--text-0);font-size:13px;transition:.2s var(--ease);
-}
+.fi,.fs{width:100%;height:42px;padding:0 12px;background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r-xs);color:var(--text-0);font-size:13px;transition:.2s var(--ease)}
 .fi:focus,.fs:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
 textarea.fi{height:auto;padding:10px 12px;resize:vertical;min-height:80px}
-.fs{cursor:pointer;appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238696b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
-}
+.fs{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238696b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
 
-/* Upload Zone */
-.upload-zone{
-  border:2px dashed var(--border-2);border-radius:var(--r-sm);
-  padding:28px 16px;text-align:center;cursor:pointer;
-  transition:.2s var(--ease);position:relative;overflow:hidden;
-}
+.upload-zone{border:2px dashed var(--border-2);border-radius:var(--r-sm);padding:24px 16px;text-align:center;cursor:pointer;transition:.2s var(--ease);position:relative;overflow:hidden}
 .upload-zone:hover{border-color:var(--blue);background:var(--blue-dim)}
 .upload-zone.has-file{border-color:var(--green);background:var(--green-dim)}
-.upload-zone input[type=file]{
-  position:absolute;inset:0;opacity:0;cursor:pointer;
-}
-.upload-icon{font-size:32px;margin-bottom:8px}
-.upload-text{font-size:13px;color:var(--text-2)}
-.upload-hint{font-size:11px;color:var(--text-3);margin-top:4px}
-.upload-preview{
-  width:80px;height:80px;border-radius:var(--r-xs);
-  object-fit:cover;margin:8px auto 0;display:none;border:2px solid var(--green);
-}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-icon{font-size:28px;margin-bottom:6px}
+.upload-text{font-size:12px;color:var(--text-2)}
+.upload-hint{font-size:10px;color:var(--text-3);margin-top:3px}
+.upload-preview{width:70px;height:70px;border-radius:var(--r-xs);object-fit:cover;margin:8px auto 0;display:none;border:2px solid var(--green)}
 
-/* ===== PROFILE CARDS ===== */
-.profile-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;
-}
-.profile-card{
-  background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r);
-  padding:18px;transition:.2s var(--ease);cursor:pointer;
-}
+/* PROFILES */
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.profile-card{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r);padding:16px;transition:.2s var(--ease);cursor:pointer}
 .profile-card:hover{border-color:var(--border-3);transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.profile-top{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.profile-avatar{
-  width:52px;height:52px;border-radius:var(--r-sm);
-  display:grid;place-items:center;font-size:20px;font-weight:700;
-  flex-shrink:0;
-}
-.profile-name{font-size:15px;font-weight:600;margin-bottom:2px}
-.profile-sub{font-size:12px;color:var(--text-3)}
-.profile-stats{display:flex;gap:10px;flex-wrap:wrap}
-.profile-stat{
-  flex:1;min-width:60px;text-align:center;
-  padding:10px 6px;background:var(--bg-3);border-radius:var(--r-xs);
-}
-.profile-stat-val{font-size:16px;font-weight:700}
-.profile-stat-label{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.profile-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.profile-avatar{width:48px;height:48px;border-radius:var(--r-sm);display:grid;place-items:center;font-size:18px;font-weight:700;flex-shrink:0}
+.profile-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.profile-sub{font-size:11px;color:var(--text-3)}
+.profile-stats{display:flex;gap:8px;flex-wrap:wrap}
+.profile-stat{flex:1;min-width:55px;text-align:center;padding:8px 4px;background:var(--bg-3);border-radius:var(--r-xs)}
+.profile-stat-val{font-size:15px;font-weight:700}
+.profile-stat-label{font-size:9px;color:var(--text-3);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
 
-/* ===== COMPLAINT CARD ===== */
-.complaint-item{
-  padding:16px 18px;border-bottom:1px solid rgba(30,41,64,.5);
-  transition:.15s var(--ease);cursor:pointer;
-}
+.complaint-item{padding:14px 16px;border-bottom:1px solid rgba(30,41,64,.5);transition:.15s var(--ease);cursor:pointer}
 .complaint-item:hover{background:rgba(74,144,255,.03)}
 .complaint-item:last-child{border-bottom:none}
-.complaint-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
-.complaint-id{font-size:12px;font-weight:600;color:var(--blue);font-family:var(--mono)}
-.complaint-date{font-size:11px;color:var(--text-3)}
-.complaint-text{font-size:13px;color:var(--text-1);line-height:1.5;margin-bottom:8px}
-.complaint-footer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.complaint-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px}
+.complaint-id{font-size:11px;font-weight:600;color:var(--blue);font-family:var(--mono)}
+.complaint-date{font-size:10px;color:var(--text-3)}
+.complaint-text{font-size:12px;color:var(--text-1);line-height:1.5;margin-bottom:6px}
+.complaint-footer{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 
-/* ===== MAP ===== */
-.map-page{position:relative;flex:1;display:flex;flex-direction:column}
+/* MAP */
 .map-wrap{flex:1;position:relative}
 #map{width:100%;height:100%;background:var(--bg-0)}
 .leaflet-tile-pane{filter:brightness(.65) contrast(1.15) saturate(.7) hue-rotate(180deg) invert(1)}
 .leaflet-control-zoom a{background:var(--bg-2)!important;color:var(--text-0)!important;border-color:var(--border-1)!important}
 .leaflet-control-attribution{display:none!important}
-
-.map-top-bar{
-  position:absolute;top:12px;left:12px;right:12px;z-index:999;
-  display:flex;gap:8px;pointer-events:none;flex-wrap:wrap;
-}
+.map-top-bar{position:absolute;top:12px;left:12px;right:12px;z-index:999;display:flex;gap:8px;pointer-events:none;flex-wrap:wrap}
 .map-top-bar>*{pointer-events:all}
-.map-input{
-  flex:1;min-width:140px;max-width:360px;height:42px;
-  background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);
-  padding:0 14px;color:var(--text-0);font-size:13px;
-  backdrop-filter:blur(16px);box-shadow:var(--shadow-md);
-}
+.map-input{flex:1;min-width:120px;max-width:320px;height:40px;background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:0 12px;color:var(--text-0);font-size:13px;backdrop-filter:blur(16px);box-shadow:var(--shadow-md)}
 .map-input:focus{outline:none;border-color:var(--blue)}
-.map-chip{
-  height:42px;padding:0 14px;
-  background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);
-  color:var(--text-2);font-size:12px;font-weight:500;
-  cursor:pointer;display:flex;align-items:center;gap:5px;
-  backdrop-filter:blur(16px);box-shadow:var(--shadow-md);
-  transition:.2s var(--ease);white-space:nowrap;
-}
+.map-chip{height:40px;padding:0 12px;background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);color:var(--text-2);font-size:11px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:4px;backdrop-filter:blur(16px);box-shadow:var(--shadow-md);transition:.2s var(--ease);white-space:nowrap}
 .map-chip:hover{color:var(--text-0);border-color:var(--border-2)}
 .map-chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-
-.map-bottom{
-  position:absolute;bottom:12px;left:12px;right:12px;z-index:999;
-  display:flex;gap:10px;pointer-events:none;flex-wrap:wrap;
-}
+.map-bottom{position:absolute;bottom:12px;left:12px;right:12px;z-index:999;display:flex;gap:8px;pointer-events:none;flex-wrap:wrap}
 .map-bottom>*{pointer-events:all}
-
-.live-panel{
-  background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);
-  padding:12px 16px;backdrop-filter:blur(16px);box-shadow:var(--shadow-md);
-  max-width:380px;flex:1;min-width:200px;
-}
-.live-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.live-panel{background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:10px 14px;backdrop-filter:blur(16px);box-shadow:var(--shadow-md);max-width:340px;flex:1;min-width:180px}
+.live-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,92,.4)}50%{box-shadow:0 0 0 6px transparent}}
-.live-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-2)}
-.live-item{
-  font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:8px;
-  padding:3px 0;animation:slideUp .3s var(--ease);
-}
+.live-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-2)}
+.live-item{font-size:11px;color:var(--text-2);display:flex;align-items:center;gap:6px;padding:2px 0;animation:slideUp .3s var(--ease)}
 @keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.live-time{font-family:var(--mono);font-size:10px;color:var(--text-3);min-width:40px}
-
-.legend-panel{
-  background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);
-  padding:12px 16px;backdrop-filter:blur(16px);box-shadow:var(--shadow-md);
-  margin-left:auto;
-}
-.legend-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);margin-bottom:6px}
-.legend-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-2);padding:2px 0}
-.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-
-/* Courier Marker */
-.c-marker{
-  width:38px;height:38px;border-radius:50%;
-  display:grid;place-items:center;font-size:16px;
-  border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.4);
-}
+.live-time{font-family:var(--mono);font-size:9px;color:var(--text-3);min-width:36px}
+.legend-panel{background:var(--bg-glass);border:1px solid var(--border-1);border-radius:var(--r-sm);padding:10px 14px;backdrop-filter:blur(16px);box-shadow:var(--shadow-md);margin-left:auto}
+.legend-title{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);margin-bottom:4px}
+.legend-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-2);padding:2px 0}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.c-marker{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.4)}
 .c-marker.on{background:var(--green)}.c-marker.busy{background:var(--orange)}.c-marker.off{background:#64748b}
-.o-marker{
-  width:26px;height:26px;border-radius:50%;background:var(--blue);
-  display:grid;place-items:center;font-size:12px;
-  border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);
-}
-
-/* Left list on map page */
-.map-sidebar{
-  width:320px;flex-shrink:0;background:var(--bg-1);border-right:1px solid var(--border-1);
-  display:flex;flex-direction:column;overflow:hidden;
-}
-.map-sidebar-head{padding:14px 16px;border-bottom:1px solid var(--border-1)}
-.map-sidebar-search{
-  width:100%;height:38px;background:var(--bg-3);border:1px solid var(--border-1);
-  border-radius:var(--r-xs);padding:0 12px;color:var(--text-0);font-size:13px;
-}
+.o-marker{width:24px;height:24px;border-radius:50%;background:var(--blue);display:grid;place-items:center;font-size:11px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.map-sidebar{width:300px;flex-shrink:0;background:var(--bg-1);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow:hidden}
+.map-sidebar-head{padding:12px 14px;border-bottom:1px solid var(--border-1)}
+.map-sidebar-search{width:100%;height:36px;background:var(--bg-3);border:1px solid var(--border-1);border-radius:var(--r-xs);padding:0 10px;color:var(--text-0);font-size:12px}
 .map-sidebar-search:focus{outline:none;border-color:var(--blue)}
-.filter-row{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
-.ftab{
-  padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;
-  color:var(--text-3);cursor:pointer;border:none;background:none;
-  transition:.15s var(--ease);
-}
+.filter-row{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
+.ftab{padding:4px 8px;border-radius:5px;font-size:10px;font-weight:500;color:var(--text-3);cursor:pointer;border:none;background:none;transition:.15s var(--ease)}
 .ftab:hover{color:var(--text-1);background:var(--bg-3)}
 .ftab.on{background:var(--blue-dim);color:var(--blue)}
-.courier-scroll{flex:1;overflow-y:auto;padding:8px 12px}
-.c-card{
-  display:flex;align-items:center;gap:10px;padding:10px;
-  background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-xs);
-  margin-bottom:6px;cursor:pointer;transition:.15s var(--ease);
-  position:relative;overflow:hidden;
-}
-.c-card::after{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-  opacity:0;transition:.15s var(--ease);
-}
-.c-card.online::after{background:var(--green)}
-.c-card.busy::after{background:var(--orange)}
-.c-card.offline::after{background:var(--text-3)}
+.courier-scroll{flex:1;overflow-y:auto;padding:6px 10px}
+.c-card{display:flex;align-items:center;gap:10px;padding:9px;background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r-xs);margin-bottom:5px;cursor:pointer;transition:.15s var(--ease);position:relative;overflow:hidden}
+.c-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;opacity:0;transition:.15s var(--ease)}
+.c-card.online::after{background:var(--green)}.c-card.busy::after{background:var(--orange)}.c-card.offline::after{background:var(--text-3)}
 .c-card:hover{background:var(--bg-3);border-color:var(--border-2)}
 .c-card:hover::after{opacity:1}
 .c-card.sel{border-color:var(--blue);background:var(--blue-dim)}
 .c-card.sel::after{opacity:1;background:var(--blue)}
-.c-ava{
-  width:38px;height:38px;border-radius:var(--r-xs);
-  display:grid;place-items:center;font-size:14px;font-weight:700;flex-shrink:0;
-}
+.c-ava{width:36px;height:36px;border-radius:var(--r-xs);display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0}
 .c-info{flex:1;min-width:0}
-.c-name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:5px}
-.c-meta{font-size:11px;color:var(--text-3);display:flex;gap:8px}
-.s-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.c-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.c-meta{font-size:10px;color:var(--text-3);display:flex;gap:6px}
+.s-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 .s-dot.on{background:var(--green);box-shadow:0 0 5px var(--green)}
 .s-dot.busy{background:var(--orange);box-shadow:0 0 5px var(--orange)}
 .s-dot.off{background:var(--text-3)}
-.c-btns{display:flex;gap:3px}
-.c-btn{
-  width:30px;height:30px;border-radius:6px;border:1px solid var(--border-1);
-  background:var(--bg-1);color:var(--text-2);cursor:pointer;font-size:13px;
-  display:grid;place-items:center;transition:.15s var(--ease);
-}
+.c-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border-1);background:var(--bg-1);color:var(--text-2);cursor:pointer;font-size:12px;display:grid;place-items:center;transition:.15s var(--ease)}
 .c-btn:hover{background:var(--bg-4);color:var(--text-0)}
 
-/* ===== RIGHT DETAIL PANEL ===== */
-.detail-panel{
-  width:340px;flex-shrink:0;background:var(--bg-1);border-left:1px solid var(--border-1);
-  display:flex;flex-direction:column;overflow:hidden;
-  transition:width .3s var(--ease);
-}
+.detail-panel{width:320px;flex-shrink:0;background:var(--bg-1);border-left:1px solid var(--border-1);display:flex;flex-direction:column;overflow:hidden;transition:width .3s var(--ease)}
 .detail-panel.closed{width:0;border:none}
-.detail-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;border-bottom:1px solid var(--border-1);
-}
-.detail-head h3{font-size:14px;font-weight:600}
-.detail-scroll{flex:1;overflow-y:auto;padding:16px}
-.d-sec{margin-bottom:18px}
-.d-sec-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:8px}
-.d-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(30,41,64,.3)}
+.detail-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border-1)}
+.detail-head h3{font-size:13px;font-weight:600}
+.detail-scroll{flex:1;overflow-y:auto;padding:14px}
+.d-sec{margin-bottom:16px}
+.d-sec-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:6px}
+.d-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(30,41,64,.3)}
 .d-row:last-child{border:none}
-.d-label{font-size:12px;color:var(--text-2)}
-.d-val{font-size:12px;font-weight:600;color:var(--text-0)}
-
-.timeline{position:relative;padding-left:18px}
+.d-label{font-size:11px;color:var(--text-2)}
+.d-val{font-size:11px;font-weight:600;color:var(--text-0)}
+.timeline{position:relative;padding-left:16px}
 .timeline::before{content:'';position:absolute;left:4px;top:4px;bottom:4px;width:2px;background:var(--border-1)}
-.tl-item{position:relative;padding-bottom:14px}
+.tl-item{position:relative;padding-bottom:12px}
 .tl-item:last-child{padding-bottom:0}
-.tl-dot{
-  position:absolute;left:-16px;top:3px;width:10px;height:10px;
-  border-radius:50%;border:2px solid var(--border-2);background:var(--bg-1);
-}
+.tl-dot{position:absolute;left:-14px;top:3px;width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--bg-1)}
 .tl-item.done .tl-dot{background:var(--green);border-color:var(--green)}
 .tl-item.now .tl-dot{background:var(--blue);border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
-.tl-text{font-size:12px;color:var(--text-2)}
+.tl-text{font-size:11px;color:var(--text-2)}
 .tl-time{font-size:10px;color:var(--text-3);font-family:var(--mono)}
 
-/* ===== MODAL ===== */
-.modal-bg{
-  position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;
-  display:none;align-items:center;justify-content:center;padding:16px;
-  backdrop-filter:blur(4px);
-}
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal-bg.open{display:flex}
-.modal{
-  background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r);
-  width:100%;max-width:480px;max-height:85vh;overflow:hidden;
-  box-shadow:var(--shadow-lg);animation:modalIn .25s var(--ease);
-  display:flex;flex-direction:column;
-}
+.modal{background:var(--bg-2);border:1px solid var(--border-1);border-radius:var(--r);width:100%;max-width:460px;max-height:85vh;overflow:hidden;box-shadow:var(--shadow-lg);animation:modalIn .25s var(--ease);display:flex;flex-direction:column}
 @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
-.modal-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 20px;border-bottom:1px solid var(--border-1);flex-shrink:0;
-}
-.modal-head h3{font-size:16px;font-weight:600}
-.modal-body{padding:20px;overflow-y:auto;flex:1}
-.modal-foot{
-  padding:14px 20px;border-top:1px solid var(--border-1);
-  display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;
-}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border-1);flex-shrink:0}
+.modal-head h3{font-size:15px;font-weight:600}
+.modal-body{padding:18px;overflow-y:auto;flex:1}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--border-1);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0}
 
-/* ===== TOAST ===== */
 .toast-box{position:fixed;top:64px;right:12px;z-index:5000;display:flex;flex-direction:column;gap:6px}
-.toast{
-  padding:10px 16px;border-radius:var(--r-xs);font-size:13px;font-weight:500;
-  display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-md);
-  animation:toastIn .3s var(--ease);min-width:240px;max-width:360px;
-}
+.toast{padding:10px 14px;border-radius:var(--r-xs);font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px;box-shadow:var(--shadow-md);animation:toastIn .3s var(--ease);min-width:220px;max-width:320px}
 @keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
 .toast.ok{background:#065f46;color:#a7f3d0;border:1px solid var(--green)}
 .toast.err{background:#7f1d1d;color:#fecaca;border:1px solid var(--red)}
 .toast.inf{background:#1e3a5f;color:#bfdbfe;border:1px solid var(--blue)}
 .toast.wrn{background:#713f12;color:#fef08a;border:1px solid var(--orange)}
 
-/* ===== TABS INSIDE PAGES ===== */
-.ptabs{display:flex;gap:4px;background:var(--bg-3);border-radius:var(--r-xs);padding:3px;flex-wrap:wrap}
-.ptab{
-  padding:7px 16px;border-radius:6px;font-size:12px;font-weight:500;
-  color:var(--text-2);cursor:pointer;border:none;background:none;
-  transition:.15s var(--ease);white-space:nowrap;
-}
+.ptabs{display:flex;gap:3px;background:var(--bg-3);border-radius:var(--r-xs);padding:3px;flex-wrap:wrap}
+.ptab{padding:6px 14px;border-radius:6px;font-size:11px;font-weight:500;color:var(--text-2);cursor:pointer;border:none;background:none;transition:.15s var(--ease);white-space:nowrap}
 .ptab:hover{color:var(--text-0);background:var(--bg-4)}
 .ptab.on{background:var(--blue);color:#fff}
 
-/* Empty State */
-.empty{text-align:center;padding:40px 20px}
-.empty-icon{font-size:48px;margin-bottom:12px;opacity:.6}
-.empty-text{font-size:14px;color:var(--text-2);margin-bottom:16px}
+.steps{display:flex;gap:4px;margin-bottom:18px}
+.step{flex:1;height:4px;border-radius:2px;background:var(--border-1);transition:.3s var(--ease)}
+.step.done{background:var(--green)}.step.cur{background:var(--blue)}
+.stars{color:var(--orange);font-size:12px;letter-spacing:1px}
 
-/* RESPONSIVE */
-@media(max-width:1100px){
-  .detail-panel{width:0;border:none;position:absolute;right:0;top:0;bottom:0;z-index:50;width:340px;transition:.3s var(--ease)}
-  .detail-panel.closed{transform:translateX(100%)}
-}
-@media(max-width:900px){
-  .map-sidebar{width:260px}
-  .sidebar{display:none}
-  .bottom-nav{display:block}
-}
-@media(max-width:700px){
-  .map-sidebar{display:none}
-  .stat-grid{grid-template-columns:repeat(2,1fr)}
-  .profile-grid{grid-template-columns:1fr}
-  .page-scroll{padding:14px}
-  .topbar{padding:0 12px}
-  .brand-text{display:none}
-}
-@media(max-width:400px){
-  .stat-grid{grid-template-columns:1fr 1fr;gap:8px}
-  .stat-card{padding:12px}
-  .stat-val{font-size:22px}
-}
-
-/* Hiring steps indicator */
-.steps{display:flex;gap:4px;margin-bottom:20px}
-.step{
-  flex:1;height:4px;border-radius:2px;background:var(--border-1);
-  transition:.3s var(--ease);
-}
-.step.done{background:var(--green)}
-.step.cur{background:var(--blue)}
-
-/* Star rating */
-.stars{color:var(--orange);font-size:13px;letter-spacing:1px}
+@media(max-width:1100px){.detail-panel{position:absolute;right:0;top:0;bottom:0;z-index:50}.detail-panel.closed{width:0}}
+@media(max-width:900px){.map-sidebar{width:240px}.sidebar{display:none}.bottom-nav{display:block}}
+@media(max-width:700px){.map-sidebar{display:none}.stat-grid{grid-template-columns:1fr 1fr}.profile-grid{grid-template-columns:1fr}.page-scroll{padding:14px}.topbar{padding:0 10px}.brand-text{display:none}}
+@media(max-width:400px){.stat-val{font-size:20px}.stat-card{padding:12px}}
 </style>
 </head>
 <body>
-
 <div class="app">
-
-  <!-- TOP BAR -->
   <header class="topbar">
-    <div class="topbar-brand">
-      <div class="logo">\u0422</div>
-      <div class="brand-text">Tojra<b>son</b></div>
-    </div>
+    <div class="topbar-brand"><div class="logo">Т</div><div class="brand-text">Tojra<b>son</b></div></div>
     <span class="topbar-clock" id="clock"></span>
     <div class="topbar-actions">
-      <button class="icon-btn" id="notifBtn" title="\u041e\u0433\u043e\u04b3\u0438\u04b3\u043e">\ud83d\udd14<span class="badge" id="nBadge">5</span></button>
-      <div class="avatar-sm" title="\u0410\u0434\u043c\u0438\u043d">\u0410\u0414</div>
+      <button class="icon-btn" id="notifBtn">🔔<span class="badge" id="nBadge">5</span></button>
+      <div class="avatar-sm">АД</div>
     </div>
   </header>
-
   <div class="content-area">
-
-    <!-- SIDEBAR (desktop) -->
     <nav class="sidebar">
       <div class="sidebar-nav" id="sideNav">
-        <button class="snav-item active" data-page="dashboard"><span class="si">\ud83d\udcca</span> \u0410\u0441\u043e\u0441\u04e3</button>
-        <button class="snav-item" data-page="map"><span class="si">\ud83d\uddfa</span> \u0425\u0430\u0440\u0438\u0442\u0430</button>
-        <button class="snav-item" data-page="orders"><span class="si">\ud83d\udce6</span> \u0424\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e <span class="snav-badge tag blue">24</span></button>
-        <button class="snav-item" data-page="couriers"><span class="si">\ud83c\udfcd</span> \u041a\u0443\u0440\u0435\u0440\u04b3\u043e</button>
-        <button class="snav-item" data-page="clients"><span class="si">\ud83d\udc65</span> \u041c\u0443\u0448\u0442\u0430\u0440\u0438\u0451\u043d</button>
-        <button class="snav-item" data-page="hiring"><span class="si">\ud83d\udccb</span> \u049a\u0430\u0431\u0443\u043b <span class="snav-badge tag orange">3</span></button>
-        <button class="snav-item" data-page="complaints"><span class="si">\ud83d\udce2</span> \u0428\u0438\u043a\u043e\u044f\u0442\u04b3\u043e <span class="snav-badge tag red">7</span></button>
-        <button class="snav-item" data-page="settings"><span class="si">\u2699\ufe0f</span> \u0422\u0430\u043d\u0437\u0438\u043c\u043e\u0442</button>
+        <button class="snav-item active" data-page="dashboard"><span class="si">📊</span>Асосӣ</button>
+        <button class="snav-item" data-page="map"><span class="si">🗺</span>Харита</button>
+        <button class="snav-item" data-page="orders"><span class="si">📦</span>Фармоишҳо<span class="snav-badge tag blue">24</span></button>
+        <button class="snav-item" data-page="couriers"><span class="si">🏍</span>Курерҳо</button>
+        <button class="snav-item" data-page="clients"><span class="si">👥</span>Муштариён</button>
+        <button class="snav-item" data-page="hiring"><span class="si">📋</span>Қабул<span class="snav-badge tag orange">3</span></button>
+        <button class="snav-item" data-page="complaints"><span class="si">📢</span>Шикоятҳо<span class="snav-badge tag red">7</span></button>
+        <button class="snav-item" data-page="settings"><span class="si">⚙️</span>Танзимот</button>
       </div>
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <div class="avatar-sm">\u0410\u0414</div>
-          <div class="sidebar-user-info">
-            <div class="sidebar-user-name">\u0410\u0434\u043c\u0438\u043d</div>
-            <div class="sidebar-user-role">\u0421\u0443\u043f\u0435\u0440\u0430\u0434\u043c\u0438\u043d</div>
-          </div>
-        </div>
-      </div>
+      <div class="sidebar-footer"><div class="sidebar-user"><div class="avatar-sm">АД</div><div><div class="sidebar-user-name">Админ</div><div class="sidebar-user-role">Суперадмин</div></div></div></div>
     </nav>
 
-    <!-- ====== PAGES ====== -->
-
     <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-scroll">
-        <div class="page-header">
-          <div>
-            <div class="page-title">\u041f\u0430\u043d\u0435\u043b\u0438 \u0438\u0434\u043e\u0440\u0430\u043a\u0443\u043d\u04e3</div>
-            <div class="page-subtitle">\u0425\u0443\u0448 \u043e\u043c\u0430\u0434\u0435\u0434! \u0418\u043c\u0440\u04ef\u0437 \u04b3\u0430\u043c\u0430\u0438 \u0447\u0438\u0437 \u0434\u0430\u0440 \u043d\u0430\u0437\u043e\u0440\u0430\u0442 \u0430\u0441\u0442.</div>
-          </div>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-card"><div class="stat-icon">\ud83d\udce6</div><div class="stat-label">\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e \u0438\u043c\u0440\u04ef\u0437</div><div class="stat-val">127 <span class="stat-chg up">\u219112%</span></div></div>
-          <div class="stat-card"><div class="stat-icon">\ud83c\udfcd</div><div class="stat-label">\u041a\u0443\u0440\u0435\u0440\u04b3\u043e</div><div class="stat-val">18 <span class="stat-chg up">\u21913</span></div></div>
-          <div class="stat-card"><div class="stat-icon">\ud83d\udcb0</div><div class="stat-label">\u0414\u0430\u0440\u043e\u043c\u0430\u0434</div><div class="stat-val">48,200\u20b8 <span class="stat-chg up">\u21918%</span></div></div>
-          <div class="stat-card"><div class="stat-icon">\u23f1</div><div class="stat-label">\u0412\u0430\u049b\u0442\u0438 \u043c\u0438\u0451\u043d\u0430</div><div class="stat-val">32\u0434 <span class="stat-chg dn">\u21932\u0434</span></div></div>
-          <div class="stat-card"><div class="stat-icon">\u2b50</div><div class="stat-label">\u0420\u0435\u0439\u0442\u0438\u043d\u0433</div><div class="stat-val">4.7 <span class="stat-chg up">\u21910.2</span></div></div>
-          <div class="stat-card"><div class="stat-icon">\ud83d\udce2</div><div class="stat-label">\u0428\u0438\u043a\u043e\u044f\u0442\u04b3\u043e</div><div class="stat-val">7 <span class="stat-chg dn">\u21913</span></div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <span class="card-title">\ud83d\udce6 \u0424\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e\u0438 \u043e\u0445\u0438\u0440\u0438\u043d</span>
-            <button class="btn btn-ghost btn-sm" onclick="nav('orders')">\u04b2\u0430\u043c\u0430 \u2192</button>
-          </div>
-          <div class="card-body np"><div class="table-wrap" id="dashOrdersTable"></div></div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <span class="card-title">\ud83d\udccb \u0414\u0430\u0440\u0445\u043e\u0441\u0442\u04b3\u043e\u0438 \u043d\u0430\u0432</span>
-            <button class="btn btn-ghost btn-sm" onclick="nav('hiring')">\u04b2\u0430\u043c\u0430 \u2192</button>
-          </div>
-          <div class="card-body" id="dashHiringPreview"></div>
-        </div>
+    <div class="page active" id="page-dashboard"><div class="page-scroll">
+      <div class="page-header"><div><div class="page-title">Панели идоракунӣ</div><div class="page-subtitle">Хуш омадед! Ҳамаи чиз дар назорат.</div></div></div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Фармоишҳо</div><div class="stat-val">127<span class="stat-chg up">↑12%</span></div></div>
+        <div class="stat-card"><div class="stat-icon">🏍</div><div class="stat-label">Курерҳо</div><div class="stat-val">18<span class="stat-chg up">↑3</span></div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Даромад</div><div class="stat-val">48.2к<span class="stat-chg up">↑8%</span></div></div>
+        <div class="stat-card"><div class="stat-icon">⏱</div><div class="stat-label">Вақти миёна</div><div class="stat-val">32д<span class="stat-chg dn">↓2д</span></div></div>
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label">Рейтинг</div><div class="stat-val">4.7<span class="stat-chg up">↑0.2</span></div></div>
+        <div class="stat-card"><div class="stat-icon">📢</div><div class="stat-label">Шикоятҳо</div><div class="stat-val">7<span class="stat-chg dn">↑3</span></div></div>
       </div>
-    </div>
+      <div class="card"><div class="card-head"><span class="card-title">📦 Охирин фармоишҳо</span><button class="btn btn-ghost btn-sm" onclick="nav('orders')">Ҳама →</button></div><div class="card-body np"><div class="table-wrap" id="dashOrders"></div></div></div>
+      <div class="card"><div class="card-head"><span class="card-title">📋 Дархостҳои нав</span><button class="btn btn-ghost btn-sm" onclick="nav('hiring')">Ҳама →</button></div><div class="card-body" id="dashHiring"></div></div>
+    </div></div>
 
-    <!-- MAP PAGE -->
-    <div class="page" id="page-map">
-      <div style="display:flex;flex:1;overflow:hidden">
-        <div class="map-sidebar" id="mapSidebar">
-          <div class="map-sidebar-head">
-            <input class="map-sidebar-search" id="cSearch" placeholder="\u04b6\u0443\u0441\u0442\u0443\u04b7\u04ef...">
-            <div class="filter-row">
-              <button class="ftab on" data-f="all">\u04b2\u0430\u043c\u0430</button>
-              <button class="ftab" data-f="online">\ud83d\udfe2 \u041e\u0437\u043e\u0434</button>
-              <button class="ftab" data-f="busy">\ud83d\udfe1 \u0411\u0430\u043d\u0434</button>
-              <button class="ftab" data-f="offline">\u26ab \u041e\u0444\u043b\u0430\u0439\u043d</button>
-            </div>
-          </div>
-          <div class="courier-scroll" id="cList"></div>
-        </div>
-        <div class="map-wrap">
-          <div id="map"></div>
-          <div class="map-top-bar">
-            <input class="map-input" id="mapSearch" placeholder="\u04b6\u0443\u0441\u0442\u0443\u04b7\u04ef \u0434\u0430\u0440 \u0445\u0430\u0440\u0438\u0442\u0430...">
-            <button class="map-chip" id="chipRoutes">\ud83d\udee4 \u041c\u0430\u0441\u0438\u0440\u04b3\u043e</button>
-            <button class="map-chip" id="chipLive">\ud83d\udce1 Live</button>
-          </div>
-          <div class="map-bottom">
-            <div class="live-panel">
-              <div class="live-header"><div class="live-dot"></div><span class="live-label">\u0417\u0438\u043d\u0434\u0430</span></div>
-              <div id="liveFeed"></div>
-            </div>
-            <div class="legend-panel">
-              <div class="legend-title">\u0410\u043b\u043e\u043c\u0430\u0442\u04b3\u043e</div>
-              <div class="legend-row"><div class="legend-dot" style="background:var(--green)"></div> \u041e\u0437\u043e\u0434</div>
-              <div class="legend-row"><div class="legend-dot" style="background:var(--orange)"></div> \u0411\u0430\u043d\u0434</div>
-              <div class="legend-row"><div class="legend-dot" style="background:#64748b"></div> \u041e\u0444\u043b\u0430\u0439\u043d</div>
-              <div class="legend-row"><div class="legend-dot" style="background:var(--blue)"></div> \u0424\u0430\u0440\u043c\u043e\u0438\u0448</div>
-            </div>
-          </div>
-        </div>
-        <div class="detail-panel closed" id="detailPanel">
-          <div class="detail-head"><h3 id="detailTitle">\u0422\u0430\u0444\u0441\u0438\u043b\u043e\u0442</h3><button class="icon-btn" onclick="closeDetail()">\u2715</button></div>
-          <div class="detail-scroll" id="detailBody"></div>
-        </div>
+    <!-- MAP -->
+    <div class="page" id="page-map"><div style="display:flex;flex:1;overflow:hidden">
+      <div class="map-sidebar"><div class="map-sidebar-head"><input class="map-sidebar-search" id="cSearch" placeholder="Ҷустуҷӯ..."><div class="filter-row"><button class="ftab on" data-f="all">Ҳама</button><button class="ftab" data-f="online">🟢Озод</button><button class="ftab" data-f="busy">🟡Банд</button><button class="ftab" data-f="offline">⚫Офл</button></div></div><div class="courier-scroll" id="cList"></div></div>
+      <div class="map-wrap"><div id="map"></div>
+        <div class="map-top-bar"><input class="map-input" id="mapSearch" placeholder="Ҷустуҷӯ дар харита..."><button class="map-chip" id="chipRoutes">🛤Масир</button><button class="map-chip" id="chipLive">📡Live</button></div>
+        <div class="map-bottom"><div class="live-panel"><div class="live-header"><div class="live-dot"></div><span class="live-label">Зинда</span></div><div id="liveFeed"></div></div><div class="legend-panel"><div class="legend-title">Аломат</div><div class="legend-row"><div class="legend-dot" style="background:var(--green)"></div>Озод</div><div class="legend-row"><div class="legend-dot" style="background:var(--orange)"></div>Банд</div><div class="legend-row"><div class="legend-dot" style="background:#64748b"></div>Офлайн</div><div class="legend-row"><div class="legend-dot" style="background:var(--blue)"></div>Фармоиш</div></div></div>
       </div>
-    </div>
+      <div class="detail-panel closed" id="detailPanel"><div class="detail-head"><h3 id="detailTitle">Тафсилот</h3><button class="icon-btn" onclick="closeDetail()">✕</button></div><div class="detail-scroll" id="detailBody"></div></div>
+    </div></div>
 
-    <!-- ORDERS PAGE -->
-    <div class="page" id="page-orders">
-      <div class="page-scroll">
-        <div class="page-header">
-          <div><div class="page-title">\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e</div><div class="page-subtitle">\u04b2\u0430\u043c\u0430\u0438 \u0444\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e</div></div>
-        </div>
-        <div class="card"><div class="card-body np"><div class="table-wrap" id="ordersTable"></div></div></div>
+    <!-- ORDERS -->
+    <div class="page" id="page-orders"><div class="page-scroll"><div class="page-header"><div><div class="page-title">Фармоишҳо</div></div></div><div class="card"><div class="card-body np"><div class="table-wrap" id="ordersTable"></div></div></div></div></div>
+
+    <!-- COURIERS -->
+    <div class="page" id="page-couriers"><div class="page-scroll"><div class="page-header"><div><div class="page-title">Курерҳо</div><div class="page-subtitle">Профили ҳамаи курерон</div></div><button class="btn btn-primary" onclick="nav('hiring')">+ Курери нав</button></div><div class="profile-grid" id="courierProfiles"></div></div></div>
+
+    <!-- CLIENTS -->
+    <div class="page" id="page-clients"><div class="page-scroll"><div class="page-header"><div><div class="page-title">Муштариён</div><div class="page-subtitle">Профили ҳамаи клиентон</div></div></div><div class="profile-grid" id="clientProfiles"></div></div></div>
+
+    <!-- HIRING -->
+    <div class="page" id="page-hiring"><div class="page-scroll"><div class="page-header"><div><div class="page-title">Қабули курерҳо</div><div class="page-subtitle">Дархостҳо ва қабули курерони нав</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">
+        <div class="card"><div class="card-head"><span class="card-title">⏳ Дархостҳо</span><span class="tag orange" id="pendCnt">3</span></div><div class="card-body np" id="hiringList"></div></div>
+        <div class="card"><div class="card-head"><span class="card-title">📝 Дархости нав</span></div><div class="card-body">
+          <div class="steps" id="formSteps"><div class="step cur"></div><div class="step"></div><div class="step"></div></div>
+          <div id="fs1"><div class="fg"><label class="fl">Ному насаб</label><input class="fi" id="hName" placeholder="Фирдавс Ҷамолов"></div><div class="fg"><label class="fl">Телефон</label><input class="fi" id="hPhone" placeholder="+992 9X XXX XXXX"></div><div class="fg"><label class="fl">Воситаи нақлиёт</label><select class="fs" id="hVeh"><option value="🏍 Мотосикл">🏍 Мотосикл</option><option value="🚗 Мошин">🚗 Мошин</option><option value="🚲 Велосипед">🚲 Велосипед</option><option value="🛵 Скутер">🛵 Скутер</option></select></div><div class="fg"><label class="fl">Шаҳр</label><input class="fi" id="hCity" placeholder="Душанбе"></div><button class="btn btn-primary" style="width:100%" onclick="hStep(2)">Идома →</button></div>
+          <div id="fs2" style="display:none"><div class="fg"><label class="fl">Акси шахсӣ</label><div class="upload-zone" id="z1"><input type="file" accept="image/*" onchange="hUp(this,'z1','p1')"><div class="upload-icon">📸</div><div class="upload-text">Акси худро бор кунед</div><div class="upload-hint">JPG, PNG — макс 5MB</div><img class="upload-preview" id="p1"></div></div><div class="fg"><label class="fl">Паспорт (рӯи пеш)</label><div class="upload-zone" id="z2"><input type="file" accept="image/*" onchange="hUp(this,'z2','p2')"><div class="upload-icon">🪪</div><div class="upload-text">Паспорт — рӯи пеш</div><div class="upload-hint">JPG, PNG — макс 5MB</div><img class="upload-preview" id="p2"></div></div><div class="fg"><label class="fl">Паспорт (рӯи ақиб)</label><div class="upload-zone" id="z3"><input type="file" accept="image/*" onchange="hUp(this,'z3','p3')"><div class="upload-icon">🪪</div><div class="upload-text">Паспорт — рӯи ақиб</div><div class="upload-hint">JPG, PNG — макс 5MB</div><img class="upload-preview" id="p3"></div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="hStep(1)">← Бозгашт</button><button class="btn btn-primary" style="flex:1" onclick="hStep(3)">Идома →</button></div></div>
+          <div id="fs3" style="display:none"><div class="fg"><label class="fl">Таҷрибаи корӣ</label><textarea class="fi" id="hExp" placeholder="Таҷрибаатонро нависед..."></textarea></div><div class="fg"><label class="fl">Қайд</label><textarea class="fi" id="hNote" placeholder="Маълумоти иловагӣ..."></textarea></div><div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1" onclick="hStep(2)">← Бозгашт</button><button class="btn btn-success" style="flex:1" onclick="submitH()">✓ Фиристодан</button></div></div>
+        </div></div>
       </div>
-    </div>
+    </div></div>
 
-    <!-- COURIERS PAGE -->
-    <div class="page" id="page-couriers">
-      <div class="page-scroll">
-        <div class="page-header">
-          <div><div class="page-title">\u041f\u0440\u043e\u0444\u0438\u043b\u0438 \u043a\u0443\u0440\u0435\u0440\u04b3\u043e</div><div class="page-subtitle">\u04b2\u0430\u043c\u0430\u0438 \u043a\u0443\u0440\u0435\u0440\u043e\u043d \u0432\u0430 \u043c\u0430\u044a\u043b\u0443\u043c\u043e\u0442\u0438 \u043e\u043d\u04b3\u043e</div></div>
-          <button class="btn btn-primary" onclick="nav('hiring')">+ \u041a\u0443\u0440\u0435\u0440\u0438 \u043d\u0430\u0432</button>
-        </div>
-        <div class="profile-grid" id="courierProfiles"></div>
-      </div>
-    </div>
+    <!-- COMPLAINTS -->
+    <div class="page" id="page-complaints"><div class="page-scroll"><div class="page-header"><div><div class="page-title">Шикоятҳо</div></div><div class="ptabs" id="compTabs"><button class="ptab on" data-cf="all">Ҳама</button><button class="ptab" data-cf="new">Нав</button><button class="ptab" data-cf="progress">Баррасӣ</button><button class="ptab" data-cf="resolved">Ҳалшуда</button></div></div><div class="card"><div class="card-body np" id="compList"></div></div></div></div>
 
-    <!-- CLIENTS PAGE -->
-    <div class="page" id="page-clients">
-      <div class="page-scroll">
-        <div class="page-header">
-          <div><div class="page-title">\u041c\u0443\u0448\u0442\u0430\u0440\u0438\u0451\u043d</div><div class="page-subtitle">\u04b2\u0430\u043c\u0430\u0438 \u043c\u0443\u0448\u0442\u0430\u0440\u0438\u0451\u043d\u0438 \u0431\u0430\u049b\u0430\u0439\u0434\u0433\u0438\u0440\u0438\u0444\u0442\u0430\u0448\u0443\u0434\u0430</div></div>
-        </div>
-        <div class="profile-grid" id="clientProfiles"></div>
-      </div>
-    </div>
-
-    <!-- HIRING PAGE -->
-    <div class="page" id="page-hiring">
-      <div class="page-scroll">
-        <div class="page-header">
-          <div><div class="page-title">\u049a\u0430\u0431\u0443\u043b\u0438 \u043a\u0443\u0440\u0435\u0440\u04b3\u043e</div><div class="page-subtitle">\u0414\u0430\u0440\u0445\u043e\u0441\u0442\u04b3\u043e \u0432\u0430 \u049b\u0430\u0431\u0443\u043b\u0438 \u043a\u0443\u0440\u0435\u0440\u043e\u043d\u0438 \u043d\u0430\u0432</div></div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
-          <!-- Pending Applications -->
-          <div class="card">
-            <div class="card-head"><span class="card-title">\u23f3 \u0414\u0430\u0440\u0445\u043e\u0441\u0442\u04b3\u043e\u0438 \u0438\u043d\u0442\u0438\u0437\u043e\u0440\u04e3</span><span class="tag orange" id="pendingCount">3</span></div>
-            <div class="card-body np" id="hiringList"></div>
-          </div>
-
-          <!-- New Application Form -->
-          <div class="card">
-            <div class="card-head"><span class="card-title">\ud83d\udcdd \u0414\u0430\u0440\u0445\u043e\u0441\u0442\u0438 \u043d\u0430\u0432</span></div>
-            <div class="card-body">
-              <div class="steps" id="formSteps"><div class="step cur"></div><div class="step"></div><div class="step"></div></div>
-
-              <div id="formStep1">
-                <div class="fg"><label class="fl">\u041d\u043e\u043c\u0443 \u043d\u0430\u0441\u0430\u0431</label><input class="fi" id="hName" placeholder="\u043c\u0430\u0441\u0430\u043b\u0430\u043d: \u0424\u0438\u0440\u0434\u0430\u0432\u0441 \u04b6\u0430\u043c\u043e\u043b\u043e\u0432"></div>
-                <div class="fg"><label class="fl">\u0422\u0435\u043b\u0435\u0444\u043e\u043d</label><input class="fi" id="hPhone" placeholder="+992 9X XXX XXXX"></div>
-                <div class="fg"><label class="fl">\u0412\u043e\u0441\u0438\u0442\u0430\u0438 \u043d\u0430\u049b\u043b\u0438\u0451\u0442</label>
-                  <select class="fs" id="hVehicle"><option value="\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b">\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b</option><option value="\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d">\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d</option><option value="\ud83d\udeb2 \u0412\u0435\u043b\u043e\u0441\u0438\u043f\u0435\u0434">\ud83d\udeb2 \u0412\u0435\u043b\u043e\u0441\u0438\u043f\u0435\u0434</option><option value="\ud83d\udef5 \u0421\u043a\u0443\u0442\u0435\u0440">\ud83d\udef5 \u0421\u043a\u0443\u0442\u0435\u0440</option></select>
-                </div>
-                <div class="fg"><label class="fl">\u0428\u0430\u04b3\u0440 / \u041d\u043e\u04b3\u0438\u044f</label><input class="fi" id="hCity" placeholder="\u0414\u0443\u0448\u0430\u043d\u0431\u0435"></div>
-                <button class="btn btn-primary" style="width:100%" onclick="hiringStep(2)">\u0418\u0434\u043e\u043c\u0430 \u2192</button>
-              </div>
-
-              <div id="formStep2" style="display:none">
-                <div class="fg">
-                  <label class="fl">\u0410\u043a\u0441\u0438 \u0448\u0430\u0445\u0441\u04e3</label>
-                  <div class="upload-zone" id="zonePhoto">
-                    <input type="file" accept="image/*" onchange="handleUpload(this,'zonePhoto','prevPhoto')">
-                    <div class="upload-icon">\ud83d\udcf8</div>
-                    <div class="upload-text">\u0410\u043a\u0441\u0438 \u0445\u0443\u0434\u0440\u043e \u0431\u043e\u0440 \u043a\u0443\u043d\u0435\u0434</div>
-                    <div class="upload-hint">JPG, PNG \u2014 \u043c\u0430\u043a\u0441 5MB</div>
-                    <img class="upload-preview" id="prevPhoto">
-                  </div>
-                </div>
-                <div class="fg">
-                  <label class="fl">\u0410\u043a\u0441\u0438 \u043f\u0430\u0441\u043f\u043e\u0440\u0442 (\u0440\u04ef\u0438 \u043f\u0435\u0448)</label>
-                  <div class="upload-zone" id="zonePass1">
-                    <input type="file" accept="image/*" onchange="handleUpload(this,'zonePass1','prevPass1')">
-                    <div class="upload-icon">\ud83e\udeaa</div>
-                    <div class="upload-text">\u041f\u0430\u0441\u043f\u043e\u0440\u0442 (\u0440\u04ef\u0438 \u043f\u0435\u0448)</div>
-                    <div class="upload-hint">JPG, PNG \u2014 \u043c\u0430\u043a\u0441 5MB</div>
-                    <img class="upload-preview" id="prevPass1">
-                  </div>
-                </div>
-                <div class="fg">
-                  <label class="fl">\u0410\u043a\u0441\u0438 \u043f\u0430\u0441\u043f\u043e\u0440\u0442 (\u0440\u04ef\u0438 \u0430\u049b\u0438\u0431)</label>
-                  <div class="upload-zone" id="zonePass2">
-                    <input type="file" accept="image/*" onchange="handleUpload(this,'zonePass2','prevPass2')">
-                    <div class="upload-icon">\ud83e\udeaa</div>
-                    <div class="upload-text">\u041f\u0430\u0441\u043f\u043e\u0440\u0442 (\u0440\u04ef\u0438 \u0430\u049b\u0438\u0431)</div>
-                    <div class="upload-hint">JPG, PNG \u2014 \u043c\u0430\u043a\u0441 5MB</div>
-                    <img class="upload-preview" id="prevPass2">
-                  </div>
-                </div>
-                <div style="display:flex;gap:8px">
-                  <button class="btn btn-ghost" style="flex:1" onclick="hiringStep(1)">\u2190 \u0411\u043e\u0437\u0433\u0430\u0448\u0442</button>
-                  <button class="btn btn-primary" style="flex:1" onclick="hiringStep(3)">\u0418\u0434\u043e\u043c\u0430 \u2192</button>
-                </div>
-              </div>
-
-              <div id="formStep3" style="display:none">
-                <div class="fg"><label class="fl">\u0422\u0430\u04b7\u0440\u0438\u0431\u0430\u0438 \u043a\u043e\u0440\u04e3</label><textarea class="fi" id="hExp" placeholder="\u0414\u0430\u0440 \u0431\u043e\u0440\u0430\u0438 \u0442\u0430\u04b7\u0440\u0438\u0431\u0430\u0438 \u043a\u043e\u0440\u04e3 \u043d\u0430\u0432\u0438\u0441\u0435\u0434..."></textarea></div>
-                <div class="fg"><label class="fl">\u049a\u0430\u0439\u0434 (\u0438\u0445\u0442\u0438\u0451\u0440\u04e3)</label><textarea class="fi" id="hNote" placeholder="\u041c\u0430\u044a\u043b\u0443\u043c\u043e\u0442\u0438 \u0438\u043b\u043e\u0432\u0430\u0433\u04e3..."></textarea></div>
-                <div style="display:flex;gap:8px">
-                  <button class="btn btn-ghost" style="flex:1" onclick="hiringStep(2)">\u2190 \u0411\u043e\u0437\u0433\u0430\u0448\u0442</button>
-                  <button class="btn btn-success" style="flex:1" onclick="submitHiring()">\u2713 \u0424\u0438\u0440\u0438\u0441\u0442\u043e\u0434\u0430\u043d</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- COMPLAINTS PAGE -->
-    <div class="page" id="page-complaints">
-      <div class="page-scroll">
-        <div class="page-header">
-          <div><div class="page-title">\u0428\u0438\u043a\u043e\u044f\u0442\u04b3\u043e</div><div class="page-subtitle">\u0428\u0438\u043a\u043e\u044f\u0442 \u0432\u0430 \u043f\u0435\u0448\u043d\u0438\u04b3\u043e\u0434\u04b3\u043e\u0438 \u043c\u0443\u0448\u0442\u0430\u0440\u0438\u0451\u043d</div></div>
-          <div class="ptabs" id="compTabs">
-            <button class="ptab on" data-cf="all">\u04b2\u0430\u043c\u0430</button>
-            <button class="ptab" data-cf="new">\u041d\u0430\u0432</button>
-            <button class="ptab" data-cf="progress">\u0414\u0430\u0440 \u0431\u0430\u0440\u0440\u0430\u0441\u04e3</button>
-            <button class="ptab" data-cf="resolved">\u04b2\u0430\u043b\u0448\u0443\u0434\u0430</button>
-          </div>
-        </div>
-        <div class="card"><div class="card-body np" id="complaintsList"></div></div>
-      </div>
-    </div>
-
-    <!-- SETTINGS PAGE -->
-    <div class="page" id="page-settings">
-      <div class="page-scroll">
-        <div class="page-header"><div><div class="page-title">\u0422\u0430\u043d\u0437\u0438\u043c\u043e\u0442</div></div></div>
-        <div class="card"><div class="card-head"><span class="card-title">\u2699\ufe0f \u0422\u0430\u043d\u0437\u0438\u043c\u043e\u0442\u0438 \u0443\u043c\u0443\u043c\u04e3</span></div>
-          <div class="card-body">
-            <div class="fg"><label class="fl">\u041d\u043e\u043c\u0438 \u0448\u0438\u0440\u043a\u0430\u0442</label><input class="fi" value="Tojrason"></div>
-            <div class="fg"><label class="fl">\u0422\u0435\u043b\u0435\u0444\u043e\u043d\u0438 \u0434\u0430\u0441\u0442\u0433\u043e\u04b3</label><input class="fi" value="+992 44 600 0000"></div>
-            <div class="fg"><label class="fl">\u0428\u0430\u04b3\u0440</label><input class="fi" value="\u0414\u0443\u0448\u0430\u043d\u0431\u0435"></div>
-            <div class="fg"><label class="fl">\u0417\u0430\u0431\u043e\u043d</label><select class="fs"><option>\u0422\u043e\u04b7\u0438\u043a\u04e3</option><option>\u0420\u0443\u0441\u04e3</option><option>\u0410\u043d\u0433\u043b\u0438\u0441\u04e3</option></select></div>
-            <button class="btn btn-primary">\ud83d\udcbe \u041d\u0438\u0433\u043e\u04b3 \u0434\u043e\u0448\u0442\u0430\u043d</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content-area -->
-
-  <!-- BOTTOM NAV (mobile) -->
-  <nav class="bottom-nav">
-    <div class="bottom-nav-inner" id="bottomNav">
-      <button class="bnav-item active" data-page="dashboard"><span class="bi">\ud83d\udcca</span>\u0410\u0441\u043e\u0441\u04e3</button>
-      <button class="bnav-item" data-page="map"><span class="bi">\ud83d\uddfa</span>\u0425\u0430\u0440\u0438\u0442\u0430</button>
-      <button class="bnav-item" data-page="couriers"><span class="bi">\ud83c\udfcd</span>\u041a\u0443\u0440\u0435\u0440\u04b3\u043e</button>
-      <button class="bnav-item" data-page="hiring"><span class="bi">\ud83d\udccb</span>\u049a\u0430\u0431\u0443\u043b</button>
-      <button class="bnav-item" data-page="complaints"><span class="bi">\ud83d\udce2</span>\u0428\u0438\u043a\u043e\u044f\u0442</button>
-      <button class="bnav-item" data-page="clients"><span class="bi">\ud83d\udc65</span>\u041a\u043b\u0438\u0435\u043d\u0442</button>
-    </div>
-  </nav>
-
-</div><!-- /app -->
-
-<!-- MODAL -->
-<div class="modal-bg" id="modalBg">
-  <div class="modal">
-    <div class="modal-head"><h3 id="mTitle"></h3><button class="icon-btn" onclick="closeModal()">\u2715</button></div>
-    <div class="modal-body" id="mBody"></div>
-    <div class="modal-foot" id="mFoot"></div>
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings"><div class="page-scroll"><div class="page-header"><div><div class="page-title">Танзимот</div></div></div><div class="card"><div class="card-head"><span class="card-title">⚙️ Танзимоти умумӣ</span></div><div class="card-body"><div class="fg"><label class="fl">Номи ширкат</label><input class="fi" value="Tojrason"></div><div class="fg"><label class="fl">Телефон</label><input class="fi" value="+992 44 600 0000"></div><div class="fg"><label class="fl">Забон</label><select class="fs"><option>Тоҷикӣ</option><option>Русӣ</option><option>Англисӣ</option></select></div><button class="btn btn-primary">💾 Нигоҳ доштан</button></div></div></div></div>
   </div>
+
+  <nav class="bottom-nav"><div class="bottom-nav-inner" id="bottomNav">
+    <button class="bnav-item active" data-page="dashboard"><span class="bi">📊</span>Асосӣ</button>
+    <button class="bnav-item" data-page="map"><span class="bi">🗺</span>Харита</button>
+    <button class="bnav-item" data-page="couriers"><span class="bi">🏍</span>Курер</button>
+    <button class="bnav-item" data-page="hiring"><span class="bi">📋</span>Қабул</button>
+    <button class="bnav-item" data-page="complaints"><span class="bi">📢</span>Шикоят</button>
+    <button class="bnav-item" data-page="clients"><span class="bi">👥</span>Клиент</button>
+  </div></nav>
 </div>
 
-<!-- NOTIF DROPDOWN -->
-<div class="modal-bg" id="notifBg" style="background:transparent;backdrop-filter:none">
-  <div class="modal" style="max-width:380px;position:absolute;top:58px;right:12px">
-    <div class="modal-head"><h3>\ud83d\udd14 \u041e\u0433\u043e\u04b3\u0438\u04b3\u043e</h3><button class="btn btn-ghost btn-sm" onclick="clearNotifs()">\u0422\u043e\u0437\u0430 \u043a\u0443\u043d</button></div>
-    <div class="modal-body" style="padding:0;max-height:50vh;overflow-y:auto" id="notifListEl"></div>
-  </div>
-</div>
-
-<!-- TOAST -->
+<div class="modal-bg" id="modalBg"><div class="modal"><div class="modal-head"><h3 id="mTitle"></h3><button class="icon-btn" onclick="closeModal()">✕</button></div><div class="modal-body" id="mBody"></div><div class="modal-foot" id="mFoot"></div></div></div>
 <div class="toast-box" id="toastBox"></div>
 
 <script>
-// ======================
-// DATA
-// ======================
 const DUSHANBE=[38.5598,68.774];
+const avatarC=['#6366f1','#ec4899','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#f97316','#14b8a6','#a855f7','#e11d48'];
 
 const couriers=[
-  {id:1,name:'\u0424\u0438\u0440\u0434\u0430\u0432\u0441 \u04b6\u0430\u043c\u043e\u043b\u043e\u0432',phone:'+992 93 123 4567',status:'online',orders:8,completed:245,lat:38.562,lng:68.778,vehicle:'\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b',rating:4.8,joined:'2024-03-15',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'2 \u0441\u043e\u043b'},
-  {id:2,name:'\u0420\u0443\u0441\u0442\u0430\u043c \u0410\u04b3\u043c\u0430\u0434\u043e\u0432',phone:'+992 90 234 5678',status:'busy',orders:5,completed:189,lat:38.555,lng:68.769,vehicle:'\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d',rating:4.6,joined:'2024-05-20',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'1.5 \u0441\u043e\u043b'},
-  {id:3,name:'\u0421\u043e\u0440\u0431\u043e\u043d \u041c\u0438\u0440\u0437\u043e\u0435\u0432',phone:'+992 92 345 6789',status:'online',orders:12,completed:312,lat:38.568,lng:68.782,vehicle:'\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b',rating:4.9,joined:'2023-11-01',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'3 \u0441\u043e\u043b'},
-  {id:4,name:'\u0414\u0430\u043b\u0435\u0440 \u041d\u0430\u0437\u0430\u0440\u043e\u0432',phone:'+992 91 456 7890',status:'offline',orders:3,completed:67,lat:38.55,lng:68.76,vehicle:'\ud83d\udeb2 \u0412\u0435\u043b\u043e\u0441\u0438\u043f\u0435\u0434',rating:4.2,joined:'2025-01-10',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'6 \u043c\u043e\u04b3'},
-  {id:5,name:'\u0411\u0430\u04b3\u0440\u043e\u043c \u041a\u0430\u0440\u0438\u043c\u043e\u0432',phone:'+992 93 567 8901',status:'online',orders:7,completed:198,lat:38.564,lng:68.785,vehicle:'\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b',rating:4.7,joined:'2024-07-08',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'1 \u0441\u043e\u043b'},
-  {id:6,name:'\u0418\u0441\u043c\u043e\u0438\u043b \u0428\u0430\u0440\u0438\u043f\u043e\u0432',phone:'+992 90 678 9012',status:'busy',orders:6,completed:156,lat:38.558,lng:68.772,vehicle:'\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d',rating:4.5,joined:'2024-04-22',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'2 \u0441\u043e\u043b'},
-  {id:7,name:'\u0410\u04b3\u043c\u0430\u0434 \u0420\u0430\u04b3\u0438\u043c\u043e\u0432',phone:'+992 92 789 0123',status:'online',orders:10,completed:278,lat:38.571,lng:68.765,vehicle:'\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b',rating:4.8,joined:'2023-09-15',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'3 \u0441\u043e\u043b'},
-  {id:8,name:'\u0428\u0435\u0440\u0437\u043e\u0434 \u0411\u043e\u0431\u043e\u0435\u0432',phone:'+992 91 890 1234',status:'offline',orders:0,completed:23,lat:38.547,lng:68.755,vehicle:'\ud83d\udeb2 \u0412\u0435\u043b\u043e\u0441\u0438\u043f\u0435\u0434',rating:4.0,joined:'2025-02-01',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'3 \u043c\u043e\u04b3'},
-  {id:9,name:'\u041a\u0430\u043c\u043e\u043b \u0414\u0430\u0432\u043b\u0430\u0442\u043e\u0432',phone:'+992 93 901 2345',status:'online',orders:9,completed:267,lat:38.566,lng:68.79,vehicle:'\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d',rating:4.9,joined:'2023-12-05',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'2 \u0441\u043e\u043b'},
-  {id:10,name:'\u041d\u0430\u0432\u0440\u04ef\u0437 \u0492\u0430\u043d\u0438\u0435\u0432',phone:'+992 90 012 3456',status:'busy',orders:4,completed:134,lat:38.553,lng:68.78,vehicle:'\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b',rating:4.3,joined:'2024-08-18',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'1 \u0441\u043e\u043b'},
-  {id:11,name:'\u0417\u0430\u0444\u0430\u0440 \u0418\u0441\u043c\u043e\u0438\u043b\u043e\u0432',phone:'+992 92 111 2222',status:'online',orders:11,completed:301,lat:38.575,lng:68.77,vehicle:'\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d',rating:4.7,joined:'2023-10-20',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'3 \u0441\u043e\u043b'},
-  {id:12,name:'\u04b2\u0443\u0441\u0435\u0439\u043d \u0422\u043e\u0438\u0440\u043e\u0432',phone:'+992 91 333 4444',status:'offline',orders:1,completed:12,lat:38.545,lng:68.75,vehicle:'\ud83d\udeb2 \u0412\u0435\u043b\u043e\u0441\u0438\u043f\u0435\u0434',rating:3.9,joined:'2025-03-01',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',exp:'1 \u043c\u043e\u04b3'},
+  {id:1,name:'Фирдавс Ҷамолов',phone:'+992 93 123 45',status:'online',orders:8,done:245,lat:38.562,lng:68.778,vehicle:'🏍 Мотосикл',rating:4.8,joined:'2024-03-15',city:'Душанбе',exp:'2 сол'},
+  {id:2,name:'Рустам Аҳмадов',phone:'+992 90 234 56',status:'busy',orders:5,done:189,lat:38.555,lng:68.769,vehicle:'🚗 Мошин',rating:4.6,joined:'2024-05-20',city:'Душанбе',exp:'1.5 сол'},
+  {id:3,name:'Сорбон Мирзоев',phone:'+992 92 345 67',status:'online',orders:12,done:312,lat:38.568,lng:68.782,vehicle:'🏍 Мотосикл',rating:4.9,joined:'2023-11-01',city:'Душанбе',exp:'3 сол'},
+  {id:4,name:'Далер Назаров',phone:'+992 91 456 78',status:'offline',orders:3,done:67,lat:38.55,lng:68.76,vehicle:'🚲 Велосипед',rating:4.2,joined:'2025-01-10',city:'Душанбе',exp:'6 моҳ'},
+  {id:5,name:'Баҳром Каримов',phone:'+992 93 567 89',status:'online',orders:7,done:198,lat:38.564,lng:68.785,vehicle:'🏍 Мотосикл',rating:4.7,joined:'2024-07-08',city:'Душанбе',exp:'1 сол'},
+  {id:6,name:'Исмоил Шарипов',phone:'+992 90 678 90',status:'busy',orders:6,done:156,lat:38.558,lng:68.772,vehicle:'🚗 Мошин',rating:4.5,joined:'2024-04-22',city:'Душанбе',exp:'2 сол'},
+  {id:7,name:'Аҳмад Раҳимов',phone:'+992 92 789 01',status:'online',orders:10,done:278,lat:38.571,lng:68.765,vehicle:'🏍 Мотосикл',rating:4.8,joined:'2023-09-15',city:'Душанбе',exp:'3 сол'},
+  {id:8,name:'Шерзод Бобоев',phone:'+992 91 890 12',status:'offline',orders:0,done:23,lat:38.547,lng:68.755,vehicle:'🚲 Велосипед',rating:4.0,joined:'2025-02-01',city:'Душанбе',exp:'3 моҳ'},
+  {id:9,name:'Камол Давлатов',phone:'+992 93 901 23',status:'online',orders:9,done:267,lat:38.566,lng:68.79,vehicle:'🚗 Мошин',rating:4.9,joined:'2023-12-05',city:'Душанбе',exp:'2 сол'},
+  {id:10,name:'Наврӯз Ғаниев',phone:'+992 90 012 34',status:'busy',orders:4,done:134,lat:38.553,lng:68.78,vehicle:'🏍 Мотосикл',rating:4.3,joined:'2024-08-18',city:'Душанбе',exp:'1 сол'},
+  {id:11,name:'Зафар Исмоилов',phone:'+992 92 111 22',status:'online',orders:11,done:301,lat:38.575,lng:68.77,vehicle:'🚗 Мошин',rating:4.7,joined:'2023-10-20',city:'Душанбе',exp:'3 сол'},
+  {id:12,name:'Ҳусейн Тоиров',phone:'+992 91 333 44',status:'offline',orders:1,done:12,lat:38.545,lng:68.75,vehicle:'🚲 Велосипед',rating:3.9,joined:'2025-03-01',city:'Душанбе',exp:'1 моҳ'},
 ];
-
 const orders=[
-  {id:'ORD-001',customer:'\u041c\u0430\u0434\u0438\u043d\u0430 \u0428\u0430\u0440\u0438\u0444\u043e\u0432\u0430',address:'\u043a. \u0421\u0438\u043d\u043e, 45',status:'delivering',courierId:1,total:'85 TJS',items:['\u041f\u0438\u0446\u0446\u0430 \u041c\u0430\u0440\u0433\u0430\u0440\u0438\u0442\u0430','\u041a\u043e\u043a\u0430-\u043a\u043e\u043b\u0430'],lat:38.565,lng:68.78,phone:'+992 98 111 2233',time:'14:15'},
-  {id:'ORD-002',customer:'\u0410\u043b\u0438\u0448\u0435\u0440 \u041a\u0430\u0440\u0438\u043c\u043e\u0432',address:'\u043a. \u0420\u0443\u0434\u0430\u043a\u04e3, 102',status:'delivering',courierId:2,total:'120 TJS',items:['\u041f\u043b\u043e\u0432','\u0421\u0430\u043b\u0430\u0442','\u041d\u043e\u043d'],lat:38.553,lng:68.771,phone:'+992 98 222 3344',time:'14:08'},
-  {id:'ORD-003',customer:'\u041d\u0438\u0433\u0438\u043d\u0430 \u0420\u0430\u04b3\u0438\u043c\u043e\u0432\u0430',address:'\u043a. \u0410\u0439\u043d\u04e3, 78',status:'pending',courierId:null,total:'65 TJS',items:['\u049a\u0430\u04b3\u0432\u0430','\u0427\u0438\u0437\u043a\u0435\u0439\u043a'],lat:38.559,lng:68.775,phone:'+992 98 333 4455',time:'14:25'},
-  {id:'ORD-004',customer:'\u04b2\u0430\u0441\u0430\u043d \u041c\u0438\u0440\u0437\u043e\u0435\u0432',address:'\u043a. \u0428\u043e\u04b3\u043c\u0430\u043d\u0441\u0443\u0440, 33',status:'delivered',courierId:3,total:'210 TJS',items:['\u0428\u0430\u0448\u043b\u0438\u043a','\u0425\u0430\u0447\u0430\u043f\u0443\u0440\u04e3','\u041b\u0438\u043c\u043e\u043d\u0430\u0434'],lat:38.57,lng:68.784,phone:'+992 98 444 5566',time:'13:50'},
-  {id:'ORD-005',customer:'\u0424\u043e\u0442\u0438\u043c\u0430 \u0410\u0437\u0438\u0437\u043e\u0432\u0430',address:'\u043a. \u0418\u0441\u043c\u043e\u0438\u043b\u0438 \u0421., 15',status:'delivering',courierId:5,total:'95 TJS',items:['\u0411\u0443\u0440\u0433\u0435\u0440','\u041a\u0430\u0440\u0442\u043e\u0448\u043a\u0430 \u0444\u0440\u04e3'],lat:38.567,lng:68.787,phone:'+992 98 555 6677',time:'14:18'},
-  {id:'ORD-006',customer:'\u0421\u0430\u0444\u0430\u0440 \u041d\u0430\u0437\u0430\u0440\u043e\u0432',address:'\u043a. \u0414\u0443\u0441\u0442\u0438, 67',status:'pending',courierId:null,total:'45 TJS',items:['\u0421\u0430\u043c\u0431\u0443\u0441\u0430 x3'],lat:38.556,lng:68.768,phone:'+992 98 666 7788',time:'14:32'},
+  {id:'ORD-001',customer:'Мадина Шарифова',address:'к. Сино, 45',status:'delivering',courierId:1,total:'85 TJS',items:['Пицца Маргарита','Кока-кола'],lat:38.565,lng:68.78,phone:'+992 98 111 22',time:'14:15'},
+  {id:'ORD-002',customer:'Алишер Каримов',address:'к. Рудакӣ, 102',status:'delivering',courierId:2,total:'120 TJS',items:['Плов','Салат','Нон'],lat:38.553,lng:68.771,phone:'+992 98 222 33',time:'14:08'},
+  {id:'ORD-003',customer:'Нигина Раҳимова',address:'к. Айнӣ, 78',status:'pending',courierId:null,total:'65 TJS',items:['Қаҳва','Чизкейк'],lat:38.559,lng:68.775,phone:'+992 98 333 44',time:'14:25'},
+  {id:'ORD-004',customer:'Ҳасан Мирзоев',address:'к. Шоҳмансур, 33',status:'delivered',courierId:3,total:'210 TJS',items:['Шашлик','Хачапурӣ','Лимонад'],lat:38.57,lng:68.784,phone:'+992 98 444 55',time:'13:50'},
+  {id:'ORD-005',customer:'Фотима Азизова',address:'к. Исмоили С., 15',status:'delivering',courierId:5,total:'95 TJS',items:['Бургер','Картошка фрӣ'],lat:38.567,lng:68.787,phone:'+992 98 555 66',time:'14:18'},
+  {id:'ORD-006',customer:'Сафар Назаров',address:'к. Дусти, 67',status:'pending',courierId:null,total:'45 TJS',items:['Самбуса x3'],lat:38.556,lng:68.768,phone:'+992 98 666 77',time:'14:32'},
 ];
-
 const clients=[
-  {id:1,name:'\u041c\u0430\u0434\u0438\u043d\u0430 \u0428\u0430\u0440\u0438\u0444\u043e\u0432\u0430',phone:'+992 98 111 2233',orders:23,spent:'2,340 TJS',joined:'2024-02-10',addr:'\u043a. \u0421\u0438\u043d\u043e, 45',rating:5},
-  {id:2,name:'\u0410\u043b\u0438\u0448\u0435\u0440 \u041a\u0430\u0440\u0438\u043c\u043e\u0432',phone:'+992 98 222 3344',orders:45,spent:'5,670 TJS',joined:'2023-11-05',addr:'\u043a. \u0420\u0443\u0434\u0430\u043a\u04e3, 102',rating:4},
-  {id:3,name:'\u041d\u0438\u0433\u0438\u043d\u0430 \u0420\u0430\u04b3\u0438\u043c\u043e\u0432\u0430',phone:'+992 98 333 4455',orders:12,spent:'890 TJS',joined:'2024-08-15',addr:'\u043a. \u0410\u0439\u043d\u04e3, 78',rating:5},
-  {id:4,name:'\u04b2\u0430\u0441\u0430\u043d \u041c\u0438\u0440\u0437\u043e\u0435\u0432',phone:'+992 98 444 5566',orders:67,spent:'8,900 TJS',joined:'2023-06-20',addr:'\u043a. \u0428\u043e\u04b3\u043c\u0430\u043d\u0441\u0443\u0440, 33',rating:5},
-  {id:5,name:'\u0424\u043e\u0442\u0438\u043c\u0430 \u0410\u0437\u0438\u0437\u043e\u0432\u0430',phone:'+992 98 555 6677',orders:34,spent:'3,450 TJS',joined:'2024-01-18',addr:'\u043a. \u0418\u0441\u043c\u043e\u0438\u043b\u0438 \u0421., 15',rating:4},
-  {id:6,name:'\u0421\u0430\u0444\u0430\u0440 \u041d\u0430\u0437\u0430\u0440\u043e\u0432',phone:'+992 98 666 7788',orders:8,spent:'560 TJS',joined:'2025-01-22',addr:'\u043a. \u0414\u0443\u0441\u0442\u0438, 67',rating:3},
-  {id:7,name:'\u0417\u0430\u0440\u0438\u043d\u0430 \u041e\u043b\u0438\u043c\u043e\u0432\u0430',phone:'+992 98 777 8899',orders:56,spent:'6,780 TJS',joined:'2023-08-10',addr:'\u043a. \u041b\u043e\u04b3\u0443\u0442\u04e3, 12',rating:5},
-  {id:8,name:'\u0411\u043e\u0431\u0443\u0440 \u0421\u043e\u0434\u0438\u049b\u043e\u0432',phone:'+992 98 888 9900',orders:29,spent:'3,120 TJS',joined:'2024-03-05',addr:'\u043a. \u041d\u0430\u0432\u043e\u04e3, 88',rating:4},
+  {id:1,name:'Мадина Шарифова',phone:'+992 98 111 22',orders:23,spent:'2,340₸',joined:'2024-02',addr:'к. Сино, 45',rating:5},
+  {id:2,name:'Алишер Каримов',phone:'+992 98 222 33',orders:45,spent:'5,670₸',joined:'2023-11',addr:'к. Рудакӣ, 102',rating:4},
+  {id:3,name:'Нигина Раҳимова',phone:'+992 98 333 44',orders:12,spent:'890₸',joined:'2024-08',addr:'к. Айнӣ, 78',rating:5},
+  {id:4,name:'Ҳасан Мирзоев',phone:'+992 98 444 55',orders:67,spent:'8,900₸',joined:'2023-06',addr:'к. Шоҳмансур',rating:5},
+  {id:5,name:'Фотима Азизова',phone:'+992 98 555 66',orders:34,spent:'3,450₸',joined:'2024-01',addr:'к. Исмоили С.',rating:4},
+  {id:6,name:'Сафар Назаров',phone:'+992 98 666 77',orders:8,spent:'560₸',joined:'2025-01',addr:'к. Дусти, 67',rating:3},
+  {id:7,name:'Зарина Олимова',phone:'+992 98 777 88',orders:56,spent:'6,780₸',joined:'2023-08',addr:'к. Лоҳутӣ, 12',rating:5},
+  {id:8,name:'Бобур Содиқов',phone:'+992 98 888 99',orders:29,spent:'3,120₸',joined:'2024-03',addr:'к. Навоӣ, 88',rating:4},
 ];
-
 const complaints=[
-  {id:'SH-001',customer:'\u041c\u0430\u0434\u0438\u043d\u0430 \u0428\u0430\u0440\u0438\u0444\u043e\u0432\u0430',courier:'\u0414\u0430\u043b\u0435\u0440 \u041d\u0430\u0437\u0430\u0440\u043e\u0432',date:'2025-03-25',status:'new',text:'\u041a\u0443\u0440\u0435\u0440 \u0445\u0435\u043b\u0435 \u0434\u0435\u0440 \u043e\u043c\u0430\u0434, \u0493\u0438\u0437\u043e \u0445\u0443\u043d\u0443\u043a \u0431\u0443\u0434. 45 \u0434\u0430\u049b\u0438\u049b\u0430 \u0438\u043d\u0442\u0438\u0437\u043e\u0440 \u0448\u0443\u0434\u0430\u043c.',priority:'high'},
-  {id:'SH-002',customer:'\u0410\u043b\u0438\u0448\u0435\u0440 \u041a\u0430\u0440\u0438\u043c\u043e\u0432',courier:'\u0428\u0435\u0440\u0437\u043e\u0434 \u0411\u043e\u0431\u043e\u0435\u0432',date:'2025-03-24',status:'progress',text:'\u0424\u0430\u0440\u043c\u043e\u0438\u0448 \u043d\u043e\u0434\u0443\u0440\u0443\u0441\u0442 \u0431\u0443\u0434 \u2014 \u0431\u0430 \u04b7\u043e\u0438 \u043f\u043b\u043e\u0432 \u043c\u0430\u043d\u0442\u0443 \u043e\u0432\u0430\u0440\u0434\u0430 \u0448\u0443\u0434.',priority:'medium'},
-  {id:'SH-003',customer:'\u04b2\u0430\u0441\u0430\u043d \u041c\u0438\u0440\u0437\u043e\u0435\u0432',courier:null,date:'2025-03-24',status:'new',text:'\u0414\u0430\u0440 \u0431\u0430\u0440\u043d\u043e\u043c\u0430 \u0445\u0430\u0442\u043e\u0433\u04e3 \u04b3\u0430\u0441\u0442, \u043f\u0430\u0440\u0434\u043e\u0445\u0442 \u0434\u0443 \u043c\u0430\u0440\u043e\u0442\u0438\u0431\u0430 \u0433\u0438\u0440\u0438\u0444\u0442\u0430 \u0448\u0443\u0434.',priority:'high'},
-  {id:'SH-004',customer:'\u0417\u0430\u0440\u0438\u043d\u0430 \u041e\u043b\u0438\u043c\u043e\u0432\u0430',courier:'\u041d\u0430\u0432\u0440\u04ef\u0437 \u0492\u0430\u043d\u0438\u0435\u0432',date:'2025-03-23',status:'resolved',text:'\u041a\u0443\u0440\u0435\u0440 \u0431\u043e \u043c\u0443\u0448\u0442\u0430\u0440\u04e3 \u0431\u0435\u043e\u0434\u043e\u0431\u043e\u043d\u0430 \u0440\u0430\u0444\u0442\u043e\u0440 \u043a\u0430\u0440\u0434.',priority:'high'},
-  {id:'SH-005',customer:'\u0411\u043e\u0431\u0443\u0440 \u0421\u043e\u0434\u0438\u049b\u043e\u0432',courier:'\u0420\u0443\u0441\u0442\u0430\u043c \u0410\u04b3\u043c\u0430\u0434\u043e\u0432',date:'2025-03-23',status:'new',text:'\u041d\u04ef\u0448\u043e\u043a\u04e3 \u0440\u0435\u0445\u0442\u0430 \u0431\u0443\u0434, \u04b7\u0443\u0442\u0442\u0430\u0438 \u0431\u0430\u0441\u0442\u0430\u04b3\u043e \u0442\u0430\u0440 \u0448\u0443\u0434\u0430 \u0431\u0443\u0434.',priority:'medium'},
-  {id:'SH-006',customer:'\u0424\u043e\u0442\u0438\u043c\u0430 \u0410\u0437\u0438\u0437\u043e\u0432\u0430',courier:null,date:'2025-03-22',status:'progress',text:'\u041d\u0430\u0440\u0445\u04b3\u043e \u0434\u0430\u0440 \u0431\u0430\u0440\u043d\u043e\u043c\u0430 \u0432\u0430 \u0434\u0430\u0440 \u0442\u0430\u0445\u0432\u0438\u043b\u0434\u0438\u04b3\u04e3 \u0444\u0430\u0440\u049b \u043c\u0435\u043a\u0443\u043d\u0430\u043d\u0434.',priority:'low'},
-  {id:'SH-007',customer:'\u0421\u0430\u0444\u0430\u0440 \u041d\u0430\u0437\u0430\u0440\u043e\u0432',courier:'\u0414\u0430\u043b\u0435\u0440 \u041d\u0430\u0437\u0430\u0440\u043e\u0432',date:'2025-03-22',status:'resolved',text:'\u0425\u0435\u043b\u0435 \u043c\u0438\u043d\u043d\u0430\u0442\u0434\u043e\u0440\u0430\u043c, \u0432\u0430\u043b\u0435 \u0434\u0430\u0444\u044a\u0430\u0438 \u043f\u0435\u0448 \u0441\u0430\u043c\u0431\u0443\u0441\u0430 \u0445\u0443\u043d\u0443\u043a \u0431\u0443\u0434.',priority:'low'},
+  {id:'SH-001',customer:'Мадина Ш.',courier:'Далер Н.',date:'2025-03-25',status:'new',text:'Курер хеле дер омад, ғизо хунук буд.',priority:'high'},
+  {id:'SH-002',customer:'Алишер К.',courier:'Шерзод Б.',date:'2025-03-24',status:'progress',text:'Фармоиш нодуруст — ба ҷои плов манту оварда шуд.',priority:'medium'},
+  {id:'SH-003',customer:'Ҳасан М.',courier:null,date:'2025-03-24',status:'new',text:'Пардохт ду маротиба гирифта шуд.',priority:'high'},
+  {id:'SH-004',customer:'Зарина О.',courier:'Наврӯз Ғ.',date:'2025-03-23',status:'resolved',text:'Курер беодобона рафтор кард.',priority:'high'},
+  {id:'SH-005',customer:'Бобур С.',courier:'Рустам А.',date:'2025-03-23',status:'new',text:'Нӯшокӣ рехта буд, бастаҳо тар шуд.',priority:'medium'},
+  {id:'SH-006',customer:'Фотима А.',courier:null,date:'2025-03-22',status:'progress',text:'Нархҳо дар барнома фарқ мекунанд.',priority:'low'},
+  {id:'SH-007',customer:'Сафар Н.',courier:'Далер Н.',date:'2025-03-22',status:'resolved',text:'Самбуса хунук буд.',priority:'low'},
 ];
-
 const hiringApps=[
-  {id:'APP-001',name:'\u0492\u0430\u043d\u04e3 \u0421\u0430\u0444\u0430\u0440\u043e\u0432',phone:'+992 93 444 5555',vehicle:'\ud83c\udfcd \u041c\u043e\u0442\u043e\u0441\u0438\u043a\u043b',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',date:'2025-03-25',status:'pending',exp:'1 \u0441\u043e\u043b',hasPhoto:true,hasPassport:true},
-  {id:'APP-002',name:'\u0428\u043e\u04b3\u0438\u043d \u0420\u0430\u04b3\u043c\u0430\u0442\u043e\u0432',phone:'+992 90 555 6666',vehicle:'\ud83d\ude97 \u041c\u043e\u0448\u0438\u043d',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',date:'2025-03-24',status:'pending',exp:'3 \u0441\u043e\u043b',hasPhoto:true,hasPassport:true},
-  {id:'APP-003',name:'\u041e\u0440\u0438\u0444 \u0411\u0435\u043a\u0437\u043e\u0434\u0430',phone:'+992 92 666 7777',vehicle:'\ud83d\udef5 \u0421\u043a\u0443\u0442\u0435\u0440',city:'\u0414\u0443\u0448\u0430\u043d\u0431\u0435',date:'2025-03-23',status:'pending',exp:'6 \u043c\u043e\u04b3',hasPhoto:true,hasPassport:false},
+  {id:'APP-001',name:'Ғанӣ Сафаров',phone:'+992 93 444 55',vehicle:'🏍 Мотосикл',city:'Душанбе',date:'2025-03-25',status:'pending',exp:'1 сол',hasPhoto:true,hasPass:true},
+  {id:'APP-002',name:'Шоҳин Раҳматов',phone:'+992 90 555 66',vehicle:'🚗 Мошин',city:'Душанбе',date:'2025-03-24',status:'pending',exp:'3 сол',hasPhoto:true,hasPass:true},
+  {id:'APP-003',name:'Ориф Бекзода',phone:'+992 92 666 77',vehicle:'🛵 Скутер',city:'Душанбе',date:'2025-03-23',status:'pending',exp:'6 моҳ',hasPhoto:true,hasPass:false},
 ];
-
-const notifs=[
-  {icon:'\ud83d\udce6',text:'\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u0438 \u043d\u0430\u0432 ORD-006 \u0430\u0437 \u0421\u0430\u0444\u0430\u0440 \u041d.',time:'2 \u0434\u0430\u049b \u043f\u0435\u0448',type:'inf'},
-  {icon:'\u26a0\ufe0f',text:'\u0414\u0430\u043b\u0435\u0440 \u041d. \u043e\u0444\u043b\u0430\u0439\u043d \u0448\u0443\u0434',time:'5 \u0434\u0430\u049b \u043f\u0435\u0448',type:'wrn'},
-  {icon:'\u2705',text:'ORD-004 \u0431\u043e \u043c\u0443\u0432\u0430\u0444\u0444\u0430\u049b\u0438\u044f\u0442 \u0440\u0430\u0441\u043e\u043d\u0438\u0434\u0430 \u0448\u0443\u0434',time:'12 \u0434\u0430\u049b \u043f\u0435\u0448',type:'ok'},
-  {icon:'\ud83d\udccb',text:'\u0414\u0430\u0440\u0445\u043e\u0441\u0442\u0438 \u043d\u0430\u0432: \u0492\u0430\u043d\u04e3 \u0421\u0430\u0444\u0430\u0440\u043e\u0432',time:'15 \u0434\u0430\u049b \u043f\u0435\u0448',type:'inf'},
-  {icon:'\ud83d\udce2',text:'\u0428\u0438\u043a\u043e\u044f\u0442\u0438 \u043d\u0430\u0432 \u0430\u0437 \u041c\u0430\u0434\u0438\u043d\u0430 \u0428.',time:'20 \u0434\u0430\u049b \u043f\u0435\u0448',type:'wrn'},
-];
-
 const liveEvents=[
-  {time:'14:32',icon:'\ud83d\udce6',text:'\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u0438 \u043d\u0430\u0432 #ORD-006'},
-  {time:'14:30',icon:'\u2705',text:'\u0421\u043e\u0440\u0431\u043e\u043d ORD-004-\u0440\u043e \u0440\u0430\u0441\u043e\u043d\u0434'},
-  {time:'14:28',icon:'\ud83c\udfcd',text:'\u0424\u0438\u0440\u0434\u0430\u0432\u0441 \u0431\u0430 \u043c\u0430\u0441\u0438\u0440 \u0431\u0430\u0440\u043e\u043c\u0430\u0434'},
-  {time:'14:25',icon:'\u26a0\ufe0f',text:'\u0414\u0430\u043b\u0435\u0440 \u043e\u0444\u043b\u0430\u0439\u043d \u0448\u0443\u0434'},
-  {time:'14:20',icon:'\ud83d\udce6',text:'\u0424\u0430\u0440\u043c\u043e\u0438\u0448 #ORD-005 \u0431\u0430 \u0411\u0430\u04b3\u0440\u043e\u043c'},
+  {time:'14:32',icon:'📦',text:'Фармоиш #ORD-006'},
+  {time:'14:30',icon:'✅',text:'Сорбон ORD-004 расонд'},
+  {time:'14:28',icon:'🏍',text:'Фирдавс ба масир'},
+  {time:'14:25',icon:'⚠️',text:'Далер офлайн'},
+  {time:'14:20',icon:'📦',text:'ORD-005 ба Баҳром'},
 ];
 
-// ======================
-// NAVIGATION
-// ======================
-let currentPage='dashboard';
-
-function nav(page){
-  currentPage=page;
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const el=document.getElementById('page-'+page);
-  if(el) el.classList.add('active');
-  document.querySelectorAll('.snav-item').forEach(s=>{s.classList.toggle('active',s.dataset.page===page)});
-  document.querySelectorAll('.bnav-item').forEach(b=>{b.classList.toggle('active',b.dataset.page===page)});
-  if(page==='map') setTimeout(()=>map.invalidateSize(),100);
-}
-
+// NAV
+function nav(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));const el=document.getElementById('page-'+p);if(el)el.classList.add('active');document.querySelectorAll('.snav-item').forEach(s=>s.classList.toggle('active',s.dataset.page===p));document.querySelectorAll('.bnav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===p));if(p==='map')setTimeout(()=>map.invalidateSize(),100)}
 document.querySelectorAll('.snav-item').forEach(b=>b.onclick=()=>nav(b.dataset.page));
 document.querySelectorAll('.bnav-item').forEach(b=>b.onclick=()=>nav(b.dataset.page));
 
-// ======================
 // CLOCK
-// ======================
-function tick(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');document.getElementById('clock').textContent=h+':'+m+':'+s}
+function tick(){const n=new Date();document.getElementById('clock').textContent=[n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':')}
 setInterval(tick,1000);tick();
 
-// ======================
 // TOAST
-// ======================
-function toast(type,msg){
-  const t=document.createElement('div');t.className='toast '+type;t.innerHTML=msg;
-  document.getElementById('toastBox').appendChild(t);
-  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(30px)';t.style.transition='.3s';setTimeout(()=>t.remove(),300)},3500);
-}
+function toast(t,m){const e=document.createElement('div');e.className='toast '+t;e.innerHTML=m;document.getElementById('toastBox').appendChild(e);setTimeout(()=>{e.style.opacity='0';e.style.transform='translateX(30px)';e.style.transition='.3s';setTimeout(()=>e.remove(),300)},3500)}
 
-// ======================
 // MODAL
-// ======================
-function openModal(title,body,buttons=[]){
-  document.getElementById('mTitle').textContent=title;
-  document.getElementById('mBody').innerHTML=body;
-  const f=document.getElementById('mFoot');f.innerHTML='';
-  buttons.forEach(b=>{const btn=document.createElement('button');btn.className='btn '+b.cls;btn.textContent=b.text;btn.onclick=b.fn;f.appendChild(btn)});
-  document.getElementById('modalBg').classList.add('open');
-}
+function openModal(t,b,btns=[]){document.getElementById('mTitle').textContent=t;document.getElementById('mBody').innerHTML=b;const f=document.getElementById('mFoot');f.innerHTML='';btns.forEach(x=>{const btn=document.createElement('button');btn.className='btn '+x.c;btn.textContent=x.t;btn.onclick=x.fn;f.appendChild(btn)});document.getElementById('modalBg').classList.add('open')}
 function closeModal(){document.getElementById('modalBg').classList.remove('open')}
 document.getElementById('modalBg').onclick=e=>{if(e.target.id==='modalBg')closeModal()};
 
-// ======================
-// NOTIFICATIONS
-// ======================
-document.getElementById('notifBtn').onclick=e=>{e.stopPropagation();document.getElementById('notifBg').classList.toggle('open');renderNotifs()};
-document.getElementById('notifBg').onclick=e=>{if(e.target.id==='notifBg')document.getElementById('notifBg').classList.remove('open')};
-function renderNotifs(){
-  document.getElementById('notifListEl').innerHTML=notifs.map(n=>`
-    <div class="complaint-item"><div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:20px">${n.icon}</span>
-      <div><div style="font-size:13px;color:var(--text-1)">${n.text}</div><div style="font-size:11px;color:var(--text-3)">${n.time}</div></div>
-    </div></div>`).join('')||'<div class="empty"><div class="empty-icon">\ud83d\udd14</div><div class="empty-text">\u041e\u0433\u043e\u04b3\u0438\u0435 \u043d\u0435\u0441\u0442</div></div>';
-}
-function clearNotifs(){notifs.length=0;renderNotifs();document.getElementById('nBadge').textContent='0';toast('inf','\u041e\u0433\u043e\u04b3\u0438\u04b3\u043e \u0442\u043e\u0437\u0430 \u0448\u0443\u0434')}
+// NOTIF
+document.getElementById('notifBtn').onclick=()=>{
+  openModal('🔔 Огоҳиҳо',`<div id="nList">${[...Array(5)].map((_,i)=>['📦 Фармоиши нав ORD-006','⚠️ Далер офлайн шуд','✅ ORD-004 расонида','📋 Дархост: Ғанӣ Сафаров','📢 Шикояти нав'][i]).map((t,i)=>`<div style="padding:10px 0;border-bottom:1px solid var(--border-1);font-size:12px;color:var(--text-1)">${t}<div style="font-size:10px;color:var(--text-3);margin-top:2px">${[2,5,12,15,20][i]} дақ пеш</div></div>`).join('')}</div>`,[{t:'Пӯшед',c:'btn-ghost',fn:closeModal}]);
+};
 
-// ======================
 // MAP
-// ======================
-const map=L.map('map',{center:DUSHANBE,zoom:14,zoomControl:true});
+const map=L.map('map',{center:DUSHANBE,zoom:14});
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+const cMk={},oMk={};
+const sM={online:'on',busy:'busy',offline:'off'};
+couriers.forEach(c=>{const m=L.marker([c.lat,c.lng],{icon:L.divIcon({className:'',html:`<div class="c-marker ${sM[c.status]}">🚴</div>`,iconSize:[36,36],iconAnchor:[18,18]})}).addTo(map);m.bindPopup(`<div style="font-family:var(--font)"><strong>${c.name}</strong><br><small>${c.vehicle} ⭐${c.rating}</small><br><small>📞${c.phone}</small></div>`);cMk[c.id]=m});
+orders.forEach(o=>{const m=L.marker([o.lat,o.lng],{icon:L.divIcon({className:'',html:`<div class="o-marker">📦</div>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(map);m.bindPopup(`<div style="font-family:var(--font)"><strong>${o.id}</strong><br><small>${o.customer} · ${o.total}</small></div>`);m.on('click',()=>showOD(o));oMk[o.id]=m});
 
-const cMarkers={},oMarkers={};
-const statusMap={online:'on',busy:'busy',offline:'off'};
-const avatarColors=['#6366f1','#ec4899','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#f97316','#14b8a6','#a855f7','#e11d48'];
+let selC=null,cF='all';
+function rCL(){const s=(document.getElementById('cSearch')?.value||'').toLowerCase();const ls=couriers.filter(c=>(cF==='all'||c.status===cF)&&(c.name.toLowerCase().includes(s)||c.phone.includes(s)));
+document.getElementById('cList').innerHTML=ls.map(c=>`<div class="c-card ${c.status} ${selC===c.id?'sel':''}" onclick="pickC(${c.id})"><div class="c-ava" style="background:${avatarC[c.id%12]}">${c.name.split(' ').map(n=>n[0]).join('')}</div><div class="c-info"><div class="c-name">${c.name}<span class="s-dot ${sM[c.status]}"></span></div><div class="c-meta"><span>${c.vehicle}</span><span>⭐${c.rating}</span><span>📦${c.orders}</span></div></div><div><button class="c-btn" onclick="event.stopPropagation();toast('inf','📞${c.phone}')">📞</button></div></div>`).join('')}
+function pickC(id){selC=selC===id?null:id;rCL();const c=couriers.find(x=>x.id===id);if(c){map.flyTo([c.lat,c.lng],16,{duration:.6});cMk[id].openPopup()}}
+document.getElementById('cSearch')?.addEventListener('input',rCL);
+document.querySelectorAll('.ftab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('on'));t.classList.add('on');cF=t.dataset.f;rCL()});
+document.getElementById('mapSearch').onkeydown=e=>{if(e.key!=='Enter')return;const q=e.target.value.toLowerCase();const c=couriers.find(x=>x.name.toLowerCase().includes(q));if(c){map.flyTo([c.lat,c.lng],17,{duration:.6});cMk[c.id].openPopup();return}const o=orders.find(x=>x.id.toLowerCase().includes(q)||x.customer.toLowerCase().includes(q));if(o){map.flyTo([o.lat,o.lng],17,{duration:.6});oMk[o.id].openPopup();showOD(o)}else toast('wrn','Ёфт нашуд')};
 
-couriers.forEach(c=>{
-  const mk=L.marker([c.lat,c.lng],{icon:L.divIcon({className:'',html:`<div class="c-marker ${statusMap[c.status]}">\ud83d\udeb4</div>`,iconSize:[38,38],iconAnchor:[19,19]})}).addTo(map);
-  mk.bindPopup(`<div style="font-family:var(--font);min-width:160px"><strong>${c.name}</strong><br><span style="font-size:12px;color:#666">${c.vehicle} \u00b7 \u2b50${c.rating}</span><br><span style="font-size:12px">\ud83d\udcde ${c.phone}</span></div>`);
-  cMarkers[c.id]=mk;
-});
-orders.forEach(o=>{
-  const mk=L.marker([o.lat,o.lng],{icon:L.divIcon({className:'',html:`<div class="o-marker">\ud83d\udce6</div>`,iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map);
-  mk.bindPopup(`<div style="font-family:var(--font)"><strong>${o.id}</strong><br><span style="font-size:12px">${o.customer} \u00b7 ${o.total}</span></div>`);
-  mk.on('click',()=>showOrderDetail(o));
-  oMarkers[o.id]=mk;
-});
+document.getElementById('chipRoutes').onclick=function(){this.classList.toggle('on');if(this.classList.contains('on')){orders.filter(o=>o.courierId&&o.status==='delivering').forEach(o=>{const c=couriers.find(x=>x.id===o.courierId);if(c)L.polyline([[c.lat,c.lng],[o.lat,o.lng]],{color:'#4a90ff',weight:3,opacity:.7,dashArray:'8,8'}).addTo(map)});toast('inf','🛤 Масирҳо')}else{map.eachLayer(l=>{if(l instanceof L.Polyline&&!(l instanceof L.Polygon))map.removeLayer(l)})}};
+document.getElementById('chipLive').onclick=function(){this.classList.toggle('on');toast('inf',this.classList.contains('on')?'📡 Зинда':'📡 Хомӯш')};
 
-// Courier list on map
-let selC=null,cFilter='all';
-function renderCList(){
-  const s=document.getElementById('cSearch')?.value?.toLowerCase()||'';
-  const list=couriers.filter(c=>(cFilter==='all'||c.status===cFilter)&&(c.name.toLowerCase().includes(s)||c.phone.includes(s)));
-  document.getElementById('cList').innerHTML=list.map(c=>{
-    const bg=avatarColors[c.id%avatarColors.length];
-    const init=c.name.split(' ').map(n=>n[0]).join('');
-    return`<div class="c-card ${c.status} ${selC===c.id?'sel':''}" onclick="pickCourier(${c.id})">
-      <div class="c-ava" style="background:${bg}">${init}</div>
-      <div class="c-info"><div class="c-name">${c.name} <span class="s-dot ${statusMap[c.status]}"></span></div>
-      <div class="c-meta"><span>${c.vehicle}</span><span>\u2b50${c.rating}</span><span>\ud83d\udce6${c.orders}</span></div></div>
-      <div class="c-btns"><button class="c-btn" onclick="event.stopPropagation();toast('inf','\ud83d\udcde ${c.phone}')">\ud83d\udcde</button></div>
-    </div>`;
-  }).join('');
-}
-function pickCourier(id){selC=selC===id?null:id;renderCList();const c=couriers.find(x=>x.id===id);if(c){map.flyTo([c.lat,c.lng],16,{duration:.6});cMarkers[id].openPopup()}}
-document.getElementById('cSearch')?.addEventListener('input',renderCList);
-document.querySelectorAll('.ftab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('on'));t.classList.add('on');cFilter=t.dataset.f;renderCList()});
-
-// Map search
-document.getElementById('mapSearch').onkeydown=e=>{
-  if(e.key!=='Enter')return;const q=e.target.value.toLowerCase();
-  const c=couriers.find(x=>x.name.toLowerCase().includes(q));
-  if(c){map.flyTo([c.lat,c.lng],17,{duration:.6});cMarkers[c.id].openPopup();pickCourier(c.id);return}
-  const o=orders.find(x=>x.id.toLowerCase().includes(q)||x.customer.toLowerCase().includes(q));
-  if(o){map.flyTo([o.lat,o.lng],17,{duration:.6});oMarkers[o.id].openPopup();showOrderDetail(o)}
-  else toast('wrn','\u0401\u0444\u0442 \u043d\u0430\u0448\u0443\u0434');
-};
-
-// Map chips
-document.getElementById('chipRoutes').onclick=function(){
-  this.classList.toggle('on');
-  if(this.classList.contains('on')){
-    orders.filter(o=>o.courierId&&o.status==='delivering').forEach(o=>{
-      const c=couriers.find(x=>x.id===o.courierId);
-      if(c)L.polyline([[c.lat,c.lng],[o.lat,o.lng]],{color:'#4a90ff',weight:3,opacity:.7,dashArray:'8,8'}).addTo(map);
-    });toast('inf','\ud83d\udee4 \u041c\u0430\u0441\u0438\u0440\u04b3\u043e');
-  }else{map.eachLayer(l=>{if(l instanceof L.Polyline&&!(l instanceof L.Polygon))map.removeLayer(l)});toast('inf','\u041c\u0430\u0441\u0438\u0440\u04b3\u043e \u043f\u0438\u043d\u04b3\u043e\u043d')}
-};
-document.getElementById('chipLive').onclick=function(){this.classList.toggle('on');toast('inf',this.classList.contains('on')?'\ud83d\udce1 \u0420\u0435\u0436\u0430\u0438 \u0437\u0438\u043d\u0434\u0430':'\ud83d\udce1 \u0425\u043e\u043c\u04ef\u0448')};
-
-// Detail panel
-function showOrderDetail(o){
-  const p=document.getElementById('detailPanel'),b=document.getElementById('detailBody');
-  const c=o.courierId?couriers.find(x=>x.id===o.courierId):null;
-  const sMap={delivering:'\u0414\u0430\u0440 \u0440\u043e\u04b3',delivered:'\u0420\u0430\u0441\u043e\u043d\u0438\u0434\u0430',pending:'\u0418\u043d\u0442\u0438\u0437\u043e\u0440\u04e3',cancelled:'\u0411\u0435\u043a\u043e\u0440'};
-  const sClr={delivering:'blue',delivered:'green',pending:'orange',cancelled:'red'};
-  b.innerHTML=`
-    <div class="d-sec"><div class="d-sec-title">\u0424\u0430\u0440\u043c\u043e\u0438\u0448</div>
-      <div class="d-row"><span class="d-label">\u0420\u0430\u049b\u0430\u043c</span><span class="d-val">${o.id}</span></div>
-      <div class="d-row"><span class="d-label">\u04b2\u043e\u043b\u0430\u0442</span><span class="tag ${sClr[o.status]}">${sMap[o.status]}</span></div>
-      <div class="d-row"><span class="d-label">\u041c\u0430\u0431\u043b\u0430\u0493</span><span class="d-val">${o.total}</span></div>
-      <div class="d-row"><span class="d-label">\u0412\u0430\u049b\u0442</span><span class="d-val">${o.time}</span></div>
-    </div>
-    <div class="d-sec"><div class="d-sec-title">\u041c\u0443\u0448\u0442\u0430\u0440\u04e3</div>
-      <div class="d-row"><span class="d-label">\u041d\u043e\u043c</span><span class="d-val">${o.customer}</span></div>
-      <div class="d-row"><span class="d-label">\u0421\u0443\u0440\u043e\u0493\u0430</span><span class="d-val">${o.address}</span></div>
-      <div class="d-row"><span class="d-label">\u0422\u0435\u043b</span><span class="d-val">${o.phone||''}</span></div>
-    </div>
-    <div class="d-sec"><div class="d-sec-title">\u041c\u0430\u04b3\u0441\u0443\u043b\u043e\u0442</div>${o.items.map(i=>`<div class="d-row"><span class="d-label">${i}</span></div>`).join('')}</div>
-    ${c?`<div class="d-sec"><div class="d-sec-title">\u041a\u0443\u0440\u0435\u0440</div>
-      <div class="d-row"><span class="d-label">\u041d\u043e\u043c</span><span class="d-val">${c.name}</span></div>
-      <div class="d-row"><span class="d-label">\u0422\u0435\u043b</span><span class="d-val">${c.phone}</span></div>
-      <div class="d-row"><span class="d-label">\u0412\u043e\u0441\u0438\u0442\u0430\u0438 \u043d\u0430\u049b\u043b</span><span class="d-val">${c.vehicle}</span></div>
-    </div>`:`<div class="d-sec"><div class="d-sec-title">\u041a\u0443\u0440\u0435\u0440</div>
-      <div style="padding:10px;background:var(--orange-dim);border-radius:8px;font-size:12px;color:var(--orange)">\u26a0 \u0422\u0430\u044a\u0438\u043d \u043d\u0430\u0448\u0443\u0434\u0430\u0430\u0441\u0442</div>
-      <button class="btn btn-primary btn-sm" style="width:100%;margin-top:8px" onclick="assignCourier('${o.id}')">\u041a\u0443\u0440\u0435\u0440 \u0442\u0430\u044a\u0438\u043d \u043a\u0443\u043d\u0435\u0434</button>
-    </div>`}
-    <div class="d-sec"><div class="d-sec-title">\u0420\u0430\u0432\u0430\u043d\u0434</div><div class="timeline">
-      <div class="tl-item done"><div class="tl-dot"></div><div class="tl-text">\u049a\u0430\u0431\u0443\u043b \u0448\u0443\u0434</div><div class="tl-time">${o.time}</div></div>
-      <div class="tl-item ${o.status!=='pending'?'done':''}"><div class="tl-dot"></div><div class="tl-text">\u0422\u0430\u0439\u0451\u0440</div></div>
-      <div class="tl-item ${o.status==='delivering'?'now':o.status==='delivered'?'done':''}"><div class="tl-dot"></div><div class="tl-text">\u0414\u0430\u0440 \u0440\u043e\u04b3</div></div>
-      <div class="tl-item ${o.status==='delivered'?'done':''}"><div class="tl-dot"></div><div class="tl-text">\u0420\u0430\u0441\u043e\u043d\u0438\u0434\u0430</div></div>
-    </div></div>`;
-  document.getElementById('detailTitle').textContent='\u0424\u0430\u0440\u043c\u043e\u0438\u0448 '+o.id;
-  p.classList.remove('closed');
-}
+function showOD(o){const p=document.getElementById('detailPanel'),b=document.getElementById('detailBody');const c=o.courierId?couriers.find(x=>x.id===o.courierId):null;
+const sL={delivering:'Дар роҳ',delivered:'Расонида',pending:'Интизорӣ'};const sC={delivering:'blue',delivered:'green',pending:'orange'};
+b.innerHTML=`<div class="d-sec"><div class="d-sec-title">Фармоиш</div><div class="d-row"><span class="d-label">ID</span><span class="d-val">${o.id}</span></div><div class="d-row"><span class="d-label">Ҳолат</span><span class="tag ${sC[o.status]}">${sL[o.status]}</span></div><div class="d-row"><span class="d-label">Маблағ</span><span class="d-val">${o.total}</span></div></div>
+<div class="d-sec"><div class="d-sec-title">Муштарӣ</div><div class="d-row"><span class="d-label">Ном</span><span class="d-val">${o.customer}</span></div><div class="d-row"><span class="d-label">Адрес</span><span class="d-val">${o.address}</span></div></div>
+<div class="d-sec"><div class="d-sec-title">Маҳсулот</div>${o.items.map(i=>`<div class="d-row"><span class="d-label">${i}</span></div>`).join('')}</div>
+${c?`<div class="d-sec"><div class="d-sec-title">Курер</div><div class="d-row"><span class="d-label">Ном</span><span class="d-val">${c.name}</span></div><div class="d-row"><span class="d-label">Тел</span><span class="d-val">${c.phone}</span></div></div>`:`<div class="d-sec"><div style="padding:8px;background:var(--orange-dim);border-radius:6px;font-size:11px;color:var(--orange)">⚠ Курер нест</div><button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="assignC('${o.id}')">Таъин кун</button></div>`}
+<div class="d-sec"><div class="d-sec-title">Раванд</div><div class="timeline"><div class="tl-item done"><div class="tl-dot"></div><div class="tl-text">Қабул</div><div class="tl-time">${o.time}</div></div><div class="tl-item ${o.status!=='pending'?'done':''}"><div class="tl-dot"></div><div class="tl-text">Тайёр</div></div><div class="tl-item ${o.status==='delivering'?'now':o.status==='delivered'?'done':''}"><div class="tl-dot"></div><div class="tl-text">Дар роҳ</div></div><div class="tl-item ${o.status==='delivered'?'done':''}"><div class="tl-dot"></div><div class="tl-text">Расонида</div></div></div></div>`;
+document.getElementById('detailTitle').textContent=o.id;p.classList.remove('closed')}
 function closeDetail(){document.getElementById('detailPanel').classList.add('closed')}
-function assignCourier(oid){
-  const onl=couriers.filter(c=>c.status==='online');
-  openModal('\u041a\u0443\u0440\u0435\u0440 \u0442\u0430\u044a\u0438\u043d \u043a\u0443\u043d\u0435\u0434',`<div class="fg"><label class="fl">\u0418\u043d\u0442\u0438\u0445\u043e\u0431</label><select class="fs" id="asSel">${onl.map(c=>`<option value="${c.id}">${c.name} \u2014 ${c.vehicle}</option>`).join('')}</select></div>`,
-  [{text:'\u0411\u0435\u043a\u043e\u0440',cls:'btn-ghost',fn:closeModal},{text:'\u0422\u0430\u044a\u0438\u043d \u043a\u0443\u043d',cls:'btn-primary',fn:()=>{
-    const id=+document.getElementById('asSel').value,c=couriers.find(x=>x.id===id),o=orders.find(x=>x.id===oid);
-    if(o&&c){o.courierId=id;o.status='delivering';toast('ok',`\u2705 ${c.name} \u2192 ${oid}`);showOrderDetail(o)}closeModal();
-  }}]);
-}
+function assignC(oid){const ol=couriers.filter(c=>c.status==='online');openModal('Таъин',`<div class="fg"><label class="fl">Курер</label><select class="fs" id="aS">${ol.map(c=>`<option value="${c.id}">${c.name} ${c.vehicle}</option>`).join('')}</select></div>`,[{t:'Бекор',c:'btn-ghost',fn:closeModal},{t:'Таъин',c:'btn-primary',fn:()=>{const id=+document.getElementById('aS').value;const c=couriers.find(x=>x.id===id),o=orders.find(x=>x.id===oid);if(o&&c){o.courierId=id;o.status='delivering';toast('ok',`✅${c.name}→${oid}`);showOD(o)}closeModal()}}])}
 
-// Live feed
-function renderLive(){document.getElementById('liveFeed').innerHTML=liveEvents.slice(0,5).map(e=>`<div class="live-item"><span class="live-time">${e.time}</span><span>${e.icon}</span><span>${e.text}</span></div>`).join('')}
+function rLive(){document.getElementById('liveFeed').innerHTML=liveEvents.slice(0,5).map(e=>`<div class="live-item"><span class="live-time">${e.time}</span><span>${e.icon}</span><span>${e.text}</span></div>`).join('')}
+setInterval(()=>{couriers.forEach(c=>{if(c.status!=='offline'){c.lat+=(Math.random()-.5)*.0007;c.lng+=(Math.random()-.5)*.0007;cMk[c.id]?.setLatLng([c.lat,c.lng])}})},3000);
+const rE=[{icon:'📦',text:'Фармоиши нав'},{icon:'✅',text:'Расонида шуд'},{icon:'🏍',text:'Курер ба масир'},{icon:'⭐',text:'Баҳо: 5 ситора'}];
+setInterval(()=>{const n=new Date();liveEvents.unshift({time:[n.getHours(),n.getMinutes()].map(v=>String(v).padStart(2,'0')).join(':'),...rE[Math.floor(Math.random()*rE.length)]});if(liveEvents.length>8)liveEvents.pop();rLive()},15000);
 
-// Move couriers
-setInterval(()=>{couriers.forEach(c=>{if(c.status!=='offline'){c.lat+=(Math.random()-.5)*.0007;c.lng+=(Math.random()-.5)*.0007;cMarkers[c.id]?.setLatLng([c.lat,c.lng])}})},3000);
-const rndEvts=[{icon:'\ud83d\udce6',text:'\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u0438 \u043d\u0430\u0432 \u0434\u043e\u0445\u0438\u043b \u0448\u0443\u0434'},{icon:'\u2705',text:'\u0424\u0430\u0440\u043c\u043e\u0438\u0448 \u0440\u0430\u0441\u043e\u043d\u0438\u0434\u0430 \u0448\u0443\u0434'},{icon:'\ud83c\udfcd',text:'\u041a\u0443\u0440\u0435\u0440 \u0431\u0430 \u043c\u0430\u0441\u0438\u0440 \u0431\u0430\u0440\u043e\u043c\u0430\u0434'},{icon:'\u2b50',text:'\u0411\u0430\u04b3\u043e\u0438 \u043d\u0430\u0432: 5 \u0441\u0438\u0442\u043e\u0440\u0430'}];
-setInterval(()=>{const n=new Date(),t=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;const e=rndEvts[Math.floor(Math.random()*rndEvts.length)];liveEvents.unshift({time:t,...e});if(liveEvents.length>8)liveEvents.pop();renderLive()},15000);
-
-// ======================
 // ORDERS TABLE
-// ======================
-function renderOrders(target){
-  const sMap={delivering:'\u0414\u0430\u0440 \u0440\u043e\u04b3',delivered:'\u0420\u0430\u0441\u043e\u043d\u0438\u0434\u0430',pending:'\u0418\u043d\u0442\u0438\u0437\u043e\u0440\u04e3'};
-  const sClr={delivering:'blue',delivered:'green',pending:'orange'};
-  document.getElementById(target).innerHTML=`<table><thead><tr><th>ID</th><th>\u041c\u0443\u0448\u0442\u0430\u0440\u04e3</th><th>\u041c\u0430\u0431\u043b\u0430\u0493</th><th>\u04b2\u043e\u043b\u0430\u0442</th><th>\u041a\u0443\u0440\u0435\u0440</th><th></th></tr></thead><tbody>${orders.map(o=>{
-    const c=o.courierId?couriers.find(x=>x.id===o.courierId):null;
-    return`<tr><td style="font-family:var(--mono);font-size:12px;color:var(--blue)">${o.id}</td><td><div style="font-weight:600;font-size:13px">${o.customer}</div><div style="font-size:11px;color:var(--text-3)">${o.address}</div></td><td style="font-weight:600">${o.total}</td><td><span class="tag ${sClr[o.status]}">${sMap[o.status]}</span></td><td>${c?c.name:'<span style="color:var(--text-3)">\u2014</span>'}</td><td><button class="btn btn-ghost btn-sm" onclick="nav('map');setTimeout(()=>{const o=orders.find(x=>x.id==='${o.id}');if(o)showOrderDetail(o)},200)">\ud83d\udc41</button></td></tr>`;
-  }).join('')}</tbody></table>`;
-}
+function rOrd(t){const sL={delivering:'Дар роҳ',delivered:'Расонида',pending:'Интизорӣ'};const sC={delivering:'blue',delivered:'green',pending:'orange'};
+document.getElementById(t).innerHTML=`<table><thead><tr><th>ID</th><th>Муштарӣ</th><th>Маблағ</th><th>Ҳолат</th><th>Курер</th><th></th></tr></thead><tbody>${orders.map(o=>{const c=o.courierId?couriers.find(x=>x.id===o.courierId):null;return`<tr><td style="font-family:var(--mono);font-size:11px;color:var(--blue)">${o.id}</td><td><div style="font-weight:600;font-size:12px">${o.customer}</div><div style="font-size:10px;color:var(--text-3)">${o.address}</div></td><td style="font-weight:600">${o.total}</td><td><span class="tag ${sC[o.status]}">${sL[o.status]}</span></td><td style="font-size:12px">${c?c.name:'—'}</td><td><button class="btn btn-ghost btn-sm" onclick="nav('map');setTimeout(()=>showOD(orders.find(x=>x.id==='${o.id}')),200)">👁</button></td></tr>`}).join('')}</tbody></table>`}
 
-// ======================
 // COURIER PROFILES
-// ======================
-function renderCourierProfiles(){
-  document.getElementById('courierProfiles').innerHTML=couriers.map(c=>{
-    const bg=avatarColors[c.id%avatarColors.length];
-    const init=c.name.split(' ').map(n=>n[0]).join('');
-    const sClr={online:'green',busy:'orange',offline:'gray'};
-    const sLbl={online:'\u041e\u0437\u043e\u0434',busy:'\u0411\u0430\u043d\u0434',offline:'\u041e\u0444\u043b\u0430\u0439\u043d'};
-    return`<div class="profile-card" onclick="openCourierProfile(${c.id})">
-      <div class="profile-top">
-        <div class="profile-avatar" style="background:${bg}">${init}</div>
-        <div><div class="profile-name">${c.name} <span class="tag ${sClr[c.status]}" style="margin-left:4px">${sLbl[c.status]}</span></div>
-        <div class="profile-sub">${c.vehicle} \u00b7 ${c.phone}</div></div>
-      </div>
-      <div class="profile-stats">
-        <div class="profile-stat"><div class="profile-stat-val">${c.completed}</div><div class="profile-stat-label">\u0420\u0430\u0441\u043e\u043d\u0438\u0434\u0430</div></div>
-        <div class="profile-stat"><div class="profile-stat-val">\u2b50${c.rating}</div><div class="profile-stat-label">\u0420\u0435\u0439\u0442\u0438\u043d\u0433</div></div>
-        <div class="profile-stat"><div class="profile-stat-val">${c.orders}</div><div class="profile-stat-label">\u0418\u043c\u0440\u04ef\u0437</div></div>
-        <div class="profile-stat"><div class="profile-stat-val">${c.exp}</div><div class="profile-stat-label">\u0422\u0430\u04b7\u0440\u0438\u0431\u0430</div></div>
-      </div>
-    </div>`;
-  }).join('');
-}
+function rCP(){document.getElementById('courierProfiles').innerHTML=couriers.map(c=>{const sC={online:'green',busy:'orange',offline:'gray'};const sL={online:'Озод',busy:'Банд',offline:'Офлайн'};
+return`<div class="profile-card" onclick="openCP(${c.id})"><div class="profile-top"><div class="profile-avatar" style="background:${avatarC[c.id%12]}">${c.name.split(' ').map(n=>n[0]).join('')}</div><div><div class="profile-name">${c.name} <span class="tag ${sC[c.status]}">${sL[c.status]}</span></div><div class="profile-sub">${c.vehicle} · ${c.phone}</div></div></div><div class="profile-stats"><div class="profile-stat"><div class="profile-stat-val">${c.done}</div><div class="profile-stat-label">Расонида</div></div><div class="profile-stat"><div class="profile-stat-val">⭐${c.rating}</div><div class="profile-stat-label">Рейтинг</div></div><div class="profile-stat"><div class="profile-stat-val">${c.orders}</div><div class="profile-stat-label">Имрӯз</div></div><div class="profile-stat"><div class="profile-stat-val">${c.exp}</div><div class="profile-stat-label">Таҷриба</div></div></div></div>`}).join('')}
+function openCP(id){const c=couriers.find(x=>x.id===id);openModal(c.name,`<div style="text-align:center;margin-bottom:14px"><div style="width:64px;height:64px;border-radius:var(--r);background:${avatarC[c.id%12]};display:inline-grid;place-items:center;font-size:26px;font-weight:700;margin-bottom:8px">${c.name.split(' ').map(n=>n[0]).join('')}</div><div style="font-size:17px;font-weight:700">${c.name}</div><div style="font-size:12px;color:var(--text-2)">${c.vehicle} · ${c.city}</div></div><div class="d-sec"><div class="d-sec-title">Маълумот</div><div class="d-row"><span class="d-label">Телефон</span><span class="d-val">${c.phone}</span></div><div class="d-row"><span class="d-label">Рейтинг</span><span class="d-val">⭐${c.rating}</span></div><div class="d-row"><span class="d-label">Таҷриба</span><span class="d-val">${c.exp}</span></div><div class="d-row"><span class="d-label">Аз санаи</span><span class="d-val">${c.joined}</span></div><div class="d-row"><span class="d-label">Расонидаҳо</span><span class="d-val">${c.done}</span></div><div class="d-row"><span class="d-label">Имрӯз</span><span class="d-val">${c.orders}</span></div></div>`,[{t:'Пӯшед',c:'btn-ghost',fn:closeModal},{t:'📍 Харита',c:'btn-primary',fn:()=>{closeModal();nav('map');setTimeout(()=>{map.flyTo([c.lat,c.lng],17,{duration:.6});cMk[c.id].openPopup()},200)}}])}
 
-function openCourierProfile(id){
-  const c=couriers.find(x=>x.id===id);
-  const bg=avatarColors[c.id%avatarColors.length];
-  const init=c.name.split(' ').map(n=>n[0]).join('');
-  openModal(c.name,`
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="width:72px;height:72px;border-radius:var(--r);background:${bg};display:inline-grid;place-items:center;font-size:28px;font-weight:700;margin-bottom:10px">${init}</div>
-      <div style="font-size:18px;font-weight:700">${c.name}</div>
-      <div style="font-size:13px;color:var(--text-2)">${c.vehicle} \u00b7 ${c.city}</div>
-    </div>
-    <div class="d-sec"><div class="d-sec-title">\u041c\u0430\u044a\u043b\u0443\u043c\u043e\u0442</div>
-      <div class="d-row"><span class="d-label">\u0422\u0435\u043b\u0435\u0444\u043e\u043d</span><span class="d-val">${c.phone}</span></div>
-      <div class="d-row"><span class="d-label">\u0420\u0435\u0439\u0442\u0438\u043d\u0433</span><span class="d-val">\u2b50 ${c.rating}</span></div>
-      <div class="d-row"><span class="d-label">\u0422\u0430\u04b7\u0440\u0438\u0431\u0430</span><span class="d-val">${c.exp}</span></div>
-      <div class="d-row"><span class="d-label">\u0410\u0437 \u0441\u0430\u043d\u0430\u0438</span><span class="d-val">${c.joined}</span></div>
-      <div class="d-row"><span class="d-label">\u0420\u0430\u0441\u043e\u043d\u0438\u0434\u0430\u04b3\u043e</span><span class="d-val">${c.completed}</span></div>
-      <div class="d-row"><span class="d-label">\u0418\u043c\u0440\u04ef\u0437</span><span class="d-val">${c.orders} \u0444\u0430\u0440\u043c\u043e\u0438\u0448</span></div>
-    </div>
-  `,[{text:'\u041f\u04ef\u0448\u0435\u0434',cls:'btn-ghost',fn:closeModal},{text:'\ud83d\udccd \u0414\u0430\u0440 \u0445\u0430\u0440\u0438\u0442\u0430',cls:'btn-primary',fn:()=>{closeModal();nav('map');setTimeout(()=>{map.flyTo([c.lat,c.lng],17,{duration:.6});cMarkers[c.id].openPopup()},200)}}]);
-}
-
-// ======================
 // CLIENT PROFILES
-// ======================
-function renderClientProfiles(){
-  document.getElementById('clientProfiles').innerHTML=clients.map(c=>{
-    const bg=avatarColors[(c.id+4)%avatarColors.length];
-    const init=c.name.split(' ').map(n=>n[0]).join('');
-    const stars='\u2605'.repeat(c.rating)+'\u2606'.repeat(5-c.rating);
-    return`<div class="profile-card" onclick="openClientProfile(${c.id})">
-      <div class="profile-top">
-        <div class="profile-avatar" style="background:${bg}">${init}</div>
-        <div><div class="profile-name">${c.name}</div>
-        <div class="profile-sub">${c.phone}</div>
-        <div class="stars">${stars}</div></div>
-      </div>
-      <div class="profile-stats">
-        <div class="profile-stat"><div class="profile-stat-val">${c.orders}</div><div class="profile-stat-label">\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e</div></div>
-        <div class="profile-stat"><div class="profile-stat-val">${c.spent}</div><div class="profile-stat-label">\u0425\u0430\u0440\u04b7</div></div>
-        <div class="profile-stat"><div class="profile-stat-val">${c.joined.slice(0,7)}</div><div class="profile-stat-label">\u0410\u0437</div></div>
-      </div>
-    </div>`;
-  }).join('');
-}
+function rClP(){document.getElementById('clientProfiles').innerHTML=clients.map(c=>{const stars='★'.repeat(c.rating)+'☆'.repeat(5-c.rating);
+return`<div class="profile-card" onclick="openClP(${c.id})"><div class="profile-top"><div class="profile-avatar" style="background:${avatarC[(c.id+4)%12]}">${c.name.split(' ').map(n=>n[0]).join('')}</div><div><div class="profile-name">${c.name}</div><div class="profile-sub">${c.phone}</div><div class="stars">${stars}</div></div></div><div class="profile-stats"><div class="profile-stat"><div class="profile-stat-val">${c.orders}</div><div class="profile-stat-label">Фармоиш</div></div><div class="profile-stat"><div class="profile-stat-val">${c.spent}</div><div class="profile-stat-label">Харҷ</div></div><div class="profile-stat"><div class="profile-stat-val">${c.joined}</div><div class="profile-stat-label">Аз</div></div></div></div>`}).join('')}
+function openClP(id){const c=clients.find(x=>x.id===id);const stars='★'.repeat(c.rating)+'☆'.repeat(5-c.rating);openModal(c.name,`<div style="text-align:center;margin-bottom:14px"><div style="width:64px;height:64px;border-radius:var(--r);background:${avatarC[(c.id+4)%12]};display:inline-grid;place-items:center;font-size:26px;font-weight:700;margin-bottom:8px">${c.name.split(' ').map(n=>n[0]).join('')}</div><div style="font-size:17px;font-weight:700">${c.name}</div><div class="stars" style="font-size:15px">${stars}</div></div><div class="d-sec"><div class="d-sec-title">Маълумот</div><div class="d-row"><span class="d-label">Телефон</span><span class="d-val">${c.phone}</span></div><div class="d-row"><span class="d-label">Суроға</span><span class="d-val">${c.addr}</span></div><div class="d-row"><span class="d-label">Фармоишҳо</span><span class="d-val">${c.orders}</span></div><div class="d-row"><span class="d-label">Маблағ</span><span class="d-val">${c.spent}</span></div><div class="d-row"><span class="d-label">Аз</span><span class="d-val">${c.joined}</span></div></div>`,[{t:'Пӯшед',c:'btn-ghost',fn:closeModal}])}
 
-function openClientProfile(id){
-  const c=clients.find(x=>x.id===id);
-  const bg=avatarColors[(c.id+4)%avatarColors.length];
-  const init=c.name.split(' ').map(n=>n[0]).join('');
-  const stars='\u2605'.repeat(c.rating)+'\u2606'.repeat(5-c.rating);
-  openModal(c.name,`
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="width:72px;height:72px;border-radius:var(--r);background:${bg};display:inline-grid;place-items:center;font-size:28px;font-weight:700;margin-bottom:10px">${init}</div>
-      <div style="font-size:18px;font-weight:700">${c.name}</div>
-      <div class="stars" style="font-size:16px">${stars}</div>
-    </div>
-    <div class="d-sec"><div class="d-sec-title">\u041c\u0430\u044a\u043b\u0443\u043c\u043e\u0442</div>
-      <div class="d-row"><span class="d-label">\u0422\u0435\u043b\u0435\u0444\u043e\u043d</span><span class="d-val">${c.phone}</span></div>
-      <div class="d-row"><span class="d-label">\u0421\u0443\u0440\u043e\u0493\u0430</span><span class="d-val">${c.addr}</span></div>
-      <div class="d-row"><span class="d-label">\u0424\u0430\u0440\u043c\u043e\u0438\u0448\u04b3\u043e</span><span class="d-val">${c.orders}</span></div>
-      <div class="d-row"><span class="d-label">\u041c\u0430\u0431\u043b\u0430\u0493\u0438 \u0443\u043c\u0443\u043c\u04e3</span><span class="d-val">${c.spent}</span></div>
-      <div class="d-row"><span class="d-label">\u0410\u0437 \u0441\u0430\u043d\u0430\u0438</span><span class="d-val">${c.joined}</span></div>
-    </div>
-  `,[{text:'\u041f\u04ef\u0448\u0435\u0434',cls:'btn-ghost',fn:closeModal}]);
-}
-
-// ======================
 // COMPLAINTS
-// ======================
-let compFilter='all';
-function renderComplaints(){
-  const sMap={new:'\u041d\u0430\u0432',progress:'\u0414\u0430\u0440 \u0431\u0430\u0440\u0440\u0430\u0441\u04e3',resolved:'\u04b2\u0430\u043b\u0448\u0443\u0434\u0430'};
-  const sClr={new:'red',progress:'orange',resolved:'green'};
-  const pClr={high:'red',medium:'orange',low:'gray'};
-  const pLbl={high:'\u0411\u0430\u043b\u0430\u043d\u0434',medium:'\u041c\u0438\u0451
+let compF='all';
+function rComp(){const sL={new:'Нав',progress:'Баррасӣ',resolved:'Ҳалшуда'};const sC={new:'red',progress:'orange',resolved:'green'};const pC={high:'red',medium:'orange',low:'gray'};const pL={high:'Баланд',medium:'Миёна',low:'Паст'};
+const fl=complaints.filter(c=>compF==='all'||c.status===compF);
+document.getElementById('compList').innerHTML=fl.map(c=>`<div class="complaint-item" onclick="openComp('${c.id}')"><div class="complaint-head"><span class="complaint-id">${c.id}</span><span class="complaint-date">${c.date}</span></div><div class="complaint-text">${c.text}</div><div class="complaint-footer"><span class="tag ${sC[c.status]}">${sL[c.status]}</span><span class="tag ${pC[c.priority]}">${pL[c.priority]}</span><span style="font-size:10px;color:var(--text-3)">👤${c.customer}</span>${c.courier?`<span style="font-size:10px;color:var(--text-3)">🏍${c.courier}</span>`:''}</div></div>`).join('')||'<div style="text-align:center;padding:30px;font-size:13px;color:var(--text-3)">✅ Шикояте нест</div>'}
+document.querySelectorAll('#compTabs .ptab').forEach(t=>t.onclick=()=>{document.querySelectorAll('#compTabs .ptab').forEach(x=>x.classList.remove('on'));t.classList.add('on');compF=t.dataset.cf;rComp()});
+function openComp(id){const c=complaints.find(x=>x.id===id);const sL={new:'Нав',progress:'Баррасӣ',resolved:'Ҳалшуда'};
+openModal('Шикоят '+c.id,`<div class="d-sec"><div class="d-sec-title">Маълумот</div><div class="d-row"><span class="d-label">Муштарӣ</span><span class="d-val">${c.customer}</span></div><div class="d-row"><span class="d-label">Курер</span><span class="d-val">${c.courier||'—'}</span></div><div class="d-row"><span class="d-label">Сана</span><span class="d-val">${c.date}</span></div><div class="d-row"><span class="d-label">Ҳолат</span><span class="d-val">${sL[c.status]}</span></div></div><div class="d-sec"><div class="d-sec-title">Матн</div><p style="font-size:12px;line-height:1.6;color:var(--text-1)">${c.text}</p></div><div class="fg"><label class="fl">Ҷавоб</label><textarea class="fi" placeholder="Ҷавоб нависед..."></textarea></div>`,[{t:'Пӯшед',c:'btn-ghost',fn:closeModal},c.status!=='resolved'?{t:'✅ Ҳал',c:'btn-success',fn:()=>{c.status='resolved';rComp();closeModal();toast('ok','Ҳал шуд')}}:null,c.status==='new'?{t:'🔄 Баррасӣ',c:'btn-primary',fn:()=>{c.status='progress';rComp();closeModal();toast('inf','Ба баррасӣ')}}:null].filter(Boolean))}
+
+// HIRING
+function hStep(s){document.getElementById('fs1').style.display=s===1?'block':'none';document.getElementById('fs2').style.display=s===2?'block':'none';document.getElementById('fs3').style.display=s===3?'block':'none';document.querySelectorAll('#formSteps .step').forEach((el,i)=>el.className='step '+(i<s-1?'done':i===s-1?'cur':''))}
+function hUp(inp,zid,pid){const f=inp.files[0];if(!f)return;document.getElementById(zid).classList.add('has-file');const r=new FileReader();r.onload=e=>{const p=document.getElementById(pid);p.src=e.target.result;p.style.display='block'};r.readAsDataURL(f)}
+function rH(){document.getElementById('pendCnt').textContent=hiringApps.filter(a=>a.status==='pending').length;
+document.getElementById('hiringList').innerHTML=hiringApps.map(a=>{const sC={pending:'orange',approved:'green',rejected:'red'};const sL={pending:'Интизорӣ',approved:'Қабул',rejected:'Рад'};
+return`<div class="complaint-item" onclick="openHA('${a.id}')"><div class="complaint-head"><span class="complaint-id">${a.id}</span><span class="complaint-date">${a.date}</span></div><div style="font-size:13px;font-weight:600;margin-bottom:3px">${a.name}</div><div style="font-size:11px;color:var(--text-2);margin-bottom:6px">${a.vehicle} · ${a.phone}</div><div class="complaint-footer"><span class="tag ${sC[a.status]}">${sL[a.status]}</span><span class="tag ${a.hasPhoto?'green':'red'}">${a.hasPhoto?'📸✓':'📸✗'}</span><span class="tag ${a.hasPass?'green':'red'}">${a.hasPass?'🪪✓':'🪪✗'}</span></div></div>`}).join('')}
+function openHA(id){const a=hiringApps.find(x=>x.id===id);
+openModal(a.name,`<div style="text-align:center;margin-bottom:14px"><div style="width:64px;height:64px;border-radius:var(--r);background:var(--purple-dim);display:inline-grid;place-items:center;font-size:26px;margin-bottom:8px">👤</div><div style="font-size:17px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--text-2)">${a.vehicle} · ${a.city}</div></div><div class="d-sec"><div class="d-sec-title">Маълумот</div><div class="d-row"><span class="d-label">Тел</span><span class="d-val">${a.phone}</span></div><div class="d-row"><span class="d-label">Таҷриба</span><span class="d-val">${a.exp}</span></div><div class="d-row"><span class="d-label">Акс</span><span class="d-val">${a.hasPhoto?'<span class="tag green">✓</span>':'<span class="tag red">✗</span>'}</span></div><div class="d-row"><span class="d-label">Паспорт</span><span class="d-val">${a.hasPass?'<span class="tag green">✓</span>':'<span class="tag red">✗</span>'}</span></div></div>${!a.hasPass?'<div style="padding:8px;background:var(--orange-dim);border-radius:6px;font-size:11px;color:var(--orange);margin-bottom:10px">⚠ Паспорт бор нашудааст</div>':''}`,[{t:'Пӯшед',c:'btn-ghost',fn:closeModal},a.status==='pending'?{t:'❌Рад',c:'btn-danger',fn:()=>{a.status='rejected';rH();closeModal();toast('err','Рад шуд')}}:null,a.status==='pending'?{t:'✅Қабул',c:'btn-success',fn:()=>{if(!a.hasPass){toast('wrn','⚠ Паспорт лозим!');return}a.status='approved';couriers.push({id:couriers.length+1,name:a.name,phone:a.phone,status:'online',orders:0,done:0,lat:38.56+(Math.random()-.5)*.02,lng:68.77+(Math.random()-.5)*.02,vehicle:a.vehicle,rating:0,joined:new Date().toISOString().slice(0,10),city:a.city,exp:a.exp});rH();rCP();rCL();closeModal();toast('ok',`✅${a.name} қабул шуд!`)}}:null].filter(Boolean))}
+function submitH(){const n=document.getElementById('hName').value.trim(),ph=document.getElementById('hPhone').value.trim();if(!n||!ph){toast('wrn','Ном ва телефон лозим');return}
+hiringApps.unshift({id:'APP-'+String(hiringApps.length+1).padStart(3,'0'),name:n,phone:ph,vehicle:document.getElementById('hVeh').value,city:document.getElementById('hCity').value||'Душанбе',date:new Date().toISOString().slice(0,10),status:'pending',exp:document.getElementById('hExp').value||'—',hasPhoto:!!document.getElementById('p1').src,hasPass:!!document.getElementById('p2').src});
+rH();rDH();hStep(1);['hName','hPhone','hCity','hExp','hNote'].forEach(id=>document.getElementById(id).value='');['p1','p2','p3'].forEach(id=>{const e=document.getElementById(id);e.src='';e.style.display='none'});['z1','z2','z3'].forEach(id=>document.getElementById(id).classList.remove('has-file'));toast('ok','✅ Дархост фиристода!')}
+
+function rDH(){document.getElementById('dashHiring').innerHTML=hiringApps.filter(a=>a.status==='pending').slice(0,3).map(a=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-1)"><div style="width:32px;height:32px;border-radius:var(--r-xs);background:var(--purple-dim);display:grid;place-items:center;font-size:14px">👤</div><div style="flex:1"><div style="font-size:12px;font-weight:600">${a.name}</div><div style="font-size:10px;color:var(--text-3)">${a.vehicle}</div></div><span class="tag orange">Интизорӣ</span></div>`).join('')||'<div style="font-size:12px;color:var(--text-3);padding:10px">Дархосте нест</div>'}
+
+// INIT
+rCL();rLive();rOrd('dashOrders');rOrd('ordersTable');rCP();rClP();rComp();rH();rDH();
+setTimeout(()=>map.invalidateSize(),300);
+</script>
+</body>
+</html>
