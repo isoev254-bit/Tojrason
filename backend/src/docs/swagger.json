@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>swagger.json</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Tojrason Delivery System",
+        "version": "v1",
+        "description": "Системаи интиқоли бор (ба монанди Glovo) - API барои фармоишҳо, курьерҳо ва пардохт",
+        "contact": {
+            "name": "Tojrason Support",
+            "email": "support@tojrason.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:5000",
+            "description": "Development server"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "schemas": {
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "success": { "type": "boolean", "example": false },
+                    "message": { "type": "string", "example": "Хатогӣ рух дод" },
+                    "details": { "type": "object", "nullable": true }
+                }
+            },
+            "SuccessResponse": {
+                "type": "object",
+                "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "message": { "type": "string", "example": "Амал бомуваффақият анҷом шуд" },
+                    "data": { "type": "object", "nullable": true }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "email": { "type": "string", "format": "email" },
+                    "phone": { "type": "string" },
+                    "fullName": { "type": "string" },
+                    "role": { "type": "string", "enum": ["CLIENT", "COURIER", "ADMIN", "DISPATCHER"] },
+                    "isAvailable": { "type": "boolean" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                }
+            },
+            "Order": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "clientId": { "type": "string", "format": "uuid" },
+                    "courierId": { "type": "string", "format": "uuid", "nullable": true },
+                    "pickupAddress": { "type": "string" },
+                    "pickupLat": { "type": "number" },
+                    "pickupLng": { "type": "number" },
+                    "deliveryAddress": { "type": "string" },
+                    "deliveryLat": { "type": "number" },
+                    "deliveryLng": { "type": "number" },
+                    "status": { "type": "string", "enum": ["PENDING", "ASSIGNED", "PICKED_UP", "DELIVERED", "CANCELLED"] },
+                    "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID", "FAILED", "REFUNDED"] },
+                    "amount": { "type": "number" },
+                    "deliveryFee": { "type": "number" },
+                    "totalAmount": { "type": "number" },
+                    "createdAt": { "type": "string", "format": "date-time" }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                    "email": { "type": "string", "format": "email", "example": "user@example.com" },
+                    "password": { "type": "string", "format": "password", "example": "password123" }
+                }
+            },
+            "RegisterRequest": {
+                "type": "object",
+                "required": ["email", "phone", "password", "fullName"],
+                "properties": {
+                    "email": { "type": "string", "format": "email" },
+                    "phone": { "type": "string", "example": "+992901234567" },
+                    "password": { "type": "string", "format": "password", "minLength": 6 },
+                    "fullName": { "type": "string" },
+                    "role": { "type": "string", "enum": ["CLIENT", "COURIER"], "default": "CLIENT" }
+                }
+            },
+            "PaymentRequest": {
+                "type": "object",
+                "required": ["orderId", "method"],
+                "properties": {
+                    "orderId": { "type": "string", "format": "uuid" },
+                    "method": { "type": "string", "enum": ["stripe", "cash"] },
+                    "successUrl": { "type": "string", "nullable": true },
+                    "cancelUrl": { "type": "string", "nullable": true }
+                }
+            }
+        }
+    },
+    "security": [{ "bearerAuth": [] }],
+    "tags": [
+        { "name": "Auth", "description": "Аутентификатсия ва регистратсия" },
+        { "name": "User", "description": "Идоракунии корбарон" },
+        { "name": "Order", "description": "Идоракунии фармоишҳо" },
+        { "name": "Courier", "description": "Идоракунии курьерҳо" },
+        { "name": "Payment", "description": "Пардохтҳо" },
+        { "name": "Health", "description": "Санҷиши саломатии сервер" }
+    ],
+    "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Сабти номи корбари нав",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": { "description": "Корбар бомуваффақият сабт шуд" },
+                    "400": { "description": "Маълумотҳо нодуруст" }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Воридшавӣ ба система",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/LoginRequest" }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": { "description": "Воридшавӣ муваффақ" },
+                    "401": { "description": "Email ё парол нодуруст" }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": ["Auth"],
+                "summary": "Гирифтани маълумоти корбари ҷорӣ",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Маълумоти корбар" },
+                    "401": { "description": "Токен нест ё нодуруст" }
+                }
+            }
+        },
+        "/api/orders": {
+            "post": {
+                "tags": ["Order"],
+                "summary": "Эҷоди фармоиши нав",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "201": { "description": "Фармоиш эҷод шуд" },
+                    "400": { "description": "Маълумотҳо нодуруст" }
+                }
+            },
+            "get": {
+                "tags": ["Order"],
+                "summary": "Гирифтани фармоишҳои корбари ҷорӣ",
+                "security": [{ "bearerAuth": [] }],
+                "responses": {
+                    "200": { "description": "Рӯйхати фармоишҳо" }
+                }
+            }
+        },
+        "/api/orders/{id}": {
+            "get": {
+                "tags": ["Order"],
+                "summary": "Гирифтани фармоиш бо ID",
+                "security": [{ "bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": { "type": "string", "format": "uuid" }
+                    }
+                ],
+                "responses": {
+                    "200": { "description": "Маълумоти фармоиш" },
+                    "404": { "description": "Фармоиш ёфт нашуд" }
+                }
+            }
+        },
+        "/api/health": {
+            "get": {
+                "tags": ["Health"],
+                "summary": "Санҷиши саломатии сервер",
+                "responses": {
+                    "200": { "description": "Сервер солим" }
+                }
+            }
+        }
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Код копия карда шуд!');
+    }).catch(() => {
+        alert('Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
