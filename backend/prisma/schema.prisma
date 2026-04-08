@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>schema.prisma</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// prisma/schema.prisma - Модели базаи додаҳо барои системаи Tojrason
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Модели корбар (User)
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  phone        String   @unique
+  passwordHash String
+  fullName     String
+  role         UserRole @default(CLIENT)
+  
+  // Барои курьер
+  locationLat  Float?
+  locationLng  Float?
+  isAvailable  Boolean  @default(false)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Муносибатҳо
+  ordersAsClient   Order[]   @relation("ClientOrders")
+  ordersAsCourier  Order[]   @relation("CourierOrders")
+  payments         Payment[]
+  notifications    Notification[]
+
+  @@map("users")
+}
+
+// Модели фармоиш (Order)
+model Order {
+  id              String      @id @default(uuid())
+  clientId        String
+  courierId       String?
+  pickupAddress   String
+  pickupLat       Float
+  pickupLng       Float
+  deliveryAddress String
+  deliveryLat     Float
+  deliveryLng     Float
+  status          OrderStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  amount          Float       // Маблағи фармоиш (бидуни интиқол)
+  deliveryFee     Float       // Арзиши интиқол
+  totalAmount     Float       // Маблағи умумӣ (amount + deliveryFee)
+  clientNote      String?
+  courierNote     String?
+  assignedAt      DateTime?
+  pickedUpAt      DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Муносибатҳо
+  client          User        @relation("ClientOrders", fields: [clientId], references: [id])
+  courier         User?       @relation("CourierOrders", fields: [courierId], references: [id])
+  payments        Payment[]
+
+  @@index([clientId])
+  @@index([courierId])
+  @@index([status])
+  @@map("orders")
+}
+
+// Модели пардохт (Payment)
+model Payment {
+  id                 String   @id @default(uuid())
+  orderId            String
+  userId             String
+  amount             Float
+  currency           String   @default("TJS")
+  method             String   // stripe, cash
+  status             PaymentStatus @default(PENDING)
+  providerPaymentId  String?  // ID дар провайдер (масалан stripe payment intent id)
+  clientSecret       String?  // Барои Stripe
+  metadata           Json?    // Маълумоти иловагӣ
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  paidAt             DateTime?
+  refundedAt         DateTime?
+
+  // Муносибатҳо
+  order              Order    @relation(fields: [orderId], references: [id])
+  user               User     @relation(fields: [userId], references: [id])
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+// Модели уведомление (Notification)
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String   // order_created, order_assigned, etc.
+  title     String?
+  body      String
+  data      Json?    // Маълумоти иловагӣ (JSON)
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+
+  // Муносибатҳо
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// Enum барои нақши корбар
+enum UserRole {
+  CLIENT
+  COURIER
+  ADMIN
+  DISPATCHER
+}
+
+// Enum барои статуси фармоиш
+enum OrderStatus {
+  PENDING      // Интизори таъини курьер
+  ASSIGNED     // Курьер таъин шуд
+  PICKED_UP    // Курьер борро гирифт
+  DELIVERED    // Фармоиш расонида шуд
+  CANCELLED    // Бекор шуд
+}
+
+// Enum барои статуси пардохт
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Код копия карда шуд!');
+    }).catch(() => {
+        alert('Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
