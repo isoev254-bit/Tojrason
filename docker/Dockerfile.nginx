@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dockerfile.nginx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+# docker/Dockerfile.nginx - Барои сохтани тасвири Nginx барои frontend ва reverse proxy
+
+FROM nginx:alpine
+
+# Нест кардани конфигуратсияи пешфарз
+RUN rm /etc/nginx/nginx.conf
+
+# Копияи конфигуратсияи худамон
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Эҷоди директория барои SSL (агар лозим бошад)
+RUN mkdir -p /etc/nginx/ssl
+
+# Барои static файлҳои frontend (инҳо дар вақти коркард бо volume иваз мешаванд)
+RUN mkdir -p /usr/share/nginx/html/admin
+RUN mkdir -p /usr/share/nginx/html/client
+RUN mkdir -p /usr/share/nginx/html/courier
+
+# Экспозицияи портҳо
+EXPOSE 80
+EXPOSE 443
+
+# Фармони оғоз
+CMD ["nginx", "-g", "daemon off;"]
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Код копия карда шуд!');
+    }).catch(() => {
+        alert('Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
