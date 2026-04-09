@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pagination.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/common/Pagination/Pagination.module.css */
+
+/* Контейнери асосӣ */
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+    padding: 12px 0;
+}
+
+/* Қисми чап (инфо ва интихоб) */
+.pagination-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+/* Матни умумии сабтҳо */
+.pagination-total {
+    font-size: 13px;
+    color: var(--text-2, #8696b8);
+}
+
+/* Интихоби андозаи саҳифа */
+.pagination-size-select {
+    padding: 6px 12px;
+    background: var(--bg-3, #1a2235);
+    border: 1px solid var(--border-1, #1e2940);
+    border-radius: 8px;
+    color: var(--text-0, #f0f2f7);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-size-select:hover {
+    border-color: var(--border-2, #2a3858);
+}
+
+.pagination-size-select:focus {
+    outline: none;
+    border-color: var(--blue, #4a90ff);
+}
+
+/* Қисми рост (тугмаҳо) */
+.pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Тугмаҳои умумӣ */
+.pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    background: var(--bg-3, #1a2235);
+    border: 1px solid var(--border-1, #1e2940);
+    border-radius: 8px;
+    color: var(--text-1, #c4ccdf);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--bg-4, #222d42);
+    border-color: var(--border-2, #2a3858);
+    color: var(--text-0, #f0f2f7);
+    transform: translateY(-1px);
+}
+
+.pagination-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Тугмаи фаъол (саҳифаи ҷорӣ) */
+.pagination-active {
+    background: var(--blue, #4a90ff);
+    border-color: var(--blue, #4a90ff);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(74, 144, 255, 0.3);
+}
+
+.pagination-active:hover {
+    background: #3a7ef0;
+    border-color: #3a7ef0;
+    color: #ffffff;
+}
+
+/* Тугмаҳои маъюб */
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Тугмаҳои навигатсия */
+.pagination-first,
+.pagination-last {
+    font-weight: 600;
+    letter-spacing: -1px;
+}
+
+.pagination-prev,
+.pagination-next {
+    font-weight: 600;
+}
+
+/* Нуқтаҳо (dots) */
+.pagination-dots {
+    min-width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-3, #5a6a8e);
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* Резпонсифӣ */
+@media (max-width: 768px) {
+    .pagination-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .pagination-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .pagination-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .pagination-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        font-size: 12px;
+    }
+    
+    .pagination-dots {
+        min-width: 32px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-btn {
+        min-width: 28px;
+        height: 28px;
+        padding: 0 6px;
+        font-size: 11px;
+    }
+    
+    .pagination-dots {
+        min-width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .pagination-size-select {
+        padding: 4px 10px;
+        font-size: 11px;
+    }
+    
+    .pagination-total {
+        font-size: 11px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
