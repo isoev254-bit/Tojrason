@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Header.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/layout/Header/Header.module.css */
+
+/* Header асосӣ */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 24px;
+    background: var(--bg-1, #0c1017);
+    border-bottom: 1px solid var(--border-1, #1e2940);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 16px;
+}
+
+/* Қисми чап */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Тугмаи меню */
+.header-menu-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-2, #131924);
+    border: 1px solid var(--border-1, #1e2940);
+    color: var(--text-2, #8696b8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.header-menu-btn:hover {
+    background: var(--bg-3, #1a2235);
+    color: var(--text-0, #f0f2f7);
+    border-color: var(--border-2, #2a3858);
+}
+
+/* Логотип */
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.header-logo:hover {
+    opacity: 0.8;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--blue, #4a90ff), #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-0, #f0f2f7);
+    letter-spacing: -0.3px;
+}
+
+/* Қисми марказ */
+.header-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.header-datetime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.header-date {
+    font-size: 11px;
+    color: var(--text-3, #5a6a8e);
+    text-transform: capitalize;
+}
+
+.header-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-0, #f0f2f7);
+    letter-spacing: 1px;
+}
+
+/* Қисми рост */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Иконкаҳо */
+.header-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--bg-2, #131924);
+    border: 1px solid var(--border-1, #1e2940);
+    color: var(--text-2, #8696b8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.header-icon-btn:hover {
+    background: var(--bg-3, #1a2235);
+    color: var(--text-0, #f0f2f7);
+    border-color: var(--border-2, #2a3858);
+    transform: translateY(-1px);
+}
+
+/* Профили корбар */
+.header-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px 5px 5px;
+    border-radius: 12px;
+    background: var(--bg-2, #131924);
+    border: 1px solid var(--border-1, #1e2940);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-user:hover {
+    background: var(--bg-3, #1a2235);
+    border-color: var(--border-2, #2a3858);
+}
+
+.header-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.header-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.header-user-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-0, #f0f2f7);
+}
+
+/* Тугмаи баромад */
+.header-logout-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 92, 92, 0.1);
+    border: 1px solid rgba(255, 92, 92, 0.2);
+    color: var(--red, #ff5c5c);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.header-logout-btn:hover {
+    background: rgba(255, 92, 92, 0.2);
+    border-color: var(--red, #ff5c5c);
+    transform: translateY(-1px);
+}
+
+/* Резпонсифӣ */
+@media (max-width: 1024px) {
+    .header {
+        padding: 0 16px;
+    }
+    
+    .header-date {
+        display: none;
+    }
+    
+    .header-time {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        height: 56px;
+        padding: 0 12px;
+    }
+    
+    .logo-text {
+        display: none;
+    }
+    
+    .header-user-info {
+        display: none;
+    }
+    
+    .header-user {
+        padding: 4px;
+    }
+    
+    .header-icon-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .header-menu-btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-center {
+        display: none;
+    }
+    
+    .header-right {
+        gap: 4px;
+    }
+    
+    .header-icon-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .header-logout-btn {
+        width: 32px;
+        height: 32px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
