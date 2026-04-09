@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/layout/Sidebar/Sidebar.module.css */
+
+/* Overlay барои mobile */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 199;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Sidebar асосӣ */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    background: var(--bg-1, #0c1017);
+    border-right: 1px solid var(--border-1, #1e2940);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, width 0.2s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Версияи компакт */
+.sidebar-compact {
+    width: 72px;
+}
+
+.sidebar-compact .sidebar-item-title,
+.sidebar-compact .sidebar-item-arrow,
+.sidebar-compact .badge {
+    display: none;
+}
+
+.sidebar-compact .sidebar-item {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.sidebar-compact .sidebar-item-icon {
+    margin-right: 0;
+    font-size: 22px;
+}
+
+/* Ҳолатҳои кушода ва баста (барои mobile) */
+.sidebar-open {
+    transform: translateX(0);
+}
+
+.sidebar-closed {
+    transform: translateX(-100%);
+}
+
+/* Мазмуни sidebar */
+.sidebar-content {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Элементҳои меню */
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-2, #8696b8);
+    text-decoration: none;
+    gap: 10px;
+}
+
+.sidebar-item:hover {
+    background: var(--bg-3, #1a2235);
+    color: var(--text-0, #f0f2f7);
+}
+
+.sidebar-item.active {
+    background: var(--blue-dim, rgba(74, 144, 255, 0.12));
+    color: var(--blue, #4a90ff);
+}
+
+.sidebar-item.active .sidebar-item-icon {
+    color: var(--blue, #4a90ff);
+}
+
+/* Иконка */
+.sidebar-item-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+/* Ном */
+.sidebar-item-title {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Тирча барои зерменю */
+.sidebar-item-arrow {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+    margin-left: auto;
+}
+
+.sidebar-item-parent.expanded .sidebar-item-arrow {
+    transform: rotate(180deg);
+}
+
+/* Гурӯҳи меню */
+.sidebar-item-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Зерменю */
+.sidebar-submenu {
+    padding-left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+}
+
+.sidebar-submenu .sidebar-item {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.sidebar-submenu .sidebar-item-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+}
+
+/* Custom scrollbar */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--border-2, #2a3858);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--border-3, #354569);
+}
+
+/* Резпонсифӣ */
+@media (min-width: 1025px) {
+    .sidebar-overlay {
+        display: none;
+    }
+    
+    .sidebar {
+        transform: translateX(0) !important;
+    }
+    
+    .sidebar-closed {
+        width: 72px;
+    }
+    
+    .sidebar-closed .sidebar-item-title,
+    .sidebar-closed .sidebar-item-arrow,
+    .sidebar-closed .badge {
+        display: none;
+    }
+    
+    .sidebar-closed .sidebar-item {
+        justify-content: center;
+        padding: 12px 0;
+    }
+    
+    .sidebar-closed .sidebar-item-icon {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 260px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
