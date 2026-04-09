@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loader.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/common/Loader/Loader.module.css */
+
+/* ============================================
+   Loader асосӣ
+   ============================================ */
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* Спиннер */
+.loader-spinner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.loader-circle:nth-child(1) {
+    border-top-color: currentColor;
+    animation-delay: -0.45s;
+}
+
+.loader-circle:nth-child(2) {
+    border-right-color: currentColor;
+    animation-delay: -0.3s;
+}
+
+.loader-circle:nth-child(3) {
+    border-bottom-color: currentColor;
+    animation-delay: -0.15s;
+}
+
+.loader-circle:nth-child(4) {
+    border-left-color: currentColor;
+    animation-delay: 0s;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Андозаҳо */
+.loader-xs {
+    width: 24px;
+    height: 24px;
+}
+
+.loader-xs .loader-circle {
+    border-width: 2px;
+}
+
+.loader-sm {
+    width: 32px;
+    height: 32px;
+}
+
+.loader-sm .loader-circle {
+    border-width: 2px;
+}
+
+.loader-md {
+    width: 48px;
+    height: 48px;
+}
+
+.loader-md .loader-circle {
+    border-width: 3px;
+}
+
+.loader-lg {
+    width: 64px;
+    height: 64px;
+}
+
+.loader-lg .loader-circle {
+    border-width: 3px;
+}
+
+.loader-xl {
+    width: 80px;
+    height: 80px;
+}
+
+.loader-xl .loader-circle {
+    border-width: 4px;
+}
+
+/* Вариантҳои ранг */
+.loader-primary {
+    color: var(--blue, #4a90ff);
+}
+
+.loader-secondary {
+    color: var(--text-2, #8696b8);
+}
+
+.loader-white {
+    color: #ffffff;
+}
+
+/* Матн */
+.loader-text {
+    font-size: 12px;
+    color: var(--text-2, #8696b8);
+    margin-top: 8px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   FullScreen Loader
+   ============================================ */
+.loader-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-0, #06080d);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Page Loader (барои саҳифаҳо)
+   ============================================ */
+.page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-0, #06080d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9998;
+}
+
+.page-loader-spinner {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--blue, #4a90ff), #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: bounce 0.8s ease-in-out infinite alternate;
+}
+
+.page-loader-logo {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+@keyframes bounce {
+    from {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    to {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Button Loader (барои тугмаҳо)
+   ============================================ */
+.button-loader {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.button-loader-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: buttonLoader 1.2s ease-in-out infinite;
+}
+
+.button-loader-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.button-loader-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.button-loader-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes buttonLoader {
+    0%, 60%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+    30% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Skeleton Loader (барои таблитсаҳо)
+   ============================================ */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-3, #1a2235) 25%, var(--bg-4, #222d42) 50%, var(--bg-3, #1a2235) 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Резпонсифӣ */
+@media (max-width: 480px) {
+    .loader-md {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .loader-lg {
+        width: 52px;
+        height: 52px;
+    }
+    
+    .page-loader-spinner {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .page-loader-logo {
+        font-size: 24px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
