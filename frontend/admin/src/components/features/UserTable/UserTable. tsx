@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>UserTable.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/features/UserTable/UserTable.tsx
+import React, { useState, useMemo } from 'react';
+import { Table, Column } from '../../common/Table';
+import { Badge, StatusBadge } from '../../common/Badge';
+import { Button } from '../../common/Button';
+import { Modal } from '../../common/Modal';
+import { Input } from '../../common/Input';
+import './UserTable.module.css';
+
+export interface User {
+    id: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    role: 'CLIENT' | 'COURIER' | 'ADMIN' | 'DISPATCHER';
+    isAvailable: boolean;
+    createdAt: string;
+    totalOrders?: number;
+    rating?: number;
+}
+
+export interface UserTableProps {
+    /** Массиви корбарон */
+    data: User[];
+    /** Оям таблитса сарборӣ дорад */
+    loading?: boolean;
+    /** Функсия ҳангоми таҳрир */
+    onEdit?: (user: User) => void;
+    /** Функсия ҳангоми нест кардан */
+    onDelete?: (user: User) => void;
+    /** Функсия ҳангоми тағйири ҳолат */
+    onToggleStatus?: (user: User) => void;
+    /** Функсия ҳангоми клик ба сатр */
+    onRowClick?: (user: User) => void;
+}
+
+export const UserTable: React.FC&lt;UserTableProps&gt; = ({
+    data,
+    loading = false,
+    onEdit,
+    onDelete,
+    onToggleStatus,
+    onRowClick,
+}) => {
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState&lt;User | null&gt;(null);
+
+    const handleDeleteClick = (user: User, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedUser(user);
+        setDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedUser && onDelete) {
+            onDelete(selectedUser);
+        }
+        setDeleteModalOpen(false);
+        setSelectedUser(null);
+    };
+
+    const handleEditClick = (user: User, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onEdit) onEdit(user);
+    };
+
+    const handleToggleClick = (user: User, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onToggleStatus) onToggleStatus(user);
+    };
+
+    const getRoleBadgeVariant = (role: string): 'primary' | 'success' | 'purple' | 'cyan' => {
+        switch (role) {
+            case 'ADMIN': return 'primary';
+            case 'COURIER': return 'success';
+            case 'DISPATCHER': return 'purple';
+            default: return 'cyan';
+        }
+    };
+
+    const getRoleLabel = (role: string): string => {
+        switch (role) {
+            case 'ADMIN': return 'Админ';
+            case 'COURIER': return 'Курьер';
+            case 'DISPATCHER': return 'Диспетчер';
+            default: return 'Клиент';
+        }
+    };
+
+    const columns: Column&lt;User&gt;[] = useMemo(() => [
+        {
+            key: 'fullName',
+            title: 'Ном ва насаб',
+            render: (value, record) => (
+                &lt;div className="user-cell"&gt;
+                    &lt;div className="user-avatar"&gt;
+                        {record.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;div className="user-name"&gt;{record.fullName}&lt;/div&gt;
+                        &lt;div className="user-email"&gt;{record.email}&lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            ),
+        },
+        {
+            key: 'phone',
+            title: 'Телефон',
+            render: (value) => &lt;span className="user-phone"&gt;{value}&lt;/span&gt;,
+        },
+        {
+            key: 'role',
+            title: 'Нақш',
+            render: (value) => (
+                &lt;Badge variant={getRoleBadgeVariant(value)} size="sm"&gt;
+                    {getRoleLabel(value)}
+                &lt;/Badge&gt;
+            ),
+        },
+        {
+            key: 'totalOrders',
+            title: 'Фармоишҳо',
+            render: (value) => &lt;span className="user-orders"&gt;{value || 0}&lt;/span&gt;,
+        },
+        {
+            key: 'rating',
+            title: 'Рейтинг',
+            render: (value) => (
+                &lt;span className="user-rating"&gt;
+                    {value ? `⭐ ${value}` : '—'}
+                &lt;/span&gt;
+            ),
+        },
+        {
+            key: 'isAvailable',
+            title: 'Ҳолат',
+            render: (value, record) => (
+                record.role === 'COURIER' ? (
+                    &lt;StatusBadge status={value ? 'online' : 'offline'} showDot /&gt;
+                ) : (
+                    &lt;Badge variant={value ? 'success' : 'default'} size="sm"&gt;
+                        {value ? 'Фаъол' : 'Ғайрифаъол'}
+                    &lt;/Badge&gt;
+                )
+            ),
+        },
+        {
+            key: 'createdAt',
+            title: 'Санаи бақайдгирӣ',
+            render: (value) => new Date(value).toLocaleDateString('tg-TJ'),
+        },
+        {
+            key: 'actions',
+            title: 'Амалҳо',
+            align: 'center',
+            render: (_, record) => (
+                &lt;div className="user-actions"&gt;
+                    {onToggleStatus && record.role === 'COURIER' && (
+                        &lt;Button
+                            size="xs"
+                            variant={record.isAvailable ? 'warning' : 'success'}
+                            onClick={(e) => handleToggleClick(record, e)}
+                        &gt;
+                            {record.isAvailable ? 'Хомӯш' : 'Фаъол'}
+                        &lt;/Button&gt;
+                    )}
+                    {onEdit && (
+                        &lt;Button size="xs" variant="ghost" onClick={(e) => handleEditClick(record, e)}&gt;
+                            ✏️
+                        &lt;/Button&gt;
+                    )}
+                    {onDelete && (
+                        &lt;Button size="xs" variant="danger" onClick={(e) => handleDeleteClick(record, e)}&gt;
+                            🗑️
+                        &lt;/Button&gt;
+                    )}
+                &lt;/div&gt;
+            ),
+        },
+    ], [onEdit, onDelete, onToggleStatus]);
+
+    return (
+        &lt;&gt;
+            &lt;Table
+                data={data}
+                columns={columns}
+                rowKey="id"
+                loading={loading}
+                striped
+                bordered
+                onRowClick={onRowClick}
+            /&gt;
+            &lt;Modal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                title="Тасдиқи нест кардан"
+                size="sm"
+                footer={
+                    &lt;&gt;
+                        &lt;Button variant="ghost" onClick={() => setDeleteModalOpen(false)}&gt;
+                            Бекор
+                        &lt;/Button&gt;
+                        &lt;Button variant="danger" onClick={handleConfirmDelete}&gt;
+                            Нест кардан
+                        &lt;/Button&gt;
+                    &lt;/&gt;
+                }
+            &gt;
+                &lt;p&gt;Шумо боварӣ доред, ки корбари &lt;strong&gt;{selectedUser?.fullName}&lt;/strong&gt; -ро нест кардан мехоҳед?&lt;/p&gt;
+                &lt;p className="delete-warning"&gt;Ин амал баргардонда намешавад!&lt;/p&gt;
+            &lt;/Modal&gt;
+        &lt;/&gt;
+    );
+};
+
+UserTable.displayName = 'UserTable';
+
+export default UserTable;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
