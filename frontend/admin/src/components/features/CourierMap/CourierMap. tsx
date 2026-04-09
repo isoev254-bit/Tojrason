@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CourierMap.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/features/CourierMap/CourierMap.tsx
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import './CourierMap.module.css';
+
+// Leaflet - динамикӣ бор мекунем (барои пешгирии хатогиҳои SSR)
+let L: any = null;
+
+export interface CourierLocation {
+    id: string;
+    name: string;
+    lat: number;
+    lng: number;
+    status: 'online' | 'busy' | 'offline';
+    phone?: string;
+    vehicle?: string;
+    rating?: number;
+    currentOrderId?: string;
+}
+
+export interface OrderLocation {
+    id: string;
+    customerName: string;
+    lat: number;
+    lng: number;
+    address: string;
+    status: string;
+    amount?: number;
+}
+
+export interface CourierMapProps {
+    /** Массиви курьерҳо */
+    couriers: CourierLocation[];
+    /** Массиви фармоишҳо (ихтиёрӣ) */
+    orders?: OrderLocation[];
+    /** Маркази харита (пешфарз: Душанбе) */
+    center?: [number, number];
+    /** Зум (пешфарз: 13) */
+    zoom?: number;
+    /** Функсия ҳангоми клик ба курьер */
+    onCourierClick?: (courier: CourierLocation) => void;
+    /** Функсия ҳангоми клик ба фармоиш */
+    onOrderClick?: (order: OrderLocation) => void;
+    /** Оям нишон додани фармоишҳо */
+    showOrders?: boolean;
+    /** Оям нишон додани панели ҷонибӣ */
+    showSidebar?: boolean;
+    /** Баландӣ */
+    height?: string | number;
+}
+
+export const CourierMap: React.FC&lt;CourierMapProps&gt; = ({
+    couriers,
+    orders = [],
+    center = [38.5598, 68.774],
+    zoom = 13,
+    onCourierClick,
+    onOrderClick,
+    showOrders = true,
+    showSidebar = true,
+    height = '100%',
+}) => {
+    const mapRef = useRef&lt;HTMLDivElement&gt;(null);
+    const mapInstanceRef = useRef<any>(null);
+    const markersRef = useRef&lt;{ [key: string]: any }&gt;({});
+    const [selectedCourier, setSelectedCourier] = useState&lt;CourierLocation | null&gt;(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterStatus, setFilterStatus] = useState<'all' | 'online' | 'busy' | 'offline'>('all');
+
+    // Боркунии Leaflet
+    useEffect(() => {
+        const loadLeaflet = async () => {
+            const leaflet = await import('leaflet');
+            L = leaflet.default;
+            
+            // Тасҳеҳи иконкаҳои пешфарз
+            delete (L.Icon.Default.prototype as any)._getIconUrl;
+            L.Icon.Default.mergeOptions({
+                iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+                iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            });
+        };
+        loadLeaflet();
+    }, []);
+
+    // Инициализатсияи харита
+    useEffect(() => {
+        if (!L || !mapRef.current || mapInstanceRef.current) return;
+
+        mapInstanceRef.current = L.map(mapRef.current).setView(center, zoom);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19,
+        }).addTo(mapInstanceRef.current);
+
+        return () => {
+            if (mapInstanceRef.current) {
+                mapInstanceRef.current.remove();
+                mapInstanceRef.current = null;
+            }
+        };
+    }, [L, center, zoom]);
+
+    // Илова/навсозии маркерҳои курьер
+    useEffect(() => {
+        if (!L || !mapInstanceRef.current) return;
+
+        const getStatusColor = (status: string) => {
+            switch (status) {
+                case 'online': return '#22d693';
+                case 'busy': return '#ff9f43';
+                default: return '#64748b';
+            }
+        };
+
+        const getStatusIcon = (status: string) => {
+            const color = getStatusColor(status);
+            return L.divIcon({
+                className: 'courier-marker',
+                html: `
+                    &lt;div style="
+                        width: 40px;
+                        height: 40px;
+                        background: ${color};
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 3px solid white;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                        font-size: 18px;
+                    "&gt;🏍️&lt;/div&gt;
+                `,
+                iconSize: [40, 40],
+                iconAnchor: [20, 20],
+                popupAnchor: [0, -20],
+            });
+        };
+
+        // Тоза кардани маркерҳои кӯҳна
+        Object.values(markersRef.current).forEach(marker => {
+            if (marker) mapInstanceRef.current.removeLayer(marker);
+        });
+        markersRef.current = {};
+
+        // Филтр кардани курьерҳо
+        const filteredCouriers = couriers.filter(c => {
+            if (filterStatus !== 'all' && c.status !== filterStatus) return false;
+            if (searchTerm && !c.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+            return true;
+        });
+
+        // Иловаи маркерҳои нав
+        filteredCouriers.forEach(courier => {
+            const marker = L.marker([courier.lat, courier.lng], {
+                icon: getStatusIcon(courier.status),
+            }).addTo(mapInstanceRef.current);
+
+            const statusText = courier.status === 'online' ? '🟢 Онлайн' : courier.status === 'busy' ? '🟡 Банд' : '⚫ Офлайн';
+            marker.bindPopup(`
+                &lt;div style="font-family: 'DM Sans', sans-serif; min-width: 160px;"&gt;
+                    &lt;strong&gt;${courier.name}&lt;/strong&gt;&lt;br/&gt;
+                    &lt;small&gt;${statusText}&lt;/small&gt;&lt;br/&gt;
+                    ${courier.vehicle ? `&lt;small&gt;${courier.vehicle}&lt;/small&gt;&lt;br/&gt;` : ''}
+                    ${courier.rating ? `&lt;small&gt;⭐ ${courier.rating}&lt;/small&gt;&lt;br/&gt;` : ''}
+                    ${courier.phone ? `&lt;small&gt;📞 ${courier.phone}&lt;/small&gt;` : ''}
+                &lt;/div&gt;
+            `);
+            marker.on('click', () => {
+                setSelectedCourier(courier);
+                if (onCourierClick) onCourierClick(courier);
+            });
+            markersRef.current[courier.id] = marker;
+        });
+    }, [L, couriers, filterStatus, searchTerm, onCourierClick]);
+
+    // Иловаи маркерҳои фармоишҳо
+    useEffect(() => {
+        if (!L || !mapInstanceRef.current || !showOrders) return;
+
+        orders.forEach(order => {
+            const marker = L.marker([order.lat, order.lng], {
+                icon: L.divIcon({
+                    className: 'order-marker',
+                    html: `📦`,
+                    iconSize: [30, 30],
+                    iconAnchor: [15, 15],
+                }),
+            }).addTo(mapInstanceRef.current);
+
+            marker.bindPopup(`
+                &lt;div style="font-family: 'DM Sans', sans-serif;"&gt;
+                    &lt;strong&gt;${order.customerName}&lt;/strong&gt;&lt;br/&gt;
+                    &lt;small&gt;${order.address}&lt;/small&gt;&lt;br/&gt;
+                    &lt;small&gt;${order.status === 'PENDING' ? 'Интизорӣ' : order.status === 'DELIVERED' ? 'Расонида шуд' : 'Дар роҳ'}&lt;/small&gt;
+                    ${order.amount ? `&lt;br/&gt;&lt;small&gt;${order.amount} сом&lt;/small&gt;` : ''}
+                &lt;/div&gt;
+            `);
+            marker.on('click', () => {
+                if (onOrderClick) onOrderClick(order);
+            });
+        });
+    }, [L, orders, showOrders, onOrderClick]);
+
+    const handleFlyTo = (lat: number, lng: number) => {
+        if (mapInstanceRef.current) {
+            mapInstanceRef.current.flyTo([lat, lng], 16, { duration: 1 });
+        }
+    };
+
+    const filteredCouriers = couriers.filter(c => {
+        if (filterStatus !== 'all' && c.status !== filterStatus) return false;
+        if (searchTerm && !c.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+        return true;
+    });
+
+    return (
+        &lt;div className="courier-map-container" style={{ height }}&gt;
+            {showSidebar && (
+                &lt;div className="courier-map-sidebar"&gt;
+                    &lt;div className="sidebar-header"&gt;
+                        &lt;h3&gt;🏍️ Курерҳо&lt;/h3&gt;
+                        &lt;span className="courier-count"&gt;{filteredCouriers.length} / {couriers.length}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div className="sidebar-search"&gt;
+                        &lt;input
+                            type="text"
+                            placeholder="Ҷустуҷӯ..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        /&gt;
+                    &lt;/div&gt;
+                    &lt;div className="sidebar-filters"&gt;
+                        &lt;button className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`} onClick={() => setFilterStatus('all')}&gt;
+                            Ҳама
+                        &lt;/button&gt;
+                        &lt;button className={`filter-btn ${filterStatus === 'online' ? 'active' : ''}`} onClick={() => setFilterStatus('online')}&gt;
+                            🟢 Онлайн
+                        &lt;/button&gt;
+                        &lt;button className={`filter-btn ${filterStatus === 'busy' ? 'active' : ''}`} onClick={() => setFilterStatus('busy')}&gt;
+                            🟡 Банд
+                        &lt;/button&gt;
+                        &lt;button className={`filter-btn ${filterStatus === 'offline' ? 'active' : ''}`} onClick={() => setFilterStatus('offline')}&gt;
+                            ⚫ Офлайн
+                        &lt;/button&gt;
+                    &lt;/div&gt;
+                    &lt;div className="sidebar-list"&gt;
+                        {filteredCouriers.map(courier => (
+                            &lt;div
+                                key={courier.id}
+                                className={`sidebar-item ${selectedCourier?.id === courier.id ? 'selected' : ''} ${courier.status}`}
+                                onClick={() => {
+                                    setSelectedCourier(courier);
+                                    handleFlyTo(courier.lat, courier.lng);
+                                    if (onCourierClick) onCourierClick(courier);
+                                }}
+                            &gt;
+                                &lt;div className="item-avatar"&gt;
+                                    {courier.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                                &lt;/div&gt;
+                                &lt;div className="item-info"&gt;
+                                    &lt;div className="item-name"&gt;{courier.name}&lt;/div&gt;
+                                    &lt;div className="item-status"&gt;
+                                        &lt;span className={`status-dot ${courier.status}`}&gt;&lt;/span&gt;
+                                        {courier.status === 'online' ? 'Онлайн' : courier.status === 'busy' ? 'Банд' : 'Офлайн'}
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                                {courier.rating && &lt;div className="item-rating"&gt;⭐ {courier.rating}&lt;/div&gt;}
+                            &lt;/div&gt;
+                        ))}
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            )}
+            &lt;div ref={mapRef} className="courier-map" /&gt;
+        &lt;/div&gt;
+    );
+};
+
+CourierMap.displayName = 'CourierMap';
+
+export default CourierMap;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
