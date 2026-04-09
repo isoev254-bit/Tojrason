@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pagination.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/common/Pagination/Pagination.tsx
+import React from 'react';
+import './Pagination.module.css';
+
+export interface PaginationProps {
+    /** Саҳифаи ҷорӣ */
+    currentPage: number;
+    /** Шумораи умумии саҳифаҳо */
+    totalPages: number;
+    /** Функсия ҳангоми тағйири саҳифа */
+    onPageChange: (page: number) => void;
+    /** Шумораи тугмаҳои намоиш дар паҳлӯ */
+    siblingCount?: number;
+    /** Оё нишон додани матни "Натиҷаҳо" */
+    showTotal?: boolean;
+    /** Шумораи умумии сабтҳо (барои showTotal) */
+    totalItems?: number;
+    /** Шумораи сабтҳо дар як саҳифа (барои showTotal) */
+    pageSize?: number;
+    /** Оё нишон додани интихоби андозаи саҳифа */
+    showSizeChanger?: boolean;
+    /** Массив андозаҳои саҳифа */
+    pageSizeOptions?: number[];
+    /** Функсия ҳангоми тағйири андозаи саҳифа */
+    onPageSizeChange?: (pageSize: number) => void;
+    /** Оё нишон додани тугмаи аввал ва охир */
+    showFirstLast?: boolean;
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export const Pagination: React.FC&lt;PaginationProps&gt; = ({
+    currentPage,
+    totalPages,
+    onPageChange,
+    siblingCount = 1,
+    showTotal = false,
+    totalItems = 0,
+    pageSize = 10,
+    showSizeChanger = false,
+    pageSizeOptions = [10, 20, 50, 100],
+    onPageSizeChange,
+    showFirstLast = true,
+    className = '',
+}) => {
+    const range = (start: number, end: number): number[] => {
+        const length = end - start + 1;
+        return Array.from({ length }, (_, i) => start + i);
+    };
+
+    const getPageNumbers = (): (number | 'dots')[] => {
+        const totalPageNumbers = siblingCount * 2 + 5;
+        if (totalPageNumbers >= totalPages) {
+            return range(1, totalPages);
+        }
+
+        const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+        const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
+
+        const shouldShowLeftDots = leftSiblingIndex > 2;
+        const shouldShowRightDots = rightSiblingIndex < totalPages - 2;
+
+        const firstPageIndex = 1;
+        const lastPageIndex = totalPages;
+
+        if (!shouldShowLeftDots && shouldShowRightDots) {
+            const leftItemCount = 3 + 2 * siblingCount;
+            const leftRange = range(1, leftItemCount);
+            return [...leftRange, 'dots', lastPageIndex];
+        }
+
+        if (shouldShowLeftDots && !shouldShowRightDots) {
+            const rightItemCount = 3 + 2 * siblingCount;
+            const rightRange = range(totalPages - rightItemCount + 1, totalPages);
+            return [firstPageIndex, 'dots', ...rightRange];
+        }
+
+        if (shouldShowLeftDots && shouldShowRightDots) {
+            const middleRange = range(leftSiblingIndex, rightSiblingIndex);
+            return [firstPageIndex, 'dots', ...middleRange, 'dots', lastPageIndex];
+        }
+
+        return [];
+    };
+
+    const handlePageClick = (page: number) => {
+        if (page !== currentPage && page >= 1 && page <= totalPages) {
+            onPageChange(page);
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentPage > 1) {
+            onPageChange(currentPage - 1);
+        }
+    };
+
+    const handleNext = () => {
+        if (currentPage < totalPages) {
+            onPageChange(currentPage + 1);
+        }
+    };
+
+    const handleFirst = () => {
+        if (currentPage !== 1) {
+            onPageChange(1);
+        }
+    };
+
+    const handleLast = () => {
+        if (currentPage !== totalPages) {
+            onPageChange(totalPages);
+        }
+    };
+
+    if (totalPages <= 1 && !showTotal && !showSizeChanger) {
+        return null;
+    }
+
+    const pageNumbers = getPageNumbers();
+
+    return (
+        &lt;div className={`pagination-container ${className}`}&gt;
+            &lt;div className="pagination-left"&gt;
+                {showTotal && totalItems > 0 && (
+                    &lt;span className="pagination-total"&gt;
+                        {((currentPage - 1) * pageSize) + 1} - {Math.min(currentPage * pageSize, totalItems)} аз {totalItems}
+                    &lt;/span&gt;
+                )}
+                {showSizeChanger && onPageSizeChange && (
+                    &lt;select
+                        className="pagination-size-select"
+                        value={pageSize}
+                        onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                    &gt;
+                        {pageSizeOptions.map(option => (
+                            &lt;option key={option} value={option}&gt;{option} / саҳифа&lt;/option&gt;
+                        ))}
+                    &lt;/select&gt;
+                )}
+            &lt;/div&gt;
+
+            &lt;div className="pagination-buttons"&gt;
+                {showFirstLast && (
+                    &lt;button
+                        className="pagination-btn pagination-first"
+                        onClick={handleFirst}
+                        disabled={currentPage === 1}
+                        aria-label="Аввал"
+                    &gt;
+                        ««
+                    &lt;/button&gt;
+                )}
+                
+                &lt;button
+                    className="pagination-btn pagination-prev"
+                    onClick={handlePrev}
+                    disabled={currentPage === 1}
+                    aria-label="Қаблӣ"
+                &gt;
+                    «
+                &lt;/button&gt;
+
+                {pageNumbers.map((page, index) => {
+                    if (page === 'dots') {
+                        return (
+                            &lt;span key={`dots-${index}`} className="pagination-dots"&gt;...&lt;/span&gt;
+                        );
+                    }
+                    return (
+                        &lt;button
+                            key={page}
+                            className={`pagination-btn ${currentPage === page ? 'pagination-active' : ''}`}
+                            onClick={() => handlePageClick(page)}
+                        &gt;
+                            {page}
+                        &lt;/button&gt;
+                    );
+                })}
+
+                &lt;button
+                    className="pagination-btn pagination-next"
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages}
+                    aria-label="Баъдӣ"
+                &gt;
+                    »
+                &lt;/button&gt;
+
+                {showFirstLast && (
+                    &lt;button
+                        className="pagination-btn pagination-last"
+                        onClick={handleLast}
+                        disabled={currentPage === totalPages}
+                        aria-label="Охир"
+                    &gt;
+                        »»
+                    &lt;/button&gt;
+                )}
+            &lt;/div&gt;
+        &lt;/div&gt;
+    );
+};
+
+Pagination.displayName = 'Pagination';
+
+export default Pagination;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
