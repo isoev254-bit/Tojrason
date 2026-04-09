@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Badge.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/common/Badge/Badge.module.css */
+
+/* ============================================
+   Badge асосӣ
+   ============================================ */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+/* Андозаҳо */
+.badge-xs {
+    padding: 2px 6px;
+    font-size: 9px;
+    border-radius: 20px;
+    line-height: 1.2;
+}
+
+.badge-sm {
+    padding: 3px 10px;
+    font-size: 10px;
+    border-radius: 24px;
+    line-height: 1.3;
+}
+
+.badge-md {
+    padding: 5px 14px;
+    font-size: 11px;
+    border-radius: 28px;
+    line-height: 1.4;
+}
+
+/* Даврӣ (rounded) */
+.badge-rounded {
+    border-radius: 50%;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+}
+
+.badge-rounded.badge-sm {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+}
+
+.badge-rounded.badge-md {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+}
+
+/* Вариантҳои ранга */
+.badge-default {
+    background: var(--bg-3, #1a2235);
+    color: var(--text-2, #8696b8);
+    border: 1px solid var(--border-1, #1e2940);
+}
+
+.badge-primary {
+    background: rgba(74, 144, 255, 0.12);
+    color: var(--blue, #4a90ff);
+    border: 1px solid rgba(74, 144, 255, 0.2);
+}
+
+.badge-success {
+    background: rgba(34, 214, 147, 0.12);
+    color: var(--green, #22d693);
+    border: 1px solid rgba(34, 214, 147, 0.2);
+}
+
+.badge-danger {
+    background: rgba(255, 92, 92, 0.12);
+    color: var(--red, #ff5c5c);
+    border: 1px solid rgba(255, 92, 92, 0.2);
+}
+
+.badge-warning {
+    background: rgba(255, 159, 67, 0.12);
+    color: var(--orange, #ff9f43);
+    border: 1px solid rgba(255, 159, 67, 0.2);
+}
+
+.badge-info {
+    background: rgba(34, 211, 238, 0.12);
+    color: var(--cyan, #22d3ee);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+.badge-purple {
+    background: rgba(167, 139, 250, 0.12);
+    color: var(--purple, #a78bfa);
+    border: 1px solid rgba(167, 139, 250, 0.2);
+}
+
+.badge-cyan {
+    background: rgba(34, 211, 238, 0.12);
+    color: var(--cyan, #22d3ee);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+/* ============================================
+   Icon Badge
+   ============================================ */
+.icon-badge-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    transform: scale(0.85);
+}
+
+/* ============================================
+   Status Badge
+   ============================================ */
+.status-dot {
+    margin-right: 4px;
+    font-size: 10px;
+}
+
+/* Резпонсифӣ */
+@media (max-width: 480px) {
+    .badge-md {
+        padding: 4px 12px;
+        font-size: 10px;
+    }
+    
+    .badge-sm {
+        padding: 2px 8px;
+        font-size: 9px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
