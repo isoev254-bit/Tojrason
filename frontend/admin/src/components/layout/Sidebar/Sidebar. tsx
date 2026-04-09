@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/layout/Sidebar/Sidebar.tsx
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Badge } from '../../common/Badge';
+import './Sidebar.module.css';
+
+export interface MenuItem {
+    /** Калиди унӣкал */
+    key: string;
+    /** Сарлавҳа */
+    title: string;
+    /** Иконка (SVG ё emoji) */
+    icon?: React.ReactNode;
+    /** Роут (path) */
+    path?: string;
+    /** Шумораи уведомление */
+    badge?: number;
+    /** Навъи бадҷ */
+    badgeVariant?: 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'info';
+    /** Менюи фаръӣ (зерменю) */
+    children?: MenuItem[];
+    /** Оё нишон дода шавад */
+    visible?: boolean;
+}
+
+export interface SidebarProps {
+    /** Массиви меню */
+    menuItems: MenuItem[];
+    /** Оё Sidebar кушода аст (барои mobile) */
+    isOpen?: boolean;
+    /** Функсия барои пӯшидан (mobile) */
+    onClose?: () => void;
+    /** Варианти услубӣ */
+    variant?: 'default' | 'compact';
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export const Sidebar: React.FC&lt;SidebarProps&gt; = ({
+    menuItems,
+    isOpen = true,
+    onClose,
+    variant = 'default',
+    className = '',
+}) => {
+    const navigate = useNavigate();
+    const [expandedKeys, setExpandedKeys] = React.useState&lt;string[]&gt;([]);
+
+    const toggleExpand = (key: string) => {
+        setExpandedKeys(prev =>
+            prev.includes(key)
+                ? prev.filter(k => k !== key)
+                : [...prev, key]
+        );
+    };
+
+    const handleItemClick = (item: MenuItem) => {
+        if (item.path) {
+            navigate(item.path);
+            if (onClose) onClose();
+        }
+    };
+
+    const renderMenuItem = (item: MenuItem, depth: number = 0) => {
+        if (item.visible === false) return null;
+
+        const hasChildren = item.children && item.children.length > 0;
+        const isExpanded = expandedKeys.includes(item.key);
+        const isCompact = variant === 'compact';
+
+        const itemStyle = {
+            paddingLeft: `${12 + depth * 16}px`,
+        };
+
+        if (hasChildren) {
+            return (
+                &lt;div key={item.key} className="sidebar-item-group"&gt;
+                    &lt;div
+                        className={`sidebar-item sidebar-item-parent ${isExpanded ? 'expanded' : ''}`}
+                        style={itemStyle}
+                        onClick={() => toggleExpand(item.key)}
+                    &gt;
+                        &lt;div className="sidebar-item-icon"&gt;{item.icon}&lt;/div&gt;
+                        {!isCompact && (
+                            &lt;&gt;
+                                &lt;span className="sidebar-item-title"&gt;{item.title}&lt;/span&gt;
+                                {item.badge && item.badge > 0 && (
+                                    &lt;Badge variant={item.badgeVariant || 'danger'} size="xs"&gt;
+                                        {item.badge}
+                                    &lt;/Badge&gt;
+                                )}
+                                &lt;span className="sidebar-item-arrow"&gt;{isExpanded ? '⌵' : '⌵'}&lt;/span&gt;
+                            &lt;/&gt;
+                        )}
+                    &lt;/div&gt;
+                    {isExpanded && !isCompact && (
+                        &lt;div className="sidebar-submenu"&gt;
+                            {item.children!.map(child => renderMenuItem(child, depth + 1))}
+                        &lt;/div&gt;
+                    )}
+                &lt;/div&gt;
+            );
+        }
+
+        return (
+            &lt;NavLink
+                key={item.key}
+                to={item.path || '#'}
+                className={({ isActive }) =>
+                    `sidebar-item sidebar-item-link ${isActive ? 'active' : ''}`
+                }
+                style={itemStyle}
+                onClick={() => handleItemClick(item)}
+            &gt;
+                &lt;div className="sidebar-item-icon"&gt;{item.icon}&lt;/div&gt;
+                {!isCompact && (
+                    &lt;&gt;
+                        &lt;span className="sidebar-item-title"&gt;{item.title}&lt;/span&gt;
+                        {item.badge && item.badge > 0 && (
+                            &lt;Badge variant={item.badgeVariant || 'danger'} size="xs"&gt;
+                                {item.badge}
+                            &lt;/Badge&gt;
+                        )}
+                    &lt;/&gt;
+                )}
+            &lt;/NavLink&gt;
+        );
+    };
+
+    const filteredItems = menuItems.filter(item => item.visible !== false);
+
+    const sidebarClassName = [
+        'sidebar',
+        variant === 'compact' ? 'sidebar-compact' : '',
+        isOpen ? 'sidebar-open' : 'sidebar-closed',
+        className,
+    ].filter(Boolean).join(' ');
+
+    return (
+        &lt;&gt;
+            {/* Mobile overlay */}
+            {isOpen && onClose && (
+                &lt;div className="sidebar-overlay" onClick={onClose}&gt;&lt;/div&gt;
+            )}
+            &lt;aside className={sidebarClassName}&gt;
+                &lt;div className="sidebar-content"&gt;
+                    {filteredItems.map(item => renderMenuItem(item))}
+                &lt;/div&gt;
+            &lt;/aside&gt;
+        &lt;/&gt;
+    );
+};
+
+Sidebar.displayName = 'Sidebar';
+
+export default Sidebar;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
