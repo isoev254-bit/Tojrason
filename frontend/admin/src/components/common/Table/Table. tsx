@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Table.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/common/Table/Table.tsx
+import React from 'react';
+import './Table.module.css';
+
+export interface Column&lt;T = any&gt; {
+    /** Калиди майдон */
+    key: string;
+    /** Сарлавҳаи сутун */
+    title: string;
+    /** Функсия барои рендеринги мазмун */
+    render?: (value: any, record: T, index: number) => React.ReactNode;
+    /** Алаф (align) матн */
+    align?: 'left' | 'center' | 'right';
+    /** Паҳнои сутун */
+    width?: number | string;
+    /** Оё сутун ҷудошаванда аст */
+    sortable?: boolean;
+    /** Оё сутун ҷустуҷӯшаванда аст */
+    filterable?: boolean;
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export interface TableProps&lt;T = any&gt; {
+    /** Маълумот барои таблитса */
+    data: T[];
+    /** Конфигуратсияи сутунҳо */
+    columns: Column&lt;T&gt;[];
+    /** Калиди унӣкал барои ҳар сатр */
+    rowKey: string | ((record: T) => string);
+    /** Оё таблитса сарборӣ дорад */
+    loading?: boolean;
+    /** Матн ҳангоми набудани маълумот */
+    emptyText?: string;
+    /** Оё таблитса пайдарпайӣ (striped) дорад */
+    striped?: boolean;
+    /** Оё таблитса ҳошия (bordered) дорад */
+    bordered?: boolean;
+    /** Оё таблитса хурд (compact) аст */
+    compact?: boolean;
+    /** Функсия ҳангоми клик ба сатр */
+    onRowClick?: (record: T, index: number) => void;
+    /** Классҳои иловагӣ */
+    className?: string;
+    /** Стилҳои иловагӣ */
+    style?: React.CSSProperties;
+}
+
+export function Table&lt;T extends Record&lt;string, any&gt;&gt;({
+    data,
+    columns,
+    rowKey,
+    loading = false,
+    emptyText = 'Ҳеҷ маълумоте нест',
+    striped = true,
+    bordered = false,
+    compact = false,
+    onRowClick,
+    className = '',
+    style,
+}: TableProps&lt;T&gt;) {
+    const getRowKey = (record: T, index: number): string => {
+        if (typeof rowKey === 'function') {
+            return rowKey(record);
+        }
+        return String(record[rowKey] ?? index);
+    };
+
+    const renderCell = (column: Column&lt;T&gt;, record: T, index: number): React.ReactNode => {
+        const value = record[column.key];
+        if (column.render) {
+            return column.render(value, record, index);
+        }
+        if (value === null || value === undefined) {
+            return '—';
+        }
+        if (typeof value === 'object') {
+            return JSON.stringify(value);
+        }
+        return value;
+    };
+
+    const tableClassName = [
+        'table',
+        striped ? 'table-striped' : '',
+        bordered ? 'table-bordered' : '',
+        compact ? 'table-compact' : '',
+        className,
+    ].filter(Boolean).join(' ');
+
+    if (loading) {
+        return (
+            &lt;div className="table-loading"&gt;
+                &lt;div className="table-loading-spinner"&gt;&lt;/div&gt;
+                &lt;span&gt;Боркунӣ...&lt;/span&gt;
+            &lt;/div&gt;
+        );
+    }
+
+    return (
+        &lt;div className="table-wrapper" style={style}&gt;
+            &lt;table className={tableClassName}&gt;
+                &lt;thead&gt;
+                    &lt;tr&gt;
+                        {columns.map((col) => (
+                            &lt;th
+                                key={col.key}
+                                style={{
+                                    textAlign: col.align || 'left',
+                                    width: col.width,
+                                }}
+                                className={col.className}
+                            &gt;
+                                {col.title}
+                                {col.sortable && &lt;span className="table-sort-icon"&gt;⇅&lt;/span&gt;}
+                            &lt;/th&gt;
+                        ))}
+                    &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody&gt;
+                    {data.length === 0 ? (
+                        &lt;tr&gt;
+                            &lt;td colSpan={columns.length} className="table-empty"&gt;
+                                {emptyText}
+                            &lt;/td&gt;
+                        &lt;/tr&gt;
+                    ) : (
+                        data.map((record, index) => (
+                            &lt;tr
+                                key={getRowKey(record, index)}
+                                onClick={() => onRowClick?.(record, index)}
+                                className={onRowClick ? 'table-row-clickable' : ''}
+                            &gt;
+                                {columns.map((col) => (
+                                    &lt;td
+                                        key={col.key}
+                                        style={{ textAlign: col.align || 'left' }}
+                                        className={col.className}
+                                    &gt;
+                                        {renderCell(col, record, index)}
+                                    &lt;/td&gt;
+                                ))}
+                            &lt;/tr&gt;
+                        ))
+                    )}
+                &lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/div&gt;
+    );
+}
+
+Table.displayName = 'Table';
+
+export default Table;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
