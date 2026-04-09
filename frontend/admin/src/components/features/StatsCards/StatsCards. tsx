@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>StatsCards.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/features/StatsCards/StatsCards.tsx
+import React from 'react';
+import { Card, StatsCard } from '../../common/Card';
+import './StatsCards.module.css';
+
+export interface StatsData {
+    title: string;
+    value: number | string;
+    icon: React.ReactNode;
+    change?: number;
+    changeType?: 'increase' | 'decrease';
+    color?: string;
+    onClick?: () => void;
+}
+
+export interface StatsCardsProps {
+    /** Массиви оморҳо */
+    stats: StatsData[];
+    /** Оям дар ҳоли боркунӣ аст */
+    loading?: boolean;
+    /** Шумораи сутунҳо дар як сатр */
+    columns?: 2 | 3 | 4 | 5 | 6;
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export const StatsCards: React.FC&lt;StatsCardsProps&gt; = ({
+    stats,
+    loading = false,
+    columns = 4,
+    className = '',
+}) => {
+    const getGridClass = () => {
+        switch (columns) {
+            case 2: return 'stats-grid-2';
+            case 3: return 'stats-grid-3';
+            case 4: return 'stats-grid-4';
+            case 5: return 'stats-grid-5';
+            case 6: return 'stats-grid-6';
+            default: return 'stats-grid-4';
+        }
+    };
+
+    if (loading) {
+        return (
+            &lt;div className={`stats-skeleton ${getGridClass()}`}&gt;
+                {[...Array(columns)].map((_, i) => (
+                    &lt;div key={i} className="stats-skeleton-card"&gt;
+                        &lt;div className="skeleton-icon"&gt;&lt;/div&gt;
+                        &lt;div className="skeleton-content"&gt;
+                            &lt;div className="skeleton-title"&gt;&lt;/div&gt;
+                            &lt;div className="skeleton-value"&gt;&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                ))}
+            &lt;/div&gt;
+        );
+    }
+
+    return (
+        &lt;div className={`stats-cards ${getGridClass()} ${className}`}&gt;
+            {stats.map((stat, index) => (
+                &lt;StatsCard
+                    key={index}
+                    title={stat.title}
+                    value={stat.value}
+                    icon={stat.icon}
+                    change={stat.change}
+                    changeType={stat.changeType}
+                    color={stat.color}
+                    onClick={stat.onClick}
+                /&gt;
+            ))}
+        &lt;/div&gt;
+    );
+};
+
+// Компоненти алоҳида барои омори асосӣ (пешфарз)
+export interface DefaultStatsProps {
+    totalOrders?: number;
+    totalOrdersChange?: number;
+    activeCouriers?: number;
+    activeCouriersChange?: number;
+    revenue?: number;
+    revenueChange?: number;
+    avgDeliveryTime?: number;
+    avgDeliveryTimeChange?: number;
+    complaints?: number;
+    complaintsChange?: number;
+    rating?: number;
+    ratingChange?: number;
+    onStatClick?: (statKey: string) => void;
+    loading?: boolean;
+}
+
+export const DefaultStatsCards: React.FC&lt;DefaultStatsProps&gt; = ({
+    totalOrders = 0,
+    totalOrdersChange = 0,
+    activeCouriers = 0,
+    activeCouriersChange = 0,
+    revenue = 0,
+    revenueChange = 0,
+    avgDeliveryTime = 0,
+    avgDeliveryTimeChange = 0,
+    complaints = 0,
+    complaintsChange = 0,
+    rating = 0,
+    ratingChange = 0,
+    onStatClick,
+    loading = false,
+}) => {
+    const formatPrice = (price: number): string => {
+        return new Intl.NumberFormat('tg-TJ').format(price) + ' сом';
+    };
+
+    const stats: StatsData[] = [
+        {
+            title: 'Фармоишҳо',
+            value: totalOrders,
+            icon: '📦',
+            change: totalOrdersChange,
+            changeType: totalOrdersChange >= 0 ? 'increase' : 'decrease',
+            color: '#4a90ff',
+            onClick: () => onStatClick?.('orders'),
+        },
+        {
+            title: 'Курерҳои фаъол',
+            value: activeCouriers,
+            icon: '🏍️',
+            change: activeCouriersChange,
+            changeType: activeCouriersChange >= 0 ? 'increase' : 'decrease',
+            color: '#22d693',
+            onClick: () => onStatClick?.('couriers'),
+        },
+        {
+            title: 'Даромад',
+            value: formatPrice(revenue),
+            icon: '💰',
+            change: revenueChange,
+            changeType: revenueChange >= 0 ? 'increase' : 'decrease',
+            color: '#ff9f43',
+            onClick: () => onStatClick?.('revenue'),
+        },
+        {
+            title: 'Вақти миёна',
+            value: `${avgDeliveryTime} дақ`,
+            icon: '⏱️',
+            change: avgDeliveryTimeChange,
+            changeType: avgDeliveryTimeChange <= 0 ? 'increase' : 'decrease',
+            color: '#a78bfa',
+            onClick: () => onStatClick?.('delivery'),
+        },
+        {
+            title: 'Шикоятҳо',
+            value: complaints,
+            icon: '📢',
+            change: complaintsChange,
+            changeType: complaintsChange >= 0 ? 'increase' : 'decrease',
+            color: '#ff5c5c',
+            onClick: () => onStatClick?.('complaints'),
+        },
+        {
+            title: 'Рейтинг',
+            value: rating.toFixed(1),
+            icon: '⭐',
+            change: ratingChange,
+            changeType: ratingChange >= 0 ? 'increase' : 'decrease',
+            color: '#ff9f43',
+            onClick: () => onStatClick?.('rating'),
+        },
+    ];
+
+    return &lt;StatsCards stats={stats} loading={loading} columns={6} /&gt;;
+};
+
+StatsCards.displayName = 'StatsCards';
+DefaultStatsCards.displayName = 'DefaultStatsCards';
+
+export default StatsCards;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
