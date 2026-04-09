@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OrderTable.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/features/OrderTable/OrderTable.tsx
+import React, { useState, useMemo } from 'react';
+import { Table, Column } from '../../common/Table';
+import { Badge, StatusBadge } from '../../common/Badge';
+import { Button } from '../../common/Button';
+import { Modal } from '../../common/Modal';
+import './OrderTable.module.css';
+
+export type OrderStatus = 'PENDING' | 'ASSIGNED' | 'PICKED_UP' | 'DELIVERED' | 'CANCELLED';
+export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+
+export interface Order {
+    id: string;
+    clientName: string;
+    clientPhone: string;
+    courierName?: string;
+    pickupAddress: string;
+    deliveryAddress: string;
+    amount: number;
+    deliveryFee: number;
+    totalAmount: number;
+    status: OrderStatus;
+    paymentStatus: PaymentStatus;
+    createdAt: string;
+    assignedAt?: string;
+    deliveredAt?: string;
+}
+
+export interface OrderTableProps {
+    /** Массиви фармоишҳо */
+    data: Order[];
+    /** Оям таблитса сарборӣ дорад */
+    loading?: boolean;
+    /** Функсия ҳангоми таҳрир */
+    onEdit?: (order: Order) => void;
+    /** Функсия ҳангоми нест кардан */
+    onDelete?: (order: Order) => void;
+    /** Функсия ҳангоми тағйири статус */
+    onStatusChange?: (order: Order, status: OrderStatus) => void;
+    /** Функсия ҳангоми таъини курьер */
+    onAssign?: (order: Order) => void;
+    /** Функсия ҳангоми клик ба сатр */
+    onRowClick?: (order: Order) => void;
+}
+
+export const OrderTable: React.FC&lt;OrderTableProps&gt; = ({
+    data,
+    loading = false,
+    onEdit,
+    onDelete,
+    onStatusChange,
+    onAssign,
+    onRowClick,
+}) => {
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [statusModalOpen, setStatusModalOpen] = useState(false);
+    const [selectedOrder, setSelectedOrder] = useState&lt;Order | null&gt;(null);
+    const [newStatus, setNewStatus] = useState&lt;OrderStatus&gt;('PENDING');
+
+    const handleDeleteClick = (order: Order, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedOrder(order);
+        setDeleteModalOpen(true);
+    };
+
+    const handleStatusClick = (order: Order, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setSelectedOrder(order);
+        setNewStatus(order.status);
+        setStatusModalOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedOrder && onDelete) {
+            onDelete(selectedOrder);
+        }
+        setDeleteModalOpen(false);
+        setSelectedOrder(null);
+    };
+
+    const handleConfirmStatusChange = () => {
+        if (selectedOrder && onStatusChange) {
+            onStatusChange(selectedOrder, newStatus);
+        }
+        setStatusModalOpen(false);
+        setSelectedOrder(null);
+    };
+
+    const handleAssignClick = (order: Order, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onAssign) onAssign(order);
+    };
+
+    const getStatusVariant = (status: OrderStatus): 'success' | 'warning' | 'danger' | 'info' | 'default' => {
+        switch (status) {
+            case 'DELIVERED': return 'success';
+            case 'PICKED_UP': return 'info';
+            case 'ASSIGNED': return 'warning';
+            case 'CANCELLED': return 'danger';
+            default: return 'default';
+        }
+    };
+
+    const getStatusLabel = (status: OrderStatus): string => {
+        switch (status) {
+            case 'PENDING': return 'Интизорӣ';
+            case 'ASSIGNED': return 'Таъин шуд';
+            case 'PICKED_UP': return 'Гирифта шуд';
+            case 'DELIVERED': return 'Расонида шуд';
+            case 'CANCELLED': return 'Бекор шуд';
+            default: return status;
+        }
+    };
+
+    const getPaymentVariant = (status: PaymentStatus): 'success' | 'warning' | 'danger' | 'default' => {
+        switch (status) {
+            case 'PAID': return 'success';
+            case 'PENDING': return 'warning';
+            case 'FAILED': return 'danger';
+            default: return 'default';
+        }
+    };
+
+    const getPaymentLabel = (status: PaymentStatus): string => {
+        switch (status) {
+            case 'PENDING': return 'Интизорӣ';
+            case 'PAID': return 'Пардохт шуд';
+            case 'FAILED': return 'Ноком';
+            case 'REFUNDED': return 'Бозгардон';
+            default: return status;
+        }
+    };
+
+    const formatPrice = (price: number): string => {
+        return new Intl.NumberFormat('tg-TJ').format(price) + ' сом';
+    };
+
+    const statusOptions: OrderStatus[] = ['PENDING', 'ASSIGNED', 'PICKED_UP', 'DELIVERED', 'CANCELLED'];
+
+    const columns: Column&lt;Order&gt;[] = useMemo(() => [
+        {
+            key: 'id',
+            title: 'ID фармоиш',
+            render: (value) => &lt;span className="order-id"&gt;{value}&lt;/span&gt;,
+        },
+        {
+            key: 'clientName',
+            title: 'Муштарӣ',
+            render: (value, record) => (
+                &lt;div className="order-client"&gt;
+                    &lt;div className="client-name"&gt;{record.clientName}&lt;/div&gt;
+                    &lt;div className="client-phone"&gt;{record.clientPhone}&lt;/div&gt;
+                &lt;/div&gt;
+            ),
+        },
+        {
+            key: 'courierName',
+            title: 'Курьер',
+            render: (value) => &lt;span className="order-courier"&gt;{value || '—'}&lt;/span&gt;,
+        },
+        {
+            key: 'totalAmount',
+            title: 'Маблағ',
+            render: (value) => &lt;span className="order-amount"&gt;{formatPrice(value)}&lt;/span&gt;,
+        },
+        {
+            key: 'status',
+            title: 'Ҳолат',
+            render: (value) => (
+                &lt;Badge variant={getStatusVariant(value)} size="sm"&gt;
+                    {getStatusLabel(value)}
+                &lt;/Badge&gt;
+            ),
+        },
+        {
+            key: 'paymentStatus',
+            title: 'Пардохт',
+            render: (value) => (
+                &lt;Badge variant={getPaymentVariant(value)} size="sm"&gt;
+                    {getPaymentLabel(value)}
+                &lt;/Badge&gt;
+            ),
+        },
+        {
+            key: 'createdAt',
+            title: 'Сана',
+            render: (value) => new Date(value).toLocaleDateString('tg-TJ'),
+        },
+        {
+            key: 'actions',
+            title: 'Амалҳо',
+            align: 'center',
+            render: (_, record) => (
+                &lt;div className="order-actions"&gt;
+                    {record.status === 'PENDING' && onAssign && (
+                        &lt;Button size="xs" variant="primary" onClick={(e) => handleAssignClick(record, e)}&gt;
+                            Таъин
+                        &lt;/Button&gt;
+                    )}
+                    {onStatusChange && record.status !== 'DELIVERED' && record.status !== 'CANCELLED' && (
+                        &lt;Button size="xs" variant="warning" onClick={(e) => handleStatusClick(record, e)}&gt;
+                            Статус
+                        &lt;/Button&gt;
+                    )}
+                    {onEdit && (
+                        &lt;Button size="xs" variant="ghost" onClick={(e) => onEdit(record)}&gt;
+                            ✏️
+                        &lt;/Button&gt;
+                    )}
+                    {onDelete && (
+                        &lt;Button size="xs" variant="danger" onClick={(e) => handleDeleteClick(record, e)}&gt;
+                            🗑️
+                        &lt;/Button&gt;
+                    )}
+                &lt;/div&gt;
+            ),
+        },
+    ], [onEdit, onDelete, onStatusChange, onAssign]);
+
+    return (
+        &lt;&gt;
+            &lt;Table
+                data={data}
+                columns={columns}
+                rowKey="id"
+                loading={loading}
+                striped
+                bordered
+                onRowClick={onRowClick}
+            /&gt;
+
+            {/* Modal тасдиқи нест кардан */}
+            &lt;Modal
+                isOpen={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
+                title="Тасдиқи нест кардан"
+                size="sm"
+                footer={
+                    &lt;&gt;
+                        &lt;Button variant="ghost" onClick={() => setDeleteModalOpen(false)}&gt;
+                            Бекор
+                        &lt;/Button&gt;
+                        &lt;Button variant="danger" onClick={handleConfirmDelete}&gt;
+                            Нест кардан
+                        &lt;/Button&gt;
+                    &lt;/&gt;
+                }
+            &gt;
+                &lt;p&gt;Шумо боварӣ доред, ки фармоиши &lt;strong&gt;{selectedOrder?.id}&lt;/strong&gt; -ро нест кардан мехоҳед?&lt;/p&gt;
+                &lt;p className="delete-warning"&gt;Ин амал баргардонда намешавад!&lt;/p&gt;
+            &lt;/Modal&gt;
+
+            {/* Modal тағйири статус */}
+            &lt;Modal
+                isOpen={statusModalOpen}
+                onClose={() => setStatusModalOpen(false)}
+                title="Тағйири статус"
+                size="sm"
+                footer={
+                    &lt;&gt;
+                        &lt;Button variant="ghost" onClick={() => setStatusModalOpen(false)}&gt;
+                            Бекор
+                        &lt;/Button&gt;
+                        &lt;Button variant="primary" onClick={handleConfirmStatusChange}&gt;
+                            Тасдиқ
+                        &lt;/Button&gt;
+                    &lt;/&gt;
+                }
+            &gt;
+                &lt;div className="status-select"&gt;
+                    &lt;label&gt;Фармоиш: &lt;strong&gt;{selectedOrder?.id}&lt;/strong&gt;&lt;/label&gt;
+                    &lt;select
+                        className="status-select-input"
+                        value={newStatus}
+                        onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
+                    &gt;
+                        {statusOptions.map(opt => (
+                            &lt;option key={opt} value={opt}&gt;{getStatusLabel(opt)}&lt;/option&gt;
+                        ))}
+                    &lt;/select&gt;
+                &lt;/div&gt;
+            &lt;/Modal&gt;
+        &lt;/&gt;
+    );
+};
+
+OrderTable.displayName = 'OrderTable';
+
+export default OrderTable;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
