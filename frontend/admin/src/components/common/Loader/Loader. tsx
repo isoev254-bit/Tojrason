@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loader.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/common/Loader/Loader.tsx
+import React from 'react';
+import './Loader.module.css';
+
+export type LoaderSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type LoaderVariant = 'primary' | 'secondary' | 'white';
+
+export interface LoaderProps {
+    /** Андозаи спиннер */
+    size?: LoaderSize;
+    /** Варианти услубӣ */
+    variant?: LoaderVariant;
+    /** Матни иловагӣ дар зери спиннер */
+    text?: string;
+    /** Оё спиннер пурра саҳифаро фаро гирад */
+    fullScreen?: boolean;
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export const Loader: React.FC&lt;LoaderProps&gt; = ({
+    size = 'md',
+    variant = 'primary',
+    text,
+    fullScreen = false,
+    className = '',
+}) => {
+    const sizeClass = `loader-${size}`;
+    const variantClass = `loader-${variant}`;
+    
+    const combinedClassName = [
+        'loader',
+        sizeClass,
+        variantClass,
+        className,
+    ].filter(Boolean).join(' ');
+
+    const spinner = (
+        &lt;div className={combinedClassName}&gt;
+            &lt;div className="loader-spinner"&gt;
+                &lt;div className="loader-circle"&gt;&lt;/div&gt;
+                &lt;div className="loader-circle"&gt;&lt;/div&gt;
+                &lt;div className="loader-circle"&gt;&lt;/div&gt;
+                &lt;div className="loader-circle"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            {text && &lt;p className="loader-text"&gt;{text}&lt;/p&gt;}
+        &lt;/div&gt;
+    );
+
+    if (fullScreen) {
+        return (
+            &lt;div className="loader-fullscreen"&gt;
+                {spinner}
+            &lt;/div&gt;
+        );
+    }
+
+    return spinner;
+};
+
+// Компоненти алоҳида барои дархостҳои API
+export const PageLoader: React.FC = () => {
+    return (
+        &lt;div className="page-loader"&gt;
+            &lt;div className="page-loader-spinner"&gt;
+                &lt;div className="page-loader-logo"&gt;Т&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    );
+};
+
+// Компоненти алоҳида барои тугмаҳо (хурд)
+export const ButtonLoader: React.FC = () => {
+    return (
+        &lt;span className="button-loader"&gt;
+            &lt;span className="button-loader-dot"&gt;&lt;/span&gt;
+            &lt;span className="button-loader-dot"&gt;&lt;/span&gt;
+            &lt;span className="button-loader-dot"&gt;&lt;/span&gt;
+        &lt;/span&gt;
+    );
+};
+
+Loader.displayName = 'Loader';
+PageLoader.displayName = 'PageLoader';
+ButtonLoader.displayName = 'ButtonLoader';
+
+export default Loader;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
