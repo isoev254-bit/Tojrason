@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Charts.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/features/Charts/Charts.module.css */
+
+/* Canvas барои диаграммаҳо */
+.chart-canvas {
+    background: var(--bg-2, #131924);
+    border-radius: 16px;
+    padding: 8px;
+    display: block;
+}
+
+/* Контейнери диаграмма */
+.chart-wrapper {
+    background: var(--bg-2, #131924);
+    border: 1px solid var(--border-1, #1e2940);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+/* Сарлавҳаи диаграмма */
+.chart-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-0, #f0f2f7);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Тугмаҳои диаграмма */
+.chart-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.chart-action-btn {
+    padding: 4px 10px;
+    background: var(--bg-3, #1a2235);
+    border: 1px solid var(--border-1, #1e2940);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--text-2, #8696b8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chart-action-btn:hover {
+    background: var(--bg-4, #222d42);
+    color: var(--text-0, #f0f2f7);
+}
+
+.chart-action-btn.active {
+    background: var(--blue, #4a90ff);
+    border-color: var(--blue, #4a90ff);
+    color: #ffffff;
+}
+
+/* Шабакаи диаграмма (Grid) */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+/* Резпонсифӣ */
+@media (max-width: 900px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-wrapper {
+        padding: 12px;
+    }
+    
+    .chart-title {
+        font-size: 12px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
