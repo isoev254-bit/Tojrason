@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Card.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/common/Card/Card.module.css */
+
+/* ============================================
+   Карт асосӣ
+   ============================================ */
+.card {
+    background: var(--bg-2, #131924);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+/* Вариантҳои ранга */
+.card-default {
+    background: var(--bg-2, #131924);
+}
+
+.card-primary {
+    background: linear-gradient(135deg, var(--bg-2, #131924), rgba(74, 144, 255, 0.05));
+    border-left: 3px solid var(--blue, #4a90ff);
+}
+
+.card-success {
+    background: linear-gradient(135deg, var(--bg-2, #131924), rgba(34, 214, 147, 0.05));
+    border-left: 3px solid var(--green, #22d693);
+}
+
+.card-danger {
+    background: linear-gradient(135deg, var(--bg-2, #131924), rgba(255, 92, 92, 0.05));
+    border-left: 3px solid var(--red, #ff5c5c);
+}
+
+.card-warning {
+    background: linear-gradient(135deg, var(--bg-2, #131924), rgba(255, 159, 67, 0.05));
+    border-left: 3px solid var(--orange, #ff9f43);
+}
+
+.card-info {
+    background: linear-gradient(135deg, var(--bg-2, #131924), rgba(34, 211, 238, 0.05));
+    border-left: 3px solid var(--cyan, #22d3ee);
+}
+
+/* Ҳошия */
+.card-bordered {
+    border: 1px solid var(--border-1, #1e2940);
+}
+
+/* Соя */
+.card-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card-shadow:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Ҳовершаванда */
+.card-hoverable {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hoverable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Кликшаванда */
+.card-clickable {
+    cursor: pointer;
+}
+
+.card-clickable:active {
+    transform: scale(0.98);
+}
+
+/* Сарлавҳа */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border-1, #1e2940);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-0, #f0f2f7);
+    letter-spacing: -0.2px;
+}
+
+.card-extra {
+    font-size: 12px;
+    color: var(--text-2, #8696b8);
+}
+
+/* Матни асосӣ */
+.card-body {
+    flex: 1;
+}
+
+/* Футер */
+.card-footer {
+    border-top: 1px solid var(--border-1, #1e2940);
+    background: var(--bg-3, #1a2235);
+}
+
+/* Фосилаҳои дохилӣ */
+.card-padding-none .card-header,
+.card-padding-none .card-body,
+.card-padding-none .card-footer {
+    padding: 0;
+}
+
+.card-padding-sm .card-header {
+    padding: 12px 16px;
+}
+
+.card-padding-sm .card-body {
+    padding: 12px 16px;
+}
+
+.card-padding-sm .card-footer {
+    padding: 12px 16px;
+}
+
+.card-padding-md .card-header {
+    padding: 16px 20px;
+}
+
+.card-padding-md .card-body {
+    padding: 16px 20px;
+}
+
+.card-padding-md .card-footer {
+    padding: 16px 20px;
+}
+
+.card-padding-lg .card-header {
+    padding: 20px 24px;
+}
+
+.card-padding-lg .card-body {
+    padding: 20px 24px;
+}
+
+.card-padding-lg .card-footer {
+    padding: 20px 24px;
+}
+
+/* ============================================
+   Картҳои статистикӣ (StatsCard)
+   ============================================ */
+.stats-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.stats-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.stats-card-content {
+    flex: 1;
+}
+
+.stats-card-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-3, #5a6a8e);
+    margin-bottom: 4px;
+}
+
+.stats-card-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-0, #f0f2f7);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.stats-card-change {
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 6px;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.stats-card-change.increase {
+    color: var(--green, #22d693);
+    background: rgba(34, 214, 147, 0.12);
+}
+
+.stats-card-change.decrease {
+    color: var(--red, #ff5c5c);
+    background: rgba(255, 92, 92, 0.12);
+}
+
+/* Резпонсифӣ */
+@media (max-width: 640px) {
+    .card-padding-md .card-header,
+    .card-padding-md .card-body,
+    .card-padding-md .card-footer {
+        padding: 12px 16px;
+    }
+    
+    .card-padding-lg .card-header,
+    .card-padding-lg .card-body,
+    .card-padding-lg .card-footer {
+        padding: 16px 20px;
+    }
+    
+    .stats-card-value {
+        font-size: 22px;
+    }
+    
+    .stats-card-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        border-radius: 12px;
+    }
+    
+    .card-title {
+        font-size: 14px;
+    }
+    
+    .stats-card {
+        gap: 12px;
+    }
+    
+    .stats-card-value {
+        font-size: 20px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
