@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OrderTable.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/features/OrderTable/OrderTable.module.css */
+
+/* ID фармоиш */
+.order-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--blue, #4a90ff);
+    letter-spacing: 0.3px;
+}
+
+/* Маълумоти муштарӣ */
+.order-client {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.client-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-0, #f0f2f7);
+}
+
+.client-phone {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-3, #5a6a8e);
+}
+
+/* Курьер */
+.order-courier {
+    font-size: 12px;
+    color: var(--text-1, #c4ccdf);
+}
+
+/* Маблағ */
+.order-amount {
+    font-weight: 700;
+    color: var(--green, #22d693);
+    white-space: nowrap;
+}
+
+/* Амалҳо */
+.order-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Огоҳӣ ҳангоми нест кардан */
+.delete-warning {
+    font-size: 12px;
+    color: var(--red, #ff5c5c);
+    margin-top: 12px;
+    padding: 8px;
+    background: rgba(255, 92, 92, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Интихоби статус */
+.status-select {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-select label {
+    font-size: 13px;
+    color: var(--text-1, #c4ccdf);
+}
+
+.status-select-input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-3, #1a2235);
+    border: 1px solid var(--border-1, #1e2940);
+    border-radius: 10px;
+    color: var(--text-0, #f0f2f7);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.status-select-input:focus {
+    outline: none;
+    border-color: var(--blue, #4a90ff);
+    box-shadow: 0 0 0 3px rgba(74, 144, 255, 0.2);
+}
+
+/* Резпонсифӣ */
+@media (max-width: 768px) {
+    .client-name {
+        font-size: 12px;
+    }
+    
+    .client-phone {
+        font-size: 10px;
+    }
+    
+    .order-id {
+        font-size: 10px;
+    }
+    
+    .order-amount {
+        font-size: 12px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
