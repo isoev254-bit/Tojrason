@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Modal.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/common/Modal/Modal.tsx
+import React, { useEffect, useCallback } from 'react';
+import './Modal.module.css';
+
+export interface ModalProps {
+    /** Оё модал кушода аст */
+    isOpen: boolean;
+    /** Функсия барои пӯшидан */
+    onClose: () => void;
+    /** Сарлавҳаи модал */
+    title?: string;
+    /** Матни модал */
+    children: React.ReactNode;
+    /** Футери модал (аксар вақт тугмаҳо) */
+    footer?: React.ReactNode;
+    /** Андозаи модал */
+    size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+    /** Оё бо клик дар замина пӯшида шавад */
+    closeOnOverlayClick?: boolean;
+    /** Оё бо тугмаи Escape пӯшида шавад */
+    closeOnEsc?: boolean;
+    /** Оё кушодани аниматсия дошта бошад */
+    animation?: boolean;
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export const Modal: React.FC&lt;ModalProps&gt; = ({
+    isOpen,
+    onClose,
+    title,
+    children,
+    footer,
+    size = 'md',
+    closeOnOverlayClick = true,
+    closeOnEsc = true,
+    animation = true,
+    className = '',
+}) => {
+    const handleOverlayClick = useCallback((e: React.MouseEvent&lt;HTMLDivElement&gt;) => {
+        if (closeOnOverlayClick && e.target === e.currentTarget) {
+            onClose();
+        }
+    }, [closeOnOverlayClick, onClose]);
+
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (closeOnEsc && e.key === 'Escape' && isOpen) {
+            onClose();
+        }
+    }, [closeOnEsc, isOpen, onClose]);
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen, handleKeyDown]);
+
+    if (!isOpen) return null;
+
+    const sizeClass = `modal-${size}`;
+    const animationClass = animation ? 'modal-animate' : '';
+
+    return (
+        &lt;div className={`modal-overlay ${animationClass}`} onClick={handleOverlayClick}&gt;
+            &lt;div className={`modal-container ${sizeClass} ${className}`}&gt;
+                &lt;div className="modal-header"&gt;
+                    {title && &lt;h3 className="modal-title"&gt;{title}&lt;/h3&gt;}
+                    &lt;button
+                        className="modal-close-btn"
+                        onClick={onClose}
+                        aria-label="Пӯшидан"
+                    &gt;
+                        &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"&gt;
+                            &lt;line x1="18" y1="6" x2="6" y2="18"/&gt;
+                            &lt;line x1="6" y1="6" x2="18" y2="18"/&gt;
+                        &lt;/svg&gt;
+                    &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div className="modal-body"&gt;
+                    {children}
+                &lt;/div&gt;
+                {footer && (
+                    &lt;div className="modal-footer"&gt;
+                        {footer}
+                    &lt;/div&gt;
+                )}
+            &lt;/div&gt;
+        &lt;/div&gt;
+    );
+};
+
+Modal.displayName = 'Modal';
+
+export default Modal;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
