@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Header.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/layout/Header/Header.tsx
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IconBadge, Badge } from '../../common/Badge';
+import './Header.module.css';
+
+export interface HeaderProps {
+    /** Номи корбар */
+    userName?: string;
+    /** Нақши корбар */
+    userRole?: string;
+    /** Рӯйдоди барои logout */
+    onLogout?: () => void;
+    /** Рӯйдоди барои тугмаи menu (sidebar toggle) */
+    onMenuClick?: () => void;
+    /** Шумораи уведомлениеҳои хонданашуда */
+    notificationCount?: number;
+    /** Рӯйдоди барои клик ба уведомление */
+    onNotificationClick?: () => void;
+    /** Шумораи фармоишҳои нав */
+    orderCount?: number;
+    /** Рӯйдоди барои клик ба фармоишҳо */
+    onOrderClick?: () => void;
+}
+
+export const Header: React.FC&lt;HeaderProps&gt; = ({
+    userName = 'Администратор',
+    userRole = 'ADMIN',
+    onLogout,
+    onMenuClick,
+    notificationCount = 0,
+    onNotificationClick,
+    orderCount = 0,
+    onOrderClick,
+}) => {
+    const navigate = useNavigate();
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const formatTime = (date: Date): string => {
+        return date.toLocaleTimeString('tg-TJ', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
+    const formatDate = (date: Date): string => {
+        return date.toLocaleDateString('tg-TJ', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
+    const getInitials = (name: string): string => {
+        return name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    };
+
+    const handleProfileClick = () => {
+        navigate('/profile');
+    };
+
+    return (
+        &lt;header className="header"&gt;
+            &lt;div className="header-left"&gt;
+                {onMenuClick && (
+                    &lt;button className="header-menu-btn" onClick={onMenuClick} aria-label="Меню"&gt;
+                        &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"&gt;
+                            &lt;line x1="3" y1="12" x2="21" y2="12"/&gt;
+                            &lt;line x1="3" y1="6" x2="21" y2="6"/&gt;
+                            &lt;line x1="3" y1="18" x2="21" y2="18"/&gt;
+                        &lt;/svg&gt;
+                    &lt;/button&gt;
+                )}
+                &lt;div className="header-logo" onClick={() => navigate('/')}&gt;
+                    &lt;div className="logo-icon"&gt;Т&lt;/div&gt;
+                    &lt;span className="logo-text"&gt;Tojrason&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div className="header-center"&gt;
+                &lt;div className="header-datetime"&gt;
+                    &lt;span className="header-date"&gt;{formatDate(currentTime)}&lt;/span&gt;
+                    &lt;span className="header-time"&gt;{formatTime(currentTime)}&lt;/span&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div className="header-right"&gt;
+                {orderCount > 0 && (
+                    &lt;button className="header-icon-btn" onClick={onOrderClick}&gt;
+                        &lt;IconBadge count={orderCount} variant="warning"&gt;
+                            &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"&gt;
+                                &lt;path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/&gt;
+                                &lt;line x1="3" y1="6" x2="21" y2="6"/&gt;
+                                &lt;path d="M16 10a4 4 0 0 1-8 0"/&gt;
+                            &lt;/svg&gt;
+                        &lt;/IconBadge&gt;
+                    &lt;/button&gt;
+                )}
+
+                &lt;button className="header-icon-btn" onClick={onNotificationClick}&gt;
+                    &lt;IconBadge count={notificationCount} variant="danger"&gt;
+                        &lt;svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"&gt;
+                            &lt;path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/&gt;
+                            &lt;path d="M13.73 21a2 2 0 0 1-3.46 0"/&gt;
+                        &lt;/svg&gt;
+                    &lt;/IconBadge&gt;
+                &lt;/button&gt;
+
+                &lt;div className="header-user" onClick={handleProfileClick}&gt;
+                    &lt;div className="header-avatar"&gt;
+                        {getInitials(userName)}
+                    &lt;/div&gt;
+                    &lt;div className="header-user-info"&gt;
+                        &lt;span className="header-user-name"&gt;{userName}&lt;/span&gt;
+                        &lt;Badge variant="primary" size="xs"&gt;{userRole}&lt;/Badge&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                {onLogout && (
+                    &lt;button className="header-logout-btn" onClick={onLogout} aria-label="Баромад"&gt;
+                        &lt;svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"&gt;
+                            &lt;path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/&gt;
+                            &lt;polyline points="16 17 21 12 16 7"/&gt;
+                            &lt;line x1="21" y1="12" x2="9" y2="12"/&gt;
+                        &lt;/svg&gt;
+                    &lt;/button&gt;
+                )}
+            &lt;/div&gt;
+        &lt;/header&gt;
+    );
+};
+
+Header.displayName = 'Header';
+
+export default Header;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
