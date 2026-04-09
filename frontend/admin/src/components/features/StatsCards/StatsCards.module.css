@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>StatsCards.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/features/StatsCards/StatsCards.module.css */
+
+/* Контейнери асосии картҳо */
+.stats-cards {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Шумораи сутунҳо */
+.stats-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.stats-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.stats-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.stats-grid-5 {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.stats-grid-6 {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+/* ============================================
+   Скелетон барои ҳолати боркунӣ
+   ============================================ */
+.stats-skeleton {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stats-skeleton-card {
+    background: var(--bg-2, #131924);
+    border: 1px solid var(--border-1, #1e2940);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.skeleton-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--bg-3, #1a2235);
+}
+
+.skeleton-content {
+    flex: 1;
+}
+
+.skeleton-title {
+    width: 60%;
+    height: 12px;
+    background: var(--bg-3, #1a2235);
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.skeleton-value {
+    width: 80%;
+    height: 24px;
+    background: var(--bg-3, #1a2235);
+    border-radius: 6px;
+}
+
+/* Резпонсифӣ */
+@media (max-width: 1200px) {
+    .stats-grid-5,
+    .stats-grid-6 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .stats-grid-4,
+    .stats-grid-5,
+    .stats-grid-6 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid-3,
+    .stats-grid-4,
+    .stats-grid-5,
+    .stats-grid-6 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .stats-cards {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid-2,
+    .stats-grid-3,
+    .stats-grid-4,
+    .stats-grid-5,
+    .stats-grid-6 {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-cards {
+        gap: 10px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
