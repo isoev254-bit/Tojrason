@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Card.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/common/Card/Card.tsx
+import React from 'react';
+import './Card.module.css';
+
+export type CardVariant = 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'info';
+export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
+
+export interface CardProps {
+    /** Варианти услубӣ */
+    variant?: CardVariant;
+    /** Фосилаи дохилӣ */
+    padding?: CardPadding;
+    /** Оё карт ҳошия (border) дорад */
+    bordered?: boolean;
+    /** Оё карт соя (shadow) дорад */
+    shadow?: boolean;
+    /** Оё карт ҳангоми ҳовер баланд мешавад */
+    hoverable?: boolean;
+    /** Сарлавҳаи карт */
+    title?: React.ReactNode;
+    /** Амалҳо дар тарафи рости сарлавҳа */
+    extra?: React.ReactNode;
+    /** Матни асосӣ */
+    children: React.ReactNode;
+    /** Футер */
+    footer?: React.ReactNode;
+    /** Классҳои иловагӣ */
+    className?: string;
+    /** Стилҳои иловагӣ */
+    style?: React.CSSProperties;
+    /** Рӯйдоди клик */
+    onClick?: () => void;
+}
+
+export const Card: React.FC&lt;CardProps&gt; = ({
+    variant = 'default',
+    padding = 'md',
+    bordered = true,
+    shadow = false,
+    hoverable = false,
+    title,
+    extra,
+    children,
+    footer,
+    className = '',
+    style,
+    onClick,
+}) => {
+    const variantClass = `card-${variant}`;
+    const paddingClass = `card-padding-${padding}`;
+    const borderedClass = bordered ? 'card-bordered' : '';
+    const shadowClass = shadow ? 'card-shadow' : '';
+    const hoverableClass = hoverable ? 'card-hoverable' : '';
+    const clickableClass = onClick ? 'card-clickable' : '';
+
+    const combinedClassName = [
+        'card',
+        variantClass,
+        paddingClass,
+        borderedClass,
+        shadowClass,
+        hoverableClass,
+        clickableClass,
+        className,
+    ].filter(Boolean).join(' ');
+
+    return (
+        &lt;div className={combinedClassName} style={style} onClick={onClick}&gt;
+            {(title || extra) && (
+                &lt;div className="card-header"&gt;
+                    {title && &lt;div className="card-title"&gt;{title}&lt;/div&gt;}
+                    {extra && &lt;div className="card-extra"&gt;{extra}&lt;/div&gt;}
+                &lt;/div&gt;
+            )}
+            &lt;div className="card-body"&gt;
+                {children}
+            &lt;/div&gt;
+            {footer && (
+                &lt;div className="card-footer"&gt;
+                    {footer}
+                &lt;/div&gt;
+            )}
+        &lt;/div&gt;
+    );
+};
+
+// Компоненти алоҳида барои картҳои статистикӣ
+export interface StatsCardProps {
+    title: string;
+    value: number | string;
+    icon?: React.ReactNode;
+    change?: number;
+    changeType?: 'increase' | 'decrease';
+    color?: string;
+    onClick?: () => void;
+}
+
+export const StatsCard: React.FC&lt;StatsCardProps&gt; = ({
+    title,
+    value,
+    icon,
+    change,
+    changeType = 'increase',
+    color = '#4a90ff',
+    onClick,
+}) => {
+    return (
+        &lt;Card variant="default" hoverable={!!onClick} onClick={onClick}&gt;
+            &lt;div className="stats-card"&gt;
+                &lt;div className="stats-card-icon" style={{ background: `${color}15`, color }}&gt;
+                    {icon}
+                &lt;/div&gt;
+                &lt;div className="stats-card-content"&gt;
+                    &lt;div className="stats-card-title"&gt;{title}&lt;/div&gt;
+                    &lt;div className="stats-card-value"&gt;{value}&lt;/div&gt;
+                    {change !== undefined && (
+                        &lt;div className={`stats-card-change ${changeType}`}&gt;
+                            {changeType === 'increase' ? '↑' : '↓'} {Math.abs(change)}%
+                        &lt;/div&gt;
+                    )}
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/Card&gt;
+    );
+};
+
+Card.displayName = 'Card';
+StatsCard.displayName = 'StatsCard';
+
+export default Card;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
