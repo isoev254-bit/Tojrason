@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>UserTable.module.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/components/features/UserTable/UserTable.module.css */
+
+/* Ҳуҷайраи корбар */
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Аватар */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+/* Ном ва email */
+.user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-0, #f0f2f7);
+}
+
+.user-email {
+    font-size: 11px;
+    color: var(--text-3, #5a6a8e);
+}
+
+/* Телефон */
+.user-phone {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-1, #c4ccdf);
+}
+
+/* Фармоишҳо */
+.user-orders {
+    font-weight: 600;
+    color: var(--text-0, #f0f2f7);
+}
+
+/* Рейтинг */
+.user-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--orange, #ff9f43);
+}
+
+/* Амалҳо */
+.user-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Огоҳӣ ҳангоми нест кардан */
+.delete-warning {
+    font-size: 12px;
+    color: var(--red, #ff5c5c);
+    margin-top: 12px;
+    padding: 8px;
+    background: rgba(255, 92, 92, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Резпонсифӣ */
+@media (max-width: 768px) {
+    .user-cell {
+        gap: 8px;
+    }
+    
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 10px;
+    }
+    
+    .user-name {
+        font-size: 12px;
+    }
+    
+    .user-email {
+        font-size: 10px;
+    }
+    
+    .user-phone {
+        font-size: 11px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
