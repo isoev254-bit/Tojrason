@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Badge.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/components/common/Badge/Badge.tsx
+import React from 'react';
+import './Badge.module.css';
+
+export type BadgeVariant = 
+    | 'default' 
+    | 'primary' 
+    | 'success' 
+    | 'danger' 
+    | 'warning' 
+    | 'info' 
+    | 'purple' 
+    | 'cyan';
+
+export type BadgeSize = 'xs' | 'sm' | 'md';
+
+export interface BadgeProps {
+    /** Варианти услубӣ */
+    variant?: BadgeVariant;
+    /** Андоза */
+    size?: BadgeSize;
+    /** Оё бадҷ даврӣ (circle) аст */
+    rounded?: boolean;
+    /** Матн ё элемент */
+    children?: React.ReactNode;
+    /** Классҳои иловагӣ */
+    className?: string;
+}
+
+export const Badge: React.FC&lt;BadgeProps&gt; = ({
+    variant = 'default',
+    size = 'sm',
+    rounded = false,
+    children,
+    className = '',
+}) => {
+    const variantClass = `badge-${variant}`;
+    const sizeClass = `badge-${size}`;
+    const roundedClass = rounded ? 'badge-rounded' : '';
+
+    const combinedClassName = [
+        'badge',
+        variantClass,
+        sizeClass,
+        roundedClass,
+        className,
+    ].filter(Boolean).join(' ');
+
+    return (
+        &lt;span className={combinedClassName}&gt;
+            {children}
+        &lt;/span&gt;
+    );
+};
+
+// Компоненти бадҷ барои иконкаҳо
+export interface IconBadgeProps {
+    count: number;
+    maxCount?: number;
+    variant?: BadgeVariant;
+    children: React.ReactNode;
+}
+
+export const IconBadge: React.FC&lt;IconBadgeProps&gt; = ({
+    count,
+    maxCount = 99,
+    variant = 'danger',
+    children,
+}) => {
+    const displayCount = count > maxCount ? `${maxCount}+` : count;
+    
+    return (
+        &lt;div className="icon-badge-wrapper"&gt;
+            {children}
+            {count > 0 && (
+                &lt;Badge variant={variant} size="xs" rounded className="icon-badge"&gt;
+                    {displayCount}
+                &lt;/Badge&gt;
+            )}
+        &lt;/div&gt;
+    );
+};
+
+// Компоненти бадҷ барои статусҳо
+export interface StatusBadgeProps {
+    status: 'online' | 'offline' | 'busy' | 'pending' | 'approved' | 'rejected';
+    showDot?: boolean;
+    children?: React.ReactNode;
+}
+
+export const StatusBadge: React.FC&lt;StatusBadgeProps&gt; = ({
+    status,
+    showDot = true,
+    children,
+}) => {
+    const statusMap = {
+        online: { variant: 'success', label: 'Онлайн', dot: '🟢' },
+        offline: { variant: 'default', label: 'Офлайн', dot: '⚫' },
+        busy: { variant: 'warning', label: 'Банд', dot: '🟡' },
+        pending: { variant: 'warning', label: 'Интизорӣ', dot: '🟡' },
+        approved: { variant: 'success', label: 'Қабул', dot: '✅' },
+        rejected: { variant: 'danger', label: 'Рад', dot: '❌' },
+    };
+    
+    const { variant, label, dot } = statusMap[status];
+    
+    return (
+        &lt;Badge variant={variant as BadgeVariant} size="sm"&gt;
+            {showDot && &lt;span className="status-dot"&gt;{dot}&lt;/span&gt;}
+            {children || label}
+        &lt;/Badge&gt;
+    );
+};
+
+Badge.displayName = 'Badge';
+IconBadge.displayName = 'IconBadge';
+StatusBadge.displayName = 'StatusBadge';
+
+export default Badge;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
