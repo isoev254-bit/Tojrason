@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>FinanceReport.tsx</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+// frontend/admin/src/pages/Reports/FinanceReport.tsx
+import React, { useState, useEffect } from 'react';
+import { Card } from '../../components/common/Card';
+import { Button } from '../../components/common/Button';
+import { Input } from '../../components/common/Input';
+import { Table, Column } from '../../components/common/Table';
+import { paymentsApi, Payment } from '../../api/payments.api';
+import './Reports.module.css';
+
+export const FinanceReport: React.FC = () => {
+    const [payments, setPayments] = useState<Payment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [dateRange, setDateRange] = useState({
+        fromDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        toDate: new Date().toISOString().slice(0, 10),
+    });
+    const [stats, setStats] = useState({
+        total: 0,
+        totalAmount: 0,
+        stripeAmount: 0,
+        cashAmount: 0,
+        pendingAmount: 0,
+        refundedAmount: 0,
+    });
+
+    useEffect(() => {
+        fetchPayments();
+    }, [dateRange]);
+
+    const fetchPayments = async () => {
+        setLoading(true);
+        try {
+            const response = await paymentsApi.getAllPayments({
+                fromDate: dateRange.fromDate,
+                toDate: dateRange.toDate,
+                page: 1,
+                limit: 500,
+            });
+            if (response.success) {
+                setPayments(response.data.data);
+                
+                const total = response.data.data.length;
+                const totalAmount = response.data.data.reduce((sum, p) => sum + p.amount, 0);
+                const stripeAmount = response.data.data
+                    .filter(p => p.method === 'stripe' && p.status === 'PAID')
+                    .reduce((sum, p) => sum + p.amount, 0);
+                const cashAmount = response.data.data
+                    .filter(p => p.method === 'cash' && p.status === 'PAID')
+                    .reduce((sum, p) => sum + p.amount, 0);
+                const pendingAmount = response.data.data
+                    .filter(p => p.status === 'PENDING')
+                    .reduce((sum, p) => sum + p.amount, 0);
+                const refundedAmount = response.data.data
+                    .filter(p => p.status === 'REFUNDED')
+                    .reduce((sum, p) => sum + p.amount, 0);
+                
+                setStats({ total, totalAmount, stripeAmount, cashAmount, pendingAmount, refundedAmount });
+            }
+        } catch (error) {
+            console.error('Error fetching payments:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleExportCSV = () => {
+        const headers = ['ID', 'Фармоиш', 'Маблағ', 'Усул', 'Ҳолат', 'Сана'];
+        const rows = payments.map(p => [
+            p.id,
+            p.orderId,
+            p.amount,
+            p.method === 'stripe' ? 'Stripe' : 'Нақдӣ',
+            p.status,
+            new Date(p.createdAt).toLocaleDateString('tg-TJ'),
+        ]);
+        
+        const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', `finance_report_${dateRange.fromDate}_${dateRange.toDate}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handlePrint = () => {
+        window.print();
+    };
+
+    const formatPrice = (price: number): string => {
+        return new Intl.NumberFormat('tg-TJ').format(price) + ' сом';
+    };
+
+    const getMethodLabel = (method: string): string => {
+        return method === 'stripe' ? 'Stripe' : 'Нақдӣ';
+    };
+
+    const getStatusLabel = (status: string): string => {
+        switch (status) {
+            case 'PENDING': return 'Интизорӣ';
+            case 'PAID': return 'Пардохт шуд';
+            case 'FAILED': return 'Ноком';
+            case 'REFUNDED': return 'Бозгардон';
+            default: return status;
+        }
+    };
+
+    const columns: Column<Payment>[] = [
+        { key: 'id', title: 'ID пардохт', render: (value) => value.slice(0, 8) + '...' },
+        { key: 'orderId', title: 'ID фармоиш', render: (value) => value.slice(0, 8) + '...' },
+        { key: 'amount', title: 'Маблағ', render: (value) => formatPrice(value) },
+        { key: 'method', title: 'Усул', render: (value) => getMethodLabel(value) },
+        { key: 'status', title: 'Ҳолат', render: (value) => getStatusLabel(value) },
+        { key: 'createdAt', title: 'Сана', render: (value) => new Date(value).toLocaleDateString('tg-TJ') },
+    ];
+
+    return (
+        <div className="finance-report-page">
+            <div className="report-header">
+                <div>
+                    <h1 className="report-title">Гузориши молиявӣ</h1>
+                    <p className="report-subtitle">Таҳлили пардохтҳо ва даромад дар давраи интихобшуда</p>
+                </div>
+                <div className="report-actions">
+                    <Button variant="ghost" onClick={handleExportCSV}>
+                        📄 CSV
+                    </Button>
+                    <Button variant="primary" onClick={handlePrint}>
+                        🖨 Чоп
+                    </Button>
+                </div>
+            </div>
+
+            {/* Танзимоти сана */}
+            <Card className="report-date-range">
+                <div className="date-range-row">
+                    <Input
+                        type="date"
+                        label="Аз сана"
+                        value={dateRange.fromDate}
+                        onChange={(e) => setDateRange({ ...dateRange, fromDate: e.target.value })}
+                        className="date-input"
+                    />
+                    <Input
+                        type="date"
+                        label="То сана"
+                        value={dateRange.toDate}
+                        onChange={(e) => setDateRange({ ...dateRange, toDate: e.target.value })}
+                        className="date-input"
+                    />
+                    <Button variant="primary" onClick={fetchPayments} loading={loading}>
+                        Навсозӣ
+                    </Button>
+                </div>
+            </Card>
+
+            {/* Омор */}
+            <div className="report-stats">
+                <div className="stat-card primary">
+                    <div className="stat-value">{formatPrice(stats.totalAmount)}</div>
+                    <div className="stat-label">Маблағи умумӣ</div>
+                </div>
+                <div className="stat-card success">
+                    <div className="stat-value">{formatPrice(stats.stripeAmount)}</div>
+                    <div className="stat-label">Stripe (онлайн)</div>
+                </div>
+                <div className="stat-card info">
+                    <div className="stat-value">{formatPrice(stats.cashAmount)}</div>
+                    <div className="stat-label">Нақдӣ</div>
+                </div>
+                <div className="stat-card warning">
+                    <div className="stat-value">{formatPrice(stats.pendingAmount)}</div>
+                    <div className="stat-label">Интизорӣ</div>
+                </div>
+                <div className="stat-card danger">
+                    <div className="stat-value">{formatPrice(stats.refundedAmount)}</div>
+                    <div className="stat-label">Бозгардон</div>
+                </div>
+            </div>
+
+            {/* Матн барои чоп */}
+            <div className="print-header">
+                <h2>Tojrason - Гузориши молиявӣ</h2>
+                <p>Давра: {dateRange.fromDate} то {dateRange.toDate}</p>
+                <p>Санаи чоп: {new Date().toLocaleString('tg-TJ')}</p>
+                <hr />
+            </div>
+
+            {/* Таблитсаи пардохтҳо */}
+            <Card title="Рӯйхати пардохтҳо">
+                <Table
+                    data={payments}
+                    columns={columns}
+                    rowKey="id"
+                    loading={loading}
+                    striped
+                    bordered
+                />
+            </Card>
+        </div>
+    );
+};
+
+export default FinanceReport;
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
