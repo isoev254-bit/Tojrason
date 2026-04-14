@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>dark.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/styles/themes/dark.css */
+/* Темаи торик (Dark Theme) барои Tojrason Admin - пешфарз */
+
+.theme-dark {
+    /* Рангҳои замина */
+    --bg-0: #06080d;
+    --bg-1: #0c1017;
+    --bg-2: #131924;
+    --bg-3: #1a2235;
+    --bg-4: #222d42;
+    --bg-glass: rgba(12, 16, 23, 0.88);
+    
+    /* Рангҳои ҳошия */
+    --border-1: #1e2940;
+    --border-2: #2a3858;
+    --border-3: #354569;
+    
+    /* Рангҳои матн */
+    --text-0: #f0f2f7;
+    --text-1: #c4ccdf;
+    --text-2: #8696b8;
+    --text-3: #5a6a8e;
+    
+    /* Рангҳои аксент */
+    --blue: #4a90ff;
+    --blue-dim: rgba(74, 144, 255, 0.12);
+    --blue-glow: rgba(74, 144, 255, 0.3);
+    
+    --green: #22d693;
+    --green-dim: rgba(34, 214, 147, 0.12);
+    --green-glow: rgba(34, 214, 147, 0.3);
+    
+    --orange: #ff9f43;
+    --orange-dim: rgba(255, 159, 67, 0.12);
+    --orange-glow: rgba(255, 159, 67, 0.3);
+    
+    --red: #ff5c5c;
+    --red-dim: rgba(255, 92, 92, 0.12);
+    --red-glow: rgba(255, 92, 92, 0.3);
+    
+    --purple: #a78bfa;
+    --purple-dim: rgba(167, 139, 250, 0.12);
+    --cyan: #22d3ee;
+    --cyan-dim: rgba(34, 211, 238, 0.12);
+    
+    /* Сояҳо барои темаи торик */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.7);
+    
+    /* Рангҳои компонентҳо */
+    --card-bg: var(--bg-2);
+    --table-header-bg: var(--bg-3);
+    --table-row-hover: rgba(74, 144, 255, 0.05);
+}
+
+/* Танзимоти иловагӣ барои темаи торик */
+.theme-dark .card {
+    background: var(--card-bg);
+    border-color: var(--border-1);
+}
+
+.theme-dark .table thead tr {
+    background: var(--table-header-bg);
+}
+
+.theme-dark .table tbody tr:hover {
+    background: var(--table-row-hover);
+}
+
+.theme-dark .sidebar {
+    background: var(--bg-1);
+    border-right-color: var(--border-1);
+}
+
+.theme-dark .header {
+    background: var(--bg-1);
+    border-bottom-color: var(--border-1);
+}
+
+.theme-dark .input,
+.theme-dark .fi,
+.theme-dark .fs {
+    background: var(--bg-3);
+    border-color: var(--border-1);
+    color: var(--text-0);
+}
+
+.theme-dark .input:focus,
+.theme-dark .fi:focus,
+.theme-dark .fs:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+.theme-dark .btn-ghost {
+    background: transparent;
+    color: var(--text-2);
+}
+
+.theme-dark .btn-ghost:hover {
+    background: var(--bg-3);
+    color: var(--text-0);
+}
+
+/* Барои харита дар темаи торик */
+.theme-dark .leaflet-tile-pane {
+    filter: brightness(0.65) contrast(1.15) saturate(0.7) hue-rotate(180deg) invert(1);
+}
+
+.theme-dark .leaflet-control-zoom a {
+    background: var(--bg-2) !important;
+    color: var(--text-0) !important;
+    border-color: var(--border-1) !important;
+}
+
+.theme-dark .leaflet-control-attribution {
+    display: none !important;
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
