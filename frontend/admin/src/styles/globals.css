@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>globals.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/styles/globals.css */
+
+/* ============================================
+   Reset CSS
+   ============================================ */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ============================================
+   Root Variables
+   ============================================ */
+:root {
+    /* Рангҳои асосӣ */
+    --bg-0: #06080d;
+    --bg-1: #0c1017;
+    --bg-2: #131924;
+    --bg-3: #1a2235;
+    --bg-4: #222d42;
+    --bg-glass: rgba(12, 16, 23, 0.88);
+    
+    --border-1: #1e2940;
+    --border-2: #2a3858;
+    --border-3: #354569;
+    
+    --text-0: #f0f2f7;
+    --text-1: #c4ccdf;
+    --text-2: #8696b8;
+    --text-3: #5a6a8e;
+    
+    --blue: #4a90ff;
+    --blue-dim: rgba(74, 144, 255, 0.12);
+    --blue-glow: rgba(74, 144, 255, 0.3);
+    
+    --green: #22d693;
+    --green-dim: rgba(34, 214, 147, 0.12);
+    
+    --orange: #ff9f43;
+    --orange-dim: rgba(255, 159, 67, 0.12);
+    
+    --red: #ff5c5c;
+    --red-dim: rgba(255, 92, 92, 0.12);
+    
+    --purple: #a78bfa;
+    --purple-dim: rgba(167, 139, 250, 0.12);
+    
+    --cyan: #22d3ee;
+    --cyan-dim: rgba(34, 211, 238, 0.12);
+    
+    /* Андозаҳо */
+    --r: 14px;
+    --r-sm: 10px;
+    --r-xs: 8px;
+    
+    /* Фонтҳо */
+    --font: 'DM Sans', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    
+    /* Аниматсия */
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   Асосҳои HTML
+   ============================================ */
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font);
+    background: var(--bg-0);
+    color: var(--text-0);
+}
+
+#root {
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ============================================
+   Элементҳои умумӣ
+   ============================================ */
+button,
+input,
+select,
+textarea {
+    font-family: var(--font);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-3);
+}
+
+/* ============================================
+   Scrollbar
+   ============================================ */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--border-3);
+}
+
+/* ============================================
+   Аниматсияҳо
+   ============================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ============================================
+   Классҳои ёвар
+   ============================================ */
+.text-primary {
+    color: var(--blue);
+}
+
+.text-success {
+    color: var(--green);
+}
+
+.text-warning {
+    color: var(--orange);
+}
+
+.text-danger {
+    color: var(--red);
+}
+
+.text-muted {
+    color: var(--text-2);
+}
+
+.bg-primary {
+    background: var(--blue-dim);
+}
+
+.bg-success {
+    background: var(--green-dim);
+}
+
+.bg-warning {
+    background: var(--orange-dim);
+}
+
+.bg-danger {
+    background: var(--red-dim);
+}
+
+/* ============================================
+   Чоп (Print)
+   ============================================ */
+@media print {
+    .sidebar,
+    .header,
+    .footer,
+    .reports-actions,
+    .report-actions {
+        display: none !important;
+    }
+    
+    .print-header {
+        display: block !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .card {
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
