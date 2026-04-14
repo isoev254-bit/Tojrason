@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>variables.css</title>
+    <style>
+        .code-container {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            margin: 20px 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .copy-btn:hover {
+            background-color: #005a9e;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="code-container">
+    <button class="copy-btn" onclick="copyCode()">Копия кардан</button>
+    <pre id="codeBlock">
+/* frontend/admin/src/styles/variables.css */
+
+/* ============================================
+   Light Theme (пешфарз - торик)
+   ============================================ */
+:root {
+    /* Рангҳои замина */
+    --bg-0: #06080d;
+    --bg-1: #0c1017;
+    --bg-2: #131924;
+    --bg-3: #1a2235;
+    --bg-4: #222d42;
+    --bg-glass: rgba(12, 16, 23, 0.88);
+    
+    /* Рангҳои ҳошия */
+    --border-1: #1e2940;
+    --border-2: #2a3858;
+    --border-3: #354569;
+    
+    /* Рангҳои матн */
+    --text-0: #f0f2f7;
+    --text-1: #c4ccdf;
+    --text-2: #8696b8;
+    --text-3: #5a6a8e;
+    
+    /* Рангҳои аксент */
+    --blue: #4a90ff;
+    --blue-dim: rgba(74, 144, 255, 0.12);
+    --blue-glow: rgba(74, 144, 255, 0.3);
+    
+    --green: #22d693;
+    --green-dim: rgba(34, 214, 147, 0.12);
+    --green-glow: rgba(34, 214, 147, 0.3);
+    
+    --orange: #ff9f43;
+    --orange-dim: rgba(255, 159, 67, 0.12);
+    --orange-glow: rgba(255, 159, 67, 0.3);
+    
+    --red: #ff5c5c;
+    --red-dim: rgba(255, 92, 92, 0.12);
+    --red-glow: rgba(255, 92, 92, 0.3);
+    
+    --purple: #a78bfa;
+    --purple-dim: rgba(167, 139, 250, 0.12);
+    --cyan: #22d3ee;
+    --cyan-dim: rgba(34, 211, 238, 0.12);
+    
+    /* Андозаҳои ҳошия */
+    --r: 14px;
+    --r-sm: 10px;
+    --r-xs: 8px;
+    
+    /* Сояҳо */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.5);
+    
+    /* Фонтҳо */
+    --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    
+    /* Вақтҳои аниматсия */
+    --duration-fast: 150ms;
+    --duration-base: 200ms;
+    --duration-slow: 300ms;
+    
+    /* Easing */
+    --ease-linear: cubic-bezier(0, 0, 1, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Андозаҳои саҳифа */
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 72px;
+    --header-height: 64px;
+    --footer-height: 52px;
+    
+    /* Z-index слоҳо */
+    --z-dropdown: 100;
+    --z-sticky: 150;
+    --z-header: 200;
+    --z-sidebar: 250;
+    --z-modal: 300;
+    --z-tooltip: 350;
+    --z-toast: 400;
+}
+
+/* ============================================
+   Dark Theme (агар лозим бошад)
+   ============================================ */
+.theme-dark {
+    --bg-0: #06080d;
+    --bg-1: #0c1017;
+    --bg-2: #131924;
+    --bg-3: #1a2235;
+    --bg-4: #222d42;
+    --text-0: #f0f2f7;
+    --text-1: #c4ccdf;
+    --text-2: #8696b8;
+    --text-3: #5a6a8e;
+}
+
+/* ============================================
+   Light Theme (барои истифодаи имконпазир)
+   ============================================ */
+.theme-light {
+    --bg-0: #f8f9fc;
+    --bg-1: #ffffff;
+    --bg-2: #f1f3f8;
+    --bg-3: #e9ecef;
+    --bg-4: #dee2e6;
+    --border-1: #ced4da;
+    --border-2: #adb5bd;
+    --text-0: #212529;
+    --text-1: #343a40;
+    --text-2: #6c757d;
+    --text-3: #868e96;
+}
+
+/* ============================================
+   Медиа-запросҳо
+   ============================================ */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --header-height: 56px;
+        --footer-height: 48px;
+    }
+}
+    </pre>
+</div>
+<script>
+function copyCode() {
+    const code = document.getElementById('codeBlock').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Код копия карда шуд!');
+    }).catch(() => {
+        alert('❌ Хатогӣ ҳангоми копия кардан');
+    });
+}
+</script>
+</body>
+</html>
