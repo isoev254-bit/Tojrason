@@ -1,0 +1,17 @@
+// Tojrason/frontend/client/tsconfig.node.json
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true
+  },
+  "include": ["vite.config.ts"]
+}
