@@ -1,0 +1,42 @@
+# Tojrason/frontend/client/.gitignore
+# © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+# Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+
+# Логҳо
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Вобастагиҳо
+node_modules
+dist
+dist-ssr
+*.local
+
+# Файлҳои муҳаррир
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Файлҳои муҳити корӣ
+.env
+.env.local
+.env.*.local
+
+# Файлҳои санҷишӣ
+coverage
+*.lcov
+
+# Сохти Vite
+.vite
