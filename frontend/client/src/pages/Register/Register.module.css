@@ -1,0 +1,418 @@
+/* Tojrason/frontend/client/src/pages/Register/Register.module.css */
+
+/* Аниматсияи пайдошавии форма */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Контейнери асосӣ */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: linear-gradient(135deg, #eef2ff 0%, #ffffff 50%, #f3e8ff 100%);
+}
+
+/* Карточкаи форма */
+.card {
+  width: 100%;
+  max-width: 28rem;
+  animation: slideInUp 0.5s ease-out;
+}
+
+/* Унвони лого */
+.logo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4f46e5;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.logo:hover {
+  color: #4338ca;
+}
+
+/* Унвони саҳифа */
+.title {
+  margin-top: 1.5rem;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Форма */
+.form {
+  margin-top: 2rem;
+}
+
+/* Гурӯҳи input-ҳо */
+.inputGroup {
+  margin-bottom: 1.25rem;
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Хатогӣ */
+.errorAlert {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  animation: shake 0.5s ease-in-out;
+}
+
+.errorContent {
+  display: flex;
+  align-items: flex-start;
+}
+
+.errorIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #dc2626;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.errorMessage {
+  margin-left: 0.75rem;
+  font-size: 0.875rem;
+  color: #991b1b;
+}
+
+/* Индикатори қувваи парол */
+.passwordStrength {
+  margin-top: 0.5rem;
+}
+
+.strengthBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.strengthTrack {
+  flex: 1;
+  height: 0.375rem;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.strengthFill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strengthText {
+  font-size: 0.75rem;
+  color: #6b7280;
+  min-width: 4rem;
+}
+
+/* Рӯйхати талабот ба парол */
+.passwordRequirements {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  list-style: none;
+  padding: 0;
+}
+
+.passwordRequirements li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.125rem;
+}
+
+.passwordRequirements li.valid {
+  color: #059669;
+}
+
+/* Checkbox барои шартҳо */
+.termsCheckbox {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+}
+
+.termsCheckbox input {
+  margin-top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  color: #4f46e5;
+  cursor: pointer;
+}
+
+.termsCheckbox input:focus {
+  outline: none;
+  ring: 2px solid #4f46e5;
+  ring-offset: 2px;
+}
+
+.termsLabel {
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.termsLink {
+  color: #4f46e5;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.termsLink:hover {
+  color: #4338ca;
+  text-decoration: underline;
+}
+
+.termsError {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+/* Тугмаи асосӣ */
+.submitButton {
+  margin-top: 1.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+  background-color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #4338ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton:focus {
+  outline: none;
+  ring: 2px solid #4f46e5;
+  ring-offset: 2px;
+}
+
+/* Ҷудокунанда */
+.divider {
+  margin-top: 1.5rem;
+  position: relative;
+}
+
+.dividerLine {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+
+.dividerLineInner {
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dividerText {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.dividerText span {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  background-color: white;
+  color: #6b7280;
+}
+
+/* Тугмаҳои иҷтимоӣ */
+.socialButtons {
+  margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.socialButton:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.socialButton svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+/* Истинод ба логин */
+.loginLink {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.loginLink a {
+  color: #4f46e5;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.loginLink a:hover {
+  color: #4338ca;
+  text-decoration: underline;
+}
+
+/* Истинод ба саҳифаи асосӣ */
+.backLink {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.backLink a {
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.backLink a:hover {
+  color: #374151;
+}
+
+/* Адаптивӣ барои мобил */
+@media (max-width: 640px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .card {
+    padding: 1.5rem !important;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .inputRow {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .socialButtons {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ҳолати боргузорӣ */
+.loading {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ранги матни сабз барои талаботҳои иҷрошуда */
+.valid {
+  color: #059669 !important;
+}
+
+.valid::before {
+  content: '✓ ';
+  font-weight: bold;
+  }
