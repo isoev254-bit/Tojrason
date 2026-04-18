@@ -1,0 +1,592 @@
+/* Tojrason/frontend/client/src/pages/CreateOrder/CreateOrder.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* Аниматсияҳои умумӣ */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Контейнери асосӣ */
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.content {
+  max-width: 64rem;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .content {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Сарлавҳа */
+.header {
+  margin-bottom: 2rem;
+  animation: slideInUp 0.5s ease-out;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+/* Индикатори қадамҳо */
+.stepIndicator {
+  margin-bottom: 2rem;
+}
+
+.stepContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.stepCircle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.stepCircleActive {
+  background-color: #4f46e5;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.stepCircleCompleted {
+  background-color: #10b981;
+  color: white;
+}
+
+.stepCirclePending {
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.stepLabel {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.stepConnector {
+  width: 6rem;
+  height: 0.125rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: #e5e7eb;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .stepConnector {
+    width: 8rem;
+  }
+}
+
+.stepConnectorCompleted {
+  background-color: #10b981;
+}
+
+/* Карточкаи форма */
+.formCard {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .formCard {
+    padding: 2rem;
+  }
+}
+
+.formCard:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Қисмҳои форма */
+.formSection {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Гурӯҳҳои вуруд */
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.locationButton {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4f46e5;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.locationButton:hover {
+  color: #4338ca;
+}
+
+/* Интихоби намуди бор */
+.packageTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .packageTypeGrid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.packageTypeButton {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: white;
+}
+
+.packageTypeButton:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.packageTypeButtonActive {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+  color: #4338ca;
+}
+
+.packageIcon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.packageLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Андозаҳои бор */
+.dimensionsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dimensionInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dimensionInput:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Checkbox-ҳо */
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+  color: #4f46e5;
+  cursor: pointer;
+}
+
+.checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Қисми нархи тахминӣ */
+.estimateBox {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 0.5rem;
+}
+
+.estimateTitle {
+  font-weight: 600;
+  color: #3730a3;
+  margin-bottom: 0.5rem;
+}
+
+.estimateRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.estimateLabel {
+  color: #4b5563;
+}
+
+.estimateValue {
+  font-weight: 500;
+}
+
+.estimateTotal {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+/* Усулҳои пардохт */
+.paymentMethods {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.paymentMethodLabel {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.paymentMethodLabel:hover {
+  background-color: #f9fafb;
+}
+
+.paymentMethodLabelSelected {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+}
+
+.paymentRadio {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  color: #4f46e5;
+}
+
+.paymentMethodName {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Қисми коди промо */
+.promoSection {
+  margin-top: 1.5rem;
+}
+
+.promoInputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.promoInput {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.promoInput:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Хулосаи фармоиш */
+.summaryBox {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.summaryTitle {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.summaryLabel {
+  color: #6b7280;
+}
+
+.summaryValue {
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summaryDivider {
+  border-top: 1px solid #d1d5db;
+  margin: 0.75rem 0;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.summaryTotalLabel {
+  color: #111827;
+}
+
+.summaryTotalValue {
+  color: #4f46e5;
+}
+
+/* Хатогӣ */
+.errorBox {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.errorText {
+  color: #991b1b;
+  font-size: 0.875rem;
+}
+
+/* Тугмаҳои навигатсия */
+.navigationButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+/* Ҳолати боргузорӣ */
+.loadingSpinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.6s linear infinite;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.loadingContent {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Адаптивӣ барои мобил */
+@media (max-width: 640px) {
+  .stepConnector {
+    width: 2rem;
+  }
+  
+  .stepLabel {
+    font-size: 0.75rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .formCard {
+    padding: 1rem;
+  }
+  
+  .navigationButtons {
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+  }
+  
+  .navigationButtons button {
+    width: 100%;
+  }
+  }
