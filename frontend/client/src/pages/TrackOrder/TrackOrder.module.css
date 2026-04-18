@@ -1,0 +1,365 @@
+/* Tojrason/frontend/client/src/pages/TrackOrder/TrackOrder.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* Аниматсияи маркери курйер */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Контейнери асосии саҳифа */
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 2rem 0;
+}
+
+/* Карточкаи ҷустуҷӯ */
+.searchCard {
+  margin-bottom: 2rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  margin-top: 1.5rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #e5e7eb;
+}
+
+.timelineItem {
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 2rem;
+}
+
+.timelineItem:last-child {
+  margin-bottom: 0;
+}
+
+.timelineIcon {
+  position: absolute;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.timelineIcon.completed {
+  background-color: #10b981;
+  color: white;
+}
+
+.timelineIcon.active {
+  background-color: #4f46e5;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.timelineContent {
+  padding-bottom: 0.5rem;
+}
+
+.timelineTitle {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.timelineDate {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.timelineDescription {
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* Харита */
+.mapCard {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.mapHeader {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mapTitle {
+  font-weight: 600;
+  color: #111827;
+}
+
+.mapDistance {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.mapContainer {
+  height: 320px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Маркери курйер дар харита */
+:global(.courier-marker) {
+  filter: hue-rotate(120deg) brightness(1.2);
+  animation: pulse 2s infinite;
+}
+
+/* Тафсилот */
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .detailsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.detailCard {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.detailTitle {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.addressItem {
+  margin-bottom: 1rem;
+}
+
+.addressLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.addressText {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Корти курйер */
+.courierCard {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.courierAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  overflow: hidden;
+}
+
+.courierAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.courierInitials {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.courierInfo {
+  flex: 1;
+}
+
+.courierName {
+  font-weight: 600;
+  color: #111827;
+}
+
+.courierPhone {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.messageButton {
+  margin-top: 1rem;
+}
+
+/* Тугмаҳои амал */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Ҳолати холӣ */
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.emptyIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1rem;
+  color: #d1d5db;
+}
+
+.emptyTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.emptyText {
+  color: #6b7280;
+}
+
+/* Баҷ (Badge) барои статус */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.statusPending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statusAccepted {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statusPickup {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.statusInTransit {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.statusArriving {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.statusDelivered {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.statusCancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Рақами пайгирӣ */
+.trackingNumber {
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: 0.05em;
+}
+
+/* Аниматсияи боркунӣ */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* Чоп */
+@media print {
+  .searchCard,
+  .actions,
+  .messageButton {
+    display: none;
+  }
+  
+  .mapCard {
+    break-inside: avoid;
+  }
+  
+  .container {
+    background-color: white;
+    padding: 0;
+  }
+  }
