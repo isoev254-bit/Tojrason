@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Courier Favicon Generator</title></head>
+<body>
+    <canvas id="iconCanvas" width="64" height="64"></canvas>
+    <script>
+        const canvas = document.getElementById('iconCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Танзимоти асосии тарроҳӣ барои КУРИЕР
+        ctx.fillStyle = '#10B981'; // Ранги сабз
+        ctx.beginPath();
+        ctx.arc(32, 32, 28, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF'; // Ранги сафед
+        ctx.font = 'bold 40px "Segoe UI Emoji", "Arial", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🛵', 32, 34); // Эмодзи мотороллер
+
+        // Эҷоди истинод барои зеркашӣ
+        canvas.toBlob(function(blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'courier_favicon.ico';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Намоиши паём дар саҳифа
+            const message = document.createElement('p');
+            message.style.fontFamily = 'sans-serif';
+            message.style.marginTop = '20px';
+            message.innerText = '✅ favicon.ico барои Courier бо муваффақият сохта шуд. Агар зеркашӣ оғоз нашавад, лутфан танзимоти браузери худро тафтиш кунед.';
+            document.body.appendChild(message);
+        });
+    </script>
+</body>
+</html>
