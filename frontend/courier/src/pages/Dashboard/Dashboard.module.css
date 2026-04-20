@@ -1,0 +1,464 @@
+/* Tojrason/frontend/courier/src/pages/Dashboard/Dashboard.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* Аниматсияҳо */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Контейнери асосӣ */
+.container {
+  padding-bottom: 1rem;
+}
+
+/* Сарлавҳаи профил */
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.profileInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+}
+
+.profileText h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.profileText p {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Тугмаи статус */
+.statusButton {
+  position: relative;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.statusOnline {
+  background-color: #10b981;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+}
+
+.statusOnline:hover {
+  background-color: #059669;
+  box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.4);
+}
+
+.statusOffline {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.statusOffline:hover {
+  background-color: #d1d5db;
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.statusDotPulse {
+  composes: statusDot;
+  animation: pulse 2s infinite;
+}
+
+/* Огоҳии макон */
+.locationWarning {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.locationError {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+}
+
+/* Огоҳии фармоиши нав */
+.newOrderAlert {
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+.newOrderCard {
+  padding: 1rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 2px solid #10b981;
+  border-radius: 0.75rem;
+}
+
+.newOrderHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.newOrderIcon {
+  font-size: 1.5rem;
+}
+
+.newOrderTitle {
+  font-weight: 700;
+  color: #065f46;
+  flex: 1;
+}
+
+.newOrderBadge {
+  padding: 0.125rem 0.5rem;
+  background-color: #a7f3d0;
+  color: #065f46;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.newOrderAddress {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.newOrderPrice {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #059669;
+  margin-bottom: 0.5rem;
+}
+
+.newOrderActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.newOrderExpiry {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* Фармоиши фаъол */
+.activeOrderCard {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+  border: 1px solid #a5b4fc;
+  border-radius: 0.75rem;
+}
+
+.activeOrderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.activeOrderTitle {
+  font-weight: 600;
+  color: #111827;
+}
+
+.activeOrderStatus {
+  padding: 0.125rem 0.5rem;
+  background-color: #c7d2fe;
+  color: #3730a3;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.activeOrderTracking {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.activeOrderAddress {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Корти омор */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.statCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.statCardTitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.statCardValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 0.25rem;
+}
+
+.statCardTrend {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.statCardIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Корти омори васеъ */
+.wideStatCard {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Рӯйхати фармоишҳои наздик */
+.nearbyOrders {
+  margin-bottom: 1.5rem;
+}
+
+.nearbyOrdersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.nearbyOrdersTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.refreshButton {
+  color: #10b981;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.refreshButton:hover {
+  text-decoration: underline;
+}
+
+.emptyOrders {
+  padding: 1.5rem;
+  text-align: center;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.emptyOrdersIcon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.emptyOrdersText {
+  color: #6b7280;
+}
+
+.emptyOrdersSubtext {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.orderItem {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.orderItemInfo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.orderItemDistance {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.orderItemAddress {
+  font-size: 0.875rem;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.orderItemPrice {
+  padding: 0.125rem 0.5rem;
+  background-color: #d1fae5;
+  color: #065f46;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Дастрасии зуд */
+.quickAccess {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.quickAccessButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.quickAccessButton:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.quickAccessIcon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.quickAccessLabel {
+  font-size: 0.75rem;
+  color: #4b5563;
+}
+
+/* Ҳолати боргузорӣ */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Skeleton loader */
+.skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 0.25rem;
+}
+
+/* Адаптивӣ барои планшетҳо */
+@media (min-width: 768px) {
+  .statGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .quickAccess {
+    gap: 1rem;
+  }
+  }
