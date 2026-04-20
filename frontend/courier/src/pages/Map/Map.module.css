@@ -1,0 +1,402 @@
+/* Tojrason/frontend/courier/src/pages/Map/Map.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* Аниматсияҳо */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Контейнери харита */
+.mapContainer {
+  position: relative;
+  height: calc(100vh - 56px - 80px);
+  width: 100%;
+}
+
+.mapWrapper {
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+}
+
+/* Контролҳои харита */
+.mapControls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.controlButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.controlButton:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.controlButtonActive {
+  composes: controlButton;
+  background-color: #10b981;
+  color: white;
+}
+
+.controlButtonActive:hover {
+  background-color: #059669;
+}
+
+/* Нишондиҳандаи пайваст */
+.connectionBadge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.connectionOnline {
+  composes: connectionBadge;
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.connectionOffline {
+  composes: connectionBadge;
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Хатогии локатсия */
+.locationError {
+  position: absolute;
+  bottom: 5rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 10;
+  padding: 0.75rem;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.locationErrorText {
+  font-size: 0.875rem;
+  color: #991b1b;
+}
+
+/* Панели тафсилоти фармоиш */
+.orderPanel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background-color: white;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+  animation: slideUp 0.3s ease-out;
+}
+
+.orderPanelClosing {
+  animation: slideDown 0.3s ease-out;
+}
+
+.orderPanelContent {
+  padding: 1rem;
+}
+
+.orderPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.orderPanelTitle {
+  font-weight: 600;
+  color: #111827;
+}
+
+.orderPanelClose {
+  padding: 0.25rem;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+}
+
+.orderPanelClose:hover {
+  color: #4b5563;
+}
+
+/* Тафсилоти фармоиш */
+.orderBadges {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.orderBadge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.orderBadgeDistance {
+  composes: orderBadge;
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.orderBadgeType {
+  composes: orderBadge;
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.orderAddress {
+  margin-bottom: 0.75rem;
+}
+
+.orderAddressRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.orderAddressIcon {
+  margin-top: 0.125rem;
+}
+
+.orderAddressIconPickup {
+  composes: orderAddressIcon;
+  color: #10b981;
+}
+
+.orderAddressIconDelivery {
+  composes: orderAddressIcon;
+  color: #ef4444;
+}
+
+.orderAddressText {
+  font-size: 0.875rem;
+  color: #374151;
+  flex: 1;
+}
+
+.orderPrice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.orderPriceLabel {
+  color: #4b5563;
+}
+
+.orderPriceValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #059669;
+}
+
+.orderActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Тугмаи марказкунӣ */
+.centerButton {
+  position: absolute;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border-radius: 9999px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.centerButton:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Маркерҳои фармоиш */
+.markerCourier {
+  filter: hue-rotate(200deg) brightness(1.2);
+}
+
+.markerOrder {
+  filter: hue-rotate(120deg) brightness(1.1);
+}
+
+.markerPickup {
+  filter: hue-rotate(270deg) brightness(1.1);
+}
+
+.markerDelivery {
+  filter: hue-rotate(0deg) brightness(1.2);
+}
+
+/* Попапи маркер */
+.markerPopup {
+  min-width: 180px;
+  font-size: 0.875rem;
+}
+
+.markerPopupTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.markerPopupDistance {
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+}
+
+.markerPopupPrice {
+  font-weight: 700;
+  color: #059669;
+  margin-bottom: 0.5rem;
+}
+
+/* Ҳолати боргузорӣ */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Адаптивӣ */
+@media (min-width: 768px) {
+  .mapControls {
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+  
+  .controlButton {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .orderPanel {
+    max-width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 1rem;
+    bottom: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .orderPanelContent {
+    padding: 1.5rem;
+  }
+  
+  .centerButton {
+    bottom: 1.5rem;
+  }
+}
+
+/* Leaflet override styles */
+:global(.leaflet-container) {
+  font-family: 'Inter', system-ui, sans-serif;
+  z-index: 0;
+}
+
+:global(.leaflet-popup-content) {
+  margin: 0.75rem;
+  min-width: 160px;
+}
+
+:global(.leaflet-popup-content p) {
+  margin: 0.25rem 0;
+}
+
+:global(.leaflet-control-attribution) {
+  font-size: 0.625rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+:global(.leaflet-control-zoom) {
+  display: none;
+  }
