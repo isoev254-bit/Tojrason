@@ -1,0 +1,94 @@
+/* Tojrason/frontend/shared/styles/themes/dark.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+[data-theme="dark"],
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Рангҳои замина */
+    --bg-primary: 17, 24, 39;          /* #111827 – хеле тира */
+    --bg-secondary: 31, 41, 55;        /* #1F2937 – хокистарии тира */
+    --bg-tertiary: 55, 65, 81;         /* #374151 – хокистарии миёна */
+    --bg-elevated: 31, 41, 55;         /* #1F2937 */
+    --bg-overlay: 17, 24, 39;          /* #111827 */
+
+    /* Рангҳои матн */
+    --text-primary: 249, 250, 251;     /* #F9FAFB – сафеди хеле равшан */
+    --text-secondary: 209, 213, 219;   /* #D1D5DB – хокистарии сафедча */
+    --text-tertiary: 156, 163, 175;    /* #9CA3AF – хокистарии миёна */
+    --text-disabled: 107, 114, 128;    /* #6B7280 – хокистарии тира */
+    --text-inverse: 17, 24, 39;        /* #111827 – барои матн дар заминаҳои сафед */
+
+    /* Рангҳои марзҳо */
+    --border-primary: 55, 65, 81;      /* #374151 */
+    --border-secondary: 75, 85, 99;    /* #4B5563 */
+    --border-focus: var(--color-primary);
+
+    /* Сояҳо (дар режими торик сояҳо бояд ториктар бошанд) */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.7);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
+
+    /* Рангҳои махсус барои ҳолатҳо */
+    --overlay-light: rgba(0, 0, 0, 0.4);
+    --overlay-dark: rgba(0, 0, 0, 0.7);
+    --backdrop: rgba(0, 0, 0, 0.6);
+
+    /* Рангҳои пасзамина барои ҳолатҳои гуногун */
+    --bg-hover: 55, 65, 81;            /* #374151 */
+    --bg-active: 75, 85, 99;           /* #4B5563 */
+    --bg-selected: 30, 41, 59;         /* #1E293B – каме кабудча */
+    --bg-disabled: 31, 41, 55;         /* #1F2937 */
+
+    /* Рангҳои пасзамина барои огоҳиҳо (вариантҳои торик) */
+    --bg-success: 2, 44, 34;           /* #022C22 */
+    --bg-warning: 66, 32, 6;           /* #422006 */
+    --bg-error: 69, 10, 10;            /* #450A0A */
+    --bg-info: 23, 37, 84;             /* #172554 */
+  }
+}
+
+/* Маҷбуран фаъол кардани тёмная тема */
+[data-theme="dark"] {
+  --bg-primary: 17, 24, 39;
+  --bg-secondary: 31, 41, 55;
+  --bg-tertiary: 55, 65, 81;
+  --bg-elevated: 31, 41, 55;
+  --bg-overlay: 17, 24, 39;
+
+  --text-primary: 249, 250, 251;
+  --text-secondary: 209, 213, 219;
+  --text-tertiary: 156, 163, 175;
+  --text-disabled: 107, 114, 128;
+  --text-inverse: 17, 24, 39;
+
+  --border-primary: 55, 65, 81;
+  --border-secondary: 75, 85, 99;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.6);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.7);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.3);
+
+  --overlay-light: rgba(0, 0, 0, 0.4);
+  --overlay-dark: rgba(0, 0, 0, 0.7);
+  --backdrop: rgba(0, 0, 0, 0.6);
+
+  --bg-hover: 55, 65, 81;
+  --bg-active: 75, 85, 99;
+  --bg-selected: 30, 41, 59;
+  --bg-disabled: 31, 41, 55;
+
+  --bg-success: 2, 44, 34;
+  --bg-warning: 66, 32, 6;
+  --bg-error: 69, 10, 10;
+  --bg-info: 23, 37, 84;
+}
