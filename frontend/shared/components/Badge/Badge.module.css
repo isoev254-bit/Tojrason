@@ -1,0 +1,211 @@
+/* Tojrason/frontend/shared/components/Badge/Badge.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* ========== БАҶИ АСОСӢ ========== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  border-radius: 9999px;
+}
+
+/* ========== АНДОЗАҲО ========== */
+.size-xs {
+  padding: 0.125rem 0.375rem;
+  font-size: 0.625rem;
+  min-width: 1rem;
+}
+
+.size-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  min-width: 1.25rem;
+}
+
+.size-md {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  min-width: 1.5rem;
+}
+
+.size-lg {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  min-width: 2rem;
+}
+
+/* ========== НАМУДҲО (FILLED) ========== */
+.type-filled.variant-default {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.type-filled.variant-primary {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.type-filled.variant-secondary {
+  background-color: #10b981;
+  color: white;
+}
+
+.type-filled.variant-success {
+  background-color: #10b981;
+  color: white;
+}
+
+.type-filled.variant-warning {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.type-filled.variant-error {
+  background-color: #ef4444;
+  color: white;
+}
+
+.type-filled.variant-info {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* ========== НАМУДҲО (OUTLINE) ========== */
+.type-outline {
+  background-color: transparent;
+  border: 1px solid currentColor;
+}
+
+.type-outline.variant-default {
+  color: #6b7280;
+  border-color: #d1d5db;
+}
+
+.type-outline.variant-primary {
+  color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.type-outline.variant-secondary {
+  color: #10b981;
+  border-color: #10b981;
+}
+
+.type-outline.variant-success {
+  color: #10b981;
+  border-color: #10b981;
+}
+
+.type-outline.variant-warning {
+  color: #f59e0b;
+  border-color: #f59e0b;
+}
+
+.type-outline.variant-error {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.type-outline.variant-info {
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+/* ========== НАМУДҲО (DOT) ========== */
+.type-dot {
+  padding: 0 !important;
+  min-width: auto !important;
+  border-radius: 50%;
+}
+
+.type-dot.size-xs {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.type-dot.size-sm {
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.type-dot.size-md {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.type-dot.size-lg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.type-dot.variant-default {
+  background-color: #9ca3af;
+}
+
+.type-dot.variant-primary {
+  background-color: #4f46e5;
+}
+
+.type-dot.variant-secondary {
+  background-color: #10b981;
+}
+
+.type-dot.variant-success {
+  background-color: #10b981;
+}
+
+.type-dot.variant-warning {
+  background-color: #f59e0b;
+}
+
+.type-dot.variant-error {
+  background-color: #ef4444;
+}
+
+.type-dot.variant-info {
+  background-color: #3b82f6;
+}
+
+/* ========== КЛИКШАВАНДА ========== */
+.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.clickable:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+/* ========== РЕҶАИ ТОРИК ========== */
+@media (prefers-color-scheme: dark) {
+  .type-filled.variant-default {
+    background-color: #374151;
+    color: #d1d5db;
+  }
+
+  .type-outline.variant-default {
+    color: #9ca3af;
+    border-color: #4b5563;
+  }
+
+  .type-dot.variant-default {
+    background-color: #6b7280;
+  }
+}
+
+/* ========== АДАПТИВӢ ========== */
+@media (max-width: 640px) {
+  .size-lg {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
