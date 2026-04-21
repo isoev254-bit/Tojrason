@@ -1,0 +1,156 @@
+/* Tojrason/frontend/shared/styles/variables.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* ========== БАЗОВЫЕ ПЕРЕМЕННЫЕ (ОБЩИЕ) ========== */
+:root {
+  /* Рангҳои бетараф */
+  --color-gray-50: 249, 250, 251;
+  --color-gray-100: 243, 244, 246;
+  --color-gray-200: 229, 231, 235;
+  --color-gray-300: 209, 213, 219;
+  --color-gray-400: 156, 163, 175;
+  --color-gray-500: 107, 114, 128;
+  --color-gray-600: 75, 85, 99;
+  --color-gray-700: 55, 65, 81;
+  --color-gray-800: 31, 41, 55;
+  --color-gray-900: 17, 24, 39;
+
+  /* Рангҳои ҳолат */
+  --color-success: 16, 185, 129;   /* #10B981 */
+  --color-warning: 245, 158, 11;   /* #F59E0B */
+  --color-error: 239, 68, 68;      /* #EF4444 */
+  --color-info: 59, 130, 246;      /* #3B82F6 */
+
+  /* Рангҳои замина */
+  --bg-primary: 249, 250, 251;
+  --bg-secondary: 255, 255, 255;
+  --bg-dark: 17, 24, 39;
+
+  /* Рангҳои матн */
+  --text-primary: 17, 24, 39;
+  --text-secondary: 75, 85, 99;
+  --text-tertiary: 107, 114, 128;
+  --text-light: 255, 255, 255;
+
+  /* Сояҳо */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* Ҳошияҳои мудаввар */
+  --radius-sm: 0.25rem;  /* 4px */
+  --radius-md: 0.5rem;   /* 8px */
+  --radius-lg: 0.75rem;  /* 12px */
+  --radius-xl: 1rem;     /* 16px */
+  --radius-2xl: 1.5rem;  /* 24px */
+  --radius-full: 9999px;
+
+  /* Фосилаҳо */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+
+  /* Ҳуруф */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Courier New', 'Fira Code', monospace;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Гузаришҳо */
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+  --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}
+
+/* ========== ТЕМАИ CLIENT (ИНДИГО) – ПЕШФАРЗ ========== */
+:root,
+[data-theme="client"] {
+  --color-primary: 79, 70, 229;        /* #4F46E5 */
+  --color-primary-light: 99, 102, 241;  /* #6366F1 */
+  --color-primary-dark: 67, 56, 202;    /* #4338CA */
+}
+
+/* ========== ТЕМАИ COURIER (ИЗУМРУД) ========== */
+[data-theme="courier"] {
+  --color-primary: 16, 185, 129;        /* #10B981 */
+  --color-primary-light: 52, 211, 153;  /* #34D399 */
+  --color-primary-dark: 5, 150, 105;    /* #059669 */
+}
+
+/* ========== ТЕМАИ ADMIN (КРАСНЫЙ) ========== */
+[data-theme="admin"] {
+  --color-primary: 239, 68, 68;         /* #EF4444 */
+  --color-primary-light: 248, 113, 113; /* #F87171 */
+  --color-primary-dark: 220, 38, 38;    /* #DC2626 */
+}
+
+/* ========== ТЁМНАЯ ТЕМА (ОПЦИОНАЛЬНО) ========== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: 17, 24, 39;
+    --bg-secondary: 31, 41, 55;
+    --text-primary: 249, 250, 251;
+    --text-secondary: 209, 213, 219;
+    --text-tertiary: 156, 163, 175;
+  }
+}
+
+/* Класс барои маҷбуран фаъол кардани тёмная тема */
+[data-theme="dark"] {
+  --bg-primary: 17, 24, 39;
+  --bg-secondary: 31, 41, 55;
+  --text-primary: 249, 250, 251;
+  --text-secondary: 209, 213, 219;
+  --text-tertiary: 156, 163, 175;
+}
+
+/* Класс барои маҷбуран фаъол кардани светлая тема */
+[data-theme="light"] {
+  --bg-primary: 249, 250, 251;
+  --bg-secondary: 255, 255, 255;
+  --text-primary: 17, 24, 39;
+  --text-secondary: 75, 85, 99;
+  --text-tertiary: 107, 114, 128;
+}
