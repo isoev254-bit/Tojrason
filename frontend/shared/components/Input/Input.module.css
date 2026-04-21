@@ -1,0 +1,313 @@
+/* Tojrason/frontend/shared/components/Input/Input.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* ========== КОНТЕЙНЕР ========== */
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ========== НИШОНА ========== */
+.labelWrapper {
+  display: flex;
+  margin-bottom: 0.375rem;
+}
+
+.labelWrapperTop {
+  flex-direction: column;
+}
+
+.labelWrapperLeft {
+  flex-direction: row;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.label {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.25;
+  transition: color 0.15s ease;
+}
+
+.labelDisabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.required {
+  /* Услуб барои нишонаи ҳатмӣ дар container илова мешавад */
+}
+
+.requiredStar {
+  color: #ef4444;
+  margin-left: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* ========== ҚУТТИИ ВУРУД ========== */
+.inputOuterWrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+  background-color: white;
+}
+
+/* ========== НАМУДҲО ========== */
+
+/* Default - Пешфарз */
+.variant-default {
+  border: 1px solid #d1d5db;
+  background-color: white;
+}
+
+.variant-default:hover:not(.disabled) {
+  border-color: #9ca3af;
+}
+
+.variant-default.focused {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Filled - Пуршуда */
+.variant-filled {
+  border: 1px solid transparent;
+  background-color: #f3f4f6;
+}
+
+.variant-filled:hover:not(.disabled) {
+  background-color: #e5e7eb;
+}
+
+.variant-filled.focused {
+  background-color: white;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Outline - Контурӣ */
+.variant-outline {
+  border: 2px solid #e5e7eb;
+  background-color: transparent;
+}
+
+.variant-outline:hover:not(.disabled) {
+  border-color: #9ca3af;
+}
+
+.variant-outline.focused {
+  border-color: #4f46e5;
+  background-color: white;
+}
+
+/* ========== АНДОЗАҲО ========== */
+.size-sm {
+  min-height: 2rem;
+}
+
+.size-sm .input {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.size-md {
+  min-height: 2.5rem;
+}
+
+.size-md .input {
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+.size-lg {
+  min-height: 3rem;
+}
+
+.size-lg .input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+}
+
+/* ========== ВУРУД ========== */
+.input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: #111827;
+  line-height: 1.5;
+}
+
+.input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.input:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.hasLeftIcon {
+  padding-left: 0.5rem !important;
+}
+
+.hasRightIcon {
+  padding-right: 0.5rem !important;
+}
+
+/* ========== ИКОНАҲО ========== */
+.leftIcon,
+.rightIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #9ca3af;
+  transition: color 0.15s ease;
+}
+
+.leftIcon {
+  padding-left: 0.75rem;
+}
+
+.rightIcon {
+  padding-right: 0.75rem;
+}
+
+.focused .leftIcon,
+.focused .rightIcon {
+  color: #4f46e5;
+}
+
+/* ========== ХАТОГӢ ========== */
+.error {
+  border-color: #ef4444 !important;
+}
+
+.error.focused {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.errorMessage {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: #ef4444;
+}
+
+/* ========== ҒАЙРИФАЪОЛ ========== */
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+/* ========== РЕҶАИ ТОРИК ========== */
+@media (prefers-color-scheme: dark) {
+  .label {
+    color: #d1d5db;
+  }
+
+  .labelDisabled {
+    color: #6b7280;
+  }
+
+  .inputWrapper {
+    background-color: #1f2937;
+  }
+
+  .variant-default {
+    border-color: #4b5563;
+    background-color: #1f2937;
+  }
+
+  .variant-default:hover:not(.disabled) {
+    border-color: #6b7280;
+  }
+
+  .variant-filled {
+    background-color: #374151;
+  }
+
+  .variant-filled:hover:not(.disabled) {
+    background-color: #4b5563;
+  }
+
+  .variant-filled.focused {
+    background-color: #1f2937;
+    border-color: #6366f1;
+  }
+
+  .variant-outline {
+    border-color: #4b5563;
+  }
+
+  .variant-outline.focused {
+    background-color: #1f2937;
+    border-color: #6366f1;
+  }
+
+  .input {
+    color: #f9fafb;
+  }
+
+  .input::placeholder {
+    color: #6b7280;
+  }
+
+  .input:disabled {
+    color: #6b7280;
+  }
+
+  .leftIcon,
+  .rightIcon {
+    color: #6b7280;
+  }
+
+  .focused .leftIcon,
+  .focused .rightIcon {
+    color: #818cf8;
+  }
+
+  .disabled {
+    background-color: #374151;
+  }
+}
+
+/* ========== АДАПТИВӢ ========== */
+@media (max-width: 640px) {
+  .labelWrapperLeft {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 0;
+    margin-bottom: 0.375rem;
+  }
+
+  .size-lg .input {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+}
