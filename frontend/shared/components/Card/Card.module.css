@@ -1,0 +1,150 @@
+/* Tojrason/frontend/shared/components/Card/Card.module.css */
+/*
+ * © 2024 Тоҷрасон. Ҳамаи ҳуқуқҳо маҳфузанд.
+ * Ин файл қисми нармафзори "Тоҷрасон" мебошад.
+ * Истифодаи ғайриқонунии ин файл ё қисмҳои он тибқи қонунгузории Ҷумҳурии Тоҷикистон таъқиб карда мешавад.
+ */
+
+/* ========== КОРТИ АСОСӢ ========== */
+.card {
+  background-color: white;
+  border-radius: 1rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ========== НАМУДҲО ========== */
+
+/* Default - Пешфарз */
+.variant-default {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.variant-default:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Outlined - Контурӣ */
+.variant-outlined {
+  background-color: transparent;
+  border: 1px solid #e5e7eb;
+}
+
+.variant-outlined:hover {
+  border-color: #d1d5db;
+  background-color: #fafafa;
+}
+
+/* Elevated - Баландшуда */
+.variant-elevated {
+  background-color: white;
+  border: none;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.variant-elevated:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Flat - Ҳамвор */
+.variant-flat {
+  background-color: #f9fafb;
+  border: none;
+  box-shadow: none;
+}
+
+.variant-flat:hover {
+  background-color: #f3f4f6;
+}
+
+/* ========== PADDING ========== */
+.padding-none {
+  padding: 0;
+}
+
+.padding-xs {
+  padding: 0.5rem;
+}
+
+.padding-sm {
+  padding: 0.75rem;
+}
+
+.padding-md {
+  padding: 1rem;
+}
+
+.padding-lg {
+  padding: 1.5rem;
+}
+
+.padding-xl {
+  padding: 2rem;
+}
+
+/* ========== КЛИКШАВАНДА ========== */
+.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.clickable:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.clickable:active {
+  transform: scale(0.98);
+}
+
+/* ========== РЕҶАИ ТОРИК ========== */
+@media (prefers-color-scheme: dark) {
+  .variant-default {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .variant-outlined {
+    background-color: transparent;
+    border-color: #374151;
+  }
+
+  .variant-outlined:hover {
+    border-color: #4b5563;
+    background-color: #111827;
+  }
+
+  .variant-elevated {
+    background-color: #1f2937;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  }
+
+  .variant-flat {
+    background-color: #111827;
+  }
+
+  .variant-flat:hover {
+    background-color: #1f2937;
+  }
+}
+
+/* ========== АДАПТИВӢ ========== */
+@media (max-width: 640px) {
+  .card {
+    border-radius: 0.75rem;
+  }
+
+  .padding-lg {
+    padding: 1rem;
+  }
+
+  .padding-xl {
+    padding: 1.25rem;
+  }
+}
